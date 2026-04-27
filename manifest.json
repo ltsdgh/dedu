@@ -1,0 +1,22 @@
+{
+  "name": "de-du | דדו",
+  "short_name": "de-du",
+  "description": "בצעו תהליך דדוקטיבי — גלו את המכפילים וחשפו את המספרים בלוח!",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#eef2ff",
+  "theme_color": "#6366f1",
+  "lang": "he",
+  "dir": "rtl",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "education"],
+  "screenshots": []
+}

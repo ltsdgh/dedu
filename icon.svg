@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="#4338ca"/>
+
+  <!-- Subtle grid pattern — 3×3 cells representing the multiplication board -->
+  <!-- Row 1 -->
+  <rect x="68"  y="68"  width="112" height="112" rx="18" fill="#6366f1" opacity=".55"/>
+  <rect x="200" y="68"  width="112" height="112" rx="18" fill="#6366f1" opacity=".55"/>
+  <rect x="332" y="68"  width="112" height="112" rx="18" fill="#a5b4fc" opacity=".35"/>
+
+  <!-- Row 2 -->
+  <rect x="68"  y="200" width="112" height="112" rx="18" fill="#6366f1" opacity=".55"/>
+  <!-- centre cell: "revealed" — bright with a number -->
+  <rect x="200" y="200" width="112" height="112" rx="18" fill="#eef2ff"/>
+  <text x="256" y="274" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="64" font-weight="900" fill="#4338ca">6</text>
+  <rect x="332" y="200" width="112" height="112" rx="18" fill="#818cf8" opacity=".6"/>
+
+  <!-- Row 3 -->
+  <!-- hidden cell with "?" -->
+  <rect x="68"  y="332" width="112" height="112" rx="18" fill="#818cf8" opacity=".6"/>
+  <text x="124" y="406" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="56" font-weight="900" fill="#c7d2fe">?</text>
+  <rect x="200" y="332" width="112" height="112" rx="18" fill="#6366f1" opacity=".55"/>
+  <rect x="332" y="332" width="112" height="112" rx="18" fill="#6366f1" opacity=".55"/>
+
+  <!-- App name: de·du split across two "header" areas -->
+  <!-- "de" top-right corner hint -->
+  <text x="444" y="52" text-anchor="end" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="38" font-weight="900" fill="#c7d2fe" letter-spacing="2">de</text>
+  <!-- "du" bottom-left corner hint -->
+  <text x="68" y="498" text-anchor="start" font-family="'Segoe UI',Arial,sans-serif"
+        font-size="38" font-weight="900" fill="#c7d2fe" letter-spacing="2">du</text>
+
+  <!-- Thin separator line suggesting row/col headers -->
+  <line x1="68" y1="58" x2="444" y2="58" stroke="#a5b4fc" stroke-width="3" opacity=".4"/>
+  <line x1="58" y1="68" x2="58" y2="444" stroke="#a5b4fc" stroke-width="3" opacity=".4"/>
+</svg>

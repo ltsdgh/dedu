@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>de-du | דדו — גלה את המכפילים</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#6366f1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="de-du" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+
+  <!-- SEO -->
+  <meta name="description" content="גלו את הכופל והנכפל וחשפו את המספרים בלוח!" />
+  <style>
+    /* ── Design Tokens ── */
+    :root {
+      --clr-primary:      #6366f1;
+      --clr-primary-dk:   #4338ca;
+      --clr-success:      #16a34a;
+      --clr-success-bg:   #dcfce7;
+      --clr-error:        #b91c1c;
+      --clr-error-bg:     #fee2e2;
+      --clr-warn:         #92400e;
+      --clr-warn-bg:      #fef3c7;
+      --clr-info:         #1d4ed8;
+      --clr-info-bg:      #dbeafe;
+      --clr-bg:           #eef2ff;
+      --clr-surface:      #ffffff;
+      --clr-text:         #1e293b;
+      --clr-muted:        #64748b;
+      --clr-border:       #c7d2fe;
+      --clr-cell-shown:   #f8faff;
+      --clr-cell-hidden:  #e0e7ff;
+      --clr-header-input: #ffffff;
+      --radius:           0.6rem;
+      --shadow:           0 4px 24px rgba(99,102,241,.13);
+    }
+
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--clr-bg);
+      color: var(--clr-text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    /* ── Skip link (WCAG 2.0 §2.4.1) ── */
+    .skip-link {
+      position: absolute;
+      top: -9999px;
+      left: 0;
+      background: var(--clr-primary);
+      color: #fff;
+      padding: .5rem 1rem;
+      border-radius: 0 0 .5rem .5rem;
+      font-weight: 700;
+      z-index: 999;
+      text-decoration: none;
+    }
+    .skip-link:focus { top: 0; }
+
+    /* ── Header ── */
+    .site-header {
+      text-align: center;
+      margin-bottom: 1.75rem;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.1rem 2rem 1rem;
+      width: 100%;
+      max-width: 540px;
+    }
+    .site-header h1 { line-height: 1; margin: 0; }
+    .site-header p { color: var(--clr-muted); font-size: .95rem; margin-top: .45rem; }
+
+    /* ── Card ── */
+    .card {
+      background: var(--clr-surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.75rem 2rem;
+      width: 100%;
+      max-width: 540px;
+    }
+
+    /* ── Setup Screen ── */
+    #setupScreen fieldset {
+      border: none;
+      margin-bottom: 1.4rem;
+    }
+    #setupScreen legend {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--clr-text);
+      margin-bottom: .7rem;
+    }
+    .option-group { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .option-btn {
+      flex: 1;
+      min-width: 80px;
+      padding: .65rem 1rem;
+      border: 2px solid var(--clr-border);
+      border-radius: var(--radius);
+      background: var(--clr-surface);
+      cursor: pointer;
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--clr-text);
+      transition: border-color .15s, background .15s;
+    }
+    .option-btn:hover  { border-color: var(--clr-primary); }
+    .option-btn:focus  { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
+    .option-btn[aria-pressed="true"] {
+      border-color: var(--clr-primary);
+      background: var(--clr-primary);
+      color: #fff;
+    }
+
+    .rules-box {
+      background: #f0f4ff;
+      border-radius: .5rem;
+      padding: 1rem 1.1rem;
+      margin-bottom: 1.4rem;
+      font-size: .875rem;
+      color: var(--clr-muted);
+      line-height: 1.65;
+    }
+    .rules-box strong { color: var(--clr-text); }
+
+    .btn-start {
+      display: block;
+      width: 100%;
+      padding: .9rem;
+      background: var(--clr-primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-start:hover { background: var(--clr-primary-dk); }
+    .btn-start:focus { outline: 3px solid var(--clr-primary-dk); outline-offset: 2px; }
+
+    /* ── Game Screen ── */
+    #gameScreen { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 720px; }
+    #gameScreen.active { display: flex; }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 1.1rem;
+      width: 100%;
+    }
+    .stat {
+      background: var(--clr-surface);
+      border-radius: .5rem;
+      padding: .45rem .9rem;
+      font-size: .88rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,.07);
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+    }
+    .stat .lbl { color: var(--clr-muted); }
+    .stat .val { font-weight: 800; color: var(--clr-primary); font-variant-numeric: tabular-nums; }
+    .stat.mistakes .val { color: #dc2626; }
+
+    /* Range banner above board */
+    .range-banner {
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--clr-primary-dk);
+      background: #ede9fe;
+      border: 2px solid #c4b5fd;
+      border-radius: .5rem;
+      padding: .45rem 1.1rem;
+      margin-bottom: .75rem;
+      text-align: center;
+      letter-spacing: .01em;
+    }
+    .range-banner span { color: #7c3aed; }
+
+    /* Board */
+    .board-scroll { overflow-x: auto; padding: .25rem; }
+
+    .board {
+      border-collapse: separate;
+      border-spacing: 5px;
+      margin: 0 auto;
+    }
+
+    /* Corner */
+    .cell-corner {
+      width: 36px;
+      height: 36px;
+      background: transparent;
+      font-size: .65rem;
+      color: #94a3b8;
+      text-align: center;
+      vertical-align: middle;
+      line-height: 1.3;
+      padding: 2px;
+    }
+
+    /* Header inputs — scratch pad (no validation) */
+    .hdr-input {
+      display: block;
+      width: 52px;
+      height: 52px;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 2px dashed #a5b4fc;
+      border-radius: var(--radius);
+      background: #f8faff;
+      color: var(--clr-muted);
+      padding: 0;
+      transition: border-color .15s;
+      -moz-appearance: textfield;
+    }
+    .hdr-input::-webkit-inner-spin-button,
+    .hdr-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    .hdr-input:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%,60%  { transform: translateX(-5px); }
+      40%,80%  { transform: translateX(5px); }
+    }
+
+    /* Product cells — shown (read-only) */
+    .cell-product {
+      width: 52px;
+      height: 52px;
+      border-radius: .45rem;
+      text-align: center;
+      font-size: .95rem;
+      font-weight: 700;
+      vertical-align: middle;
+    }
+    .cell-product.shown {
+      background: var(--clr-cell-shown);
+      border: 1.5px solid #c7d2fe;
+      color: var(--clr-text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Board input cells — hidden cells become editable */
+    .cell-input {
+      display: block;
+      width: 52px;
+      height: 52px;
+      text-align: center;
+      font-size: .95rem;
+      font-weight: 700;
+      border: 2px solid #818cf8;
+      border-radius: .45rem;
+      background: var(--clr-cell-hidden);
+      color: var(--clr-text);
+      padding: 0;
+      transition: border-color .15s, background .15s;
+      -moz-appearance: textfield;
+      cursor: text;
+    }
+    .cell-input::-webkit-inner-spin-button,
+    .cell-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    .cell-input:focus  { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
+    .cell-input.correct {
+      background: var(--clr-success-bg);
+      border-color: var(--clr-success);
+      color: var(--clr-success);
+    }
+    .cell-input.wrong {
+      background: var(--clr-error-bg);
+      border-color: var(--clr-error);
+      color: var(--clr-error);
+      animation: shake .35s;
+    }
+
+    /* Action buttons */
+    .action-bar {
+      display: flex;
+      gap: .65rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 1.25rem;
+    }
+    .btn {
+      padding: .6rem 1.2rem;
+      border-radius: var(--radius);
+      border: 2px solid transparent;
+      cursor: pointer;
+      font-size: .9rem;
+      font-weight: 700;
+      transition: filter .15s, transform .1s;
+    }
+    .btn:focus { outline: 3px solid currentColor; outline-offset: 2px; }
+    .btn:active { transform: scale(.97); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+    .btn-hint    { background: var(--clr-warn-bg);  color: var(--clr-warn);  border-color: #fbbf24; }
+    .btn-check   { background: var(--clr-primary);  color: #fff; }
+    .btn-check:hover:not(:disabled)  { filter: brightness(1.1); }
+    .btn-restart { background: #f1f5f9; color: var(--clr-text); border-color: #cbd5e1; }
+    .btn-hint:hover:not(:disabled)   { filter: brightness(.95); }
+    .btn-restart:hover { filter: brightness(.96); }
+    .btn-success { background: var(--clr-success-bg); color: var(--clr-success); border-color: #86efac; }
+    .btn-success:hover { filter: brightness(.95); }
+
+    /* Live message */
+    .msg {
+      min-height: 2.2rem;
+      margin-top: .9rem;
+      padding: .55rem 1rem;
+      border-radius: .5rem;
+      font-weight: 600;
+      font-size: .9rem;
+      text-align: center;
+      transition: opacity .2s;
+      width: 100%;
+      max-width: 480px;
+    }
+    .msg:empty { background: transparent; }
+    .msg.success { background: var(--clr-success-bg); color: var(--clr-success); }
+    .msg.error   { background: var(--clr-error-bg);   color: var(--clr-error);   }
+    .msg.info    { background: var(--clr-info-bg);    color: var(--clr-info);    }
+    .msg.warn    { background: var(--clr-warn-bg);    color: var(--clr-warn);    }
+
+    /* ── Modal overlay ── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,.55);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .overlay.active { display: flex; }
+    .modal {
+      background: #fff;
+      border-radius: 1rem;
+      padding: 2rem 2.25rem;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(0,0,0,.22);
+      animation: popIn .25s ease;
+    }
+    @keyframes popIn {
+      from { transform: scale(.88); opacity: 0; }
+      to   { transform: scale(1);  opacity: 1; }
+    }
+    .modal h2 { font-size: 1.9rem; margin-bottom: .4rem; }
+    .modal p  { color: var(--clr-muted); margin-bottom: 1.4rem; line-height: 1.6; }
+    .modal .btn { display: block; width: 100%; padding: .75rem; font-size: 1rem; margin-bottom: .5rem; }
+
+    /* ── Progress Summary (setup screen) ── */
+    .progress-summary {
+      display: flex; flex-wrap: wrap; gap: .5rem;
+      align-items: center; justify-content: center;
+      margin: .75rem 0 1rem; font-size: .9rem;
+    }
+    .progress-badge {
+      background: var(--clr-primary-lt, #e0e7ff);
+      color: var(--clr-primary-dk);
+      border-radius: 999px;
+      padding: .2rem .75rem;
+      font-weight: 700;
+      font-size: .85rem;
+    }
+    .progress-badge.streak { background: #fef3c7; color: #92400e; }
+    .progress-combo {
+      width: 100%; text-align: center;
+      font-size: .8rem; color: var(--clr-muted); margin: .15rem 0;
+    }
+    .progress-welcome {
+      width: 100%; text-align: center;
+      font-size: .85rem; font-weight: 600;
+      color: var(--clr-primary-dk); margin: .2rem 0;
+    }
+
+    /* ── Win Stars ── */
+    #winStars { display: flex; justify-content: center; gap: .3rem; margin: .5rem 0 1rem; }
+    #winStars .star { font-size: 2.4rem; transition: transform .25s; line-height: 1; }
+    #winStars .star.filled  { color: #f59e0b; }
+    #winStars .star.empty   { color: #d1d5db; }
+
+    /* ── Language Toggle ── */
+    .lang-toggle {
+      display: inline-block;
+      margin-top: .5rem;
+      background: transparent;
+      border: 1.5px solid var(--clr-border);
+      border-radius: 999px;
+      padding: .2rem .75rem;
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--clr-primary);
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+      letter-spacing: .02em;
+    }
+    .lang-toggle:hover { background: var(--clr-bg); border-color: var(--clr-primary); }
+    .lang-toggle:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 420px) {
+      .hdr-input, .cell-product, .cell-input { width: 42px; height: 42px; font-size: .85rem; }
+      .board { border-spacing: 3px; }
+      .card { padding: 1.25rem 1.1rem; }
+    }
+    /* 9×9 on small screens — shrink cells further */
+    @media (max-width: 560px) {
+      .board-9 .hdr-input,
+      .board-9 .cell-product,
+      .board-9 .cell-input {
+        width: 34px;
+        height: 34px;
+        font-size: .75rem;
+      }
+      .board-9 { border-spacing: 2px; }
+    }
+    @media (max-width: 380px) {
+      .board-9 .hdr-input,
+      .board-9 .cell-product,
+      .board-9 .cell-input {
+        width: 28px;
+        height: 28px;
+        font-size: .65rem;
+      }
+    }
+
+    /* ── Confetti ── */
+    .confetti-piece {
+      position: fixed;
+      top: -10px;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+      animation: confettiFall linear forwards;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(0)      rotate(0deg)   scaleX(1);   opacity: 1; }
+      80%  { opacity: 1; }
+      100% { transform: translateY(100vh)  rotate(720deg) scaleX(0.3); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link" data-i18n="skipLink">דלג לתוכן הראשי</a>
+
+<header class="site-header" role="banner">
+  <h1>
+    <img src="dedu_white.jpeg" alt="de-du — Deduction Games"
+         style="height:clamp(72px,18vw,120px);width:auto;max-width:100%;display:block;margin:0 auto;mix-blend-mode:multiply;" />
+  </h1>
+  <p data-i18n="headerSubtitle">גלו את הכופל והנכפל וחשפו את המספרים בלוח!</p>
+  <button id="lang-toggle" class="lang-toggle" aria-label="Switch to English"
+          onclick="setLang(currentLang === 'he' ? 'en' : 'he')">🌐 EN</button>
+</header>
+
+<main id="main-content">
+
+  <!-- ══ Setup Screen ══ -->
+  <section class="card" id="setupScreen" aria-labelledby="setup-heading">
+    <h2 id="setup-heading" class="sr-only" style="position:absolute;clip:rect(0,0,0,0);white-space:nowrap;overflow:hidden;" data-i18n="setup.heading">הגדרות משחק</h2>
+
+    <fieldset>
+      <legend data-i18n="setup.boardSizeLegend">גודל הלוח</legend>
+      <div class="option-group" role="group" aria-label="בחר גודל לוח" data-i18n-aria="setup.boardSizeAriaLabel">
+        <button class="option-btn" data-type="size" data-val="5" aria-pressed="true">5 × 5</button>
+        <button class="option-btn" data-type="size" data-val="9" aria-pressed="false">9 × 9</button>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend data-i18n="setup.diffLegend">רמת קושי</legend>
+      <div class="option-group" role="group" aria-label="בחר רמת קושי" data-i18n-aria="setup.diffAriaLabel">
+        <button class="option-btn" data-type="diff" data-val="easy"   aria-pressed="true"  data-i18n="diff.easy">קל</button>
+        <button class="option-btn" data-type="diff" data-val="medium" aria-pressed="false" data-i18n="diff.medium">בינוני</button>
+        <button class="option-btn" data-type="diff" data-val="hard"   aria-pressed="false" data-i18n="diff.hard">קשה</button>
+      </div>
+    </fieldset>
+
+    <div class="rules-box" role="note">
+      <span data-i18n-html="rules.intro"></span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 148"
+           aria-hidden="true" focusable="false"
+           style="max-width:210px;width:100%;display:block;margin:.55rem auto .2rem">
+        <defs>
+          <marker id="md-arr" markerWidth="8" markerHeight="8" refX="5" refY="4"
+                  orient="auto" markerUnits="userSpaceOnUse">
+            <polygon points="0,0 8,4 0,8" fill="#6366f1"/>
+          </marker>
+        </defs>
+        <text x="63" y="14" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif"
+              font-size="11" font-weight="700" fill="#4338ca" data-i18n="svg.multiplier">כופל</text>
+        <rect x="37" y="18" width="52" height="45" rx="7"
+              fill="#f8faff" stroke="#a5b4fc" stroke-width="2" stroke-dasharray="5,3"/>
+        <text x="63" y="47" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif"
+              font-size="22" font-weight="900" fill="#6366f1">4</text>
+        <text x="131" y="43" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif"
+              font-size="10" fill="#94a3b8" data-i18n="svg.notes">✏️ עזר</text>
+        <rect x="105" y="75" width="52" height="45" rx="7"
+              fill="#f8faff" stroke="#a5b4fc" stroke-width="2" stroke-dasharray="5,3"/>
+        <text x="131" y="104" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif"
+              font-size="22" font-weight="900" fill="#6366f1">3</text>
+        <text x="163" y="104" text-anchor="start" font-family="'Segoe UI',Arial,sans-serif"
+              font-size="11" font-weight="700" fill="#4338ca" data-i18n="svg.multiplicand">נכפל</text>
+        <rect x="37" y="75" width="52" height="45" rx="7"
+              fill="#f8faff" stroke="#c7d2fe" stroke-width="2"/>
+        <text x="63" y="104" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif"
+              font-size="22" font-weight="900" fill="#1e293b">12</text>
+        <line x1="63" y1="63" x2="63" y2="73" stroke="#6366f1" stroke-width="2" marker-end="url(#md-arr)"/>
+        <line x1="105" y1="97" x2="92" y2="97" stroke="#6366f1" stroke-width="2" marker-end="url(#md-arr)"/>
+        <text x="110" y="138" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif"
+              font-size="13" fill="#64748b">
+          <tspan font-weight="700" fill="#6366f1">4</tspan><tspan> × </tspan><tspan font-weight="700" fill="#6366f1">3</tspan><tspan> = </tspan><tspan font-weight="900" fill="#1e293b">12</tspan>
+        </text>
+      </svg>
+      <span data-i18n-html="rules.outro"></span>
+    </div>
+
+    <div id="progressSummary" aria-live="polite"></div>
+
+    <button class="btn-start" id="startBtn" data-i18n="setup.startBtn">התחל משחק ▶</button>
+  </section>
+
+  <!-- ══ Game Screen ══ -->
+  <section id="gameScreen" aria-labelledby="game-heading">
+    <h2 id="game-heading" class="sr-only" style="position:absolute;clip:rect(0,0,0,0);white-space:nowrap;overflow:hidden;">לוח המשחק</h2>
+
+    <!-- Stats -->
+    <div class="stats-bar" role="status" aria-live="polite" aria-atomic="false">
+      <div class="stat" aria-label="הגדרות משחק" data-i18n-aria="stats.settingsAriaLabel">
+        <span class="val" id="gameSettingsVal"></span>
+      </div>
+      <div class="stat" aria-label="זמן משחק" data-i18n-aria="stats.timerAriaLabel">
+        <span class="lbl">⏱</span>
+        <span class="val" id="timerVal" aria-live="off">0:00</span>
+      </div>
+      <div class="stat mistakes" aria-label="מספר טעויות — כל ניחוש שגוי נספר" title="כל ניחוש שגוי נספר כטעות" data-i18n-aria="stats.mistakesAriaLabel" data-i18n-title="stats.mistakesTitle">
+        <span class="lbl" data-i18n="stats.mistakesLabel">❌ טעויות:</span>
+        <span class="val" id="mistakesVal">0</span>
+        <span class="lbl" id="mistakesMax"></span>
+      </div>
+      <div class="stat" aria-label="רמזים שנותרו" data-i18n-aria="stats.hintsAriaLabel">
+        <span class="lbl" data-i18n="stats.hintsLabel">💡 רמזים:</span>
+        <span class="val" id="hintsVal">0</span>
+        <span class="lbl" id="hintsMax"></span>
+      </div>
+      <div class="stat" aria-label="ניחושים נכונים" data-i18n-aria="stats.correctAriaLabel">
+        <span class="lbl" data-i18n="stats.correctLabel">✓ נכון:</span>
+        <span class="val" id="correctVal">0</span>
+        <span class="lbl" id="correctMax"></span>
+      </div>
+      <div class="stat" aria-label="טווח מספרי הכפל" data-i18n-aria="stats.rangeAriaLabel">
+        <span class="lbl" data-i18n="stats.rangeLabel">🔢 טווח:</span>
+        <span class="val" id="rangeVal"></span>
+      </div>
+    </div>
+
+    <!-- Range banner -->
+    <div class="range-banner" id="rangeBanner" aria-live="polite"></div>
+
+    <!-- Board -->
+    <div class="board-scroll">
+      <table class="board" id="boardTable" aria-label="לוח הכפל" data-i18n-aria="board.tableAriaLabel">
+        <caption class="sr-only" style="position:absolute;clip:rect(0,0,0,0);white-space:nowrap;overflow:hidden;" data-i18n="board.caption">
+          לוח כפל. מלא את התאים הכחולים עם המכפלה הנכונה.
+        </caption>
+        <!-- Rendered by JS -->
+      </table>
+    </div>
+
+    <!-- Buttons -->
+    <div class="action-bar">
+      <button class="btn btn-hint"    id="hintBtn"    data-i18n="board.hintBtn">💡 רמז</button>
+      <button class="btn btn-check"   id="checkBtn"   data-i18n="board.checkAllBtn">✓ בדוק הכל</button>
+      <button class="btn btn-restart" id="restartBtn" data-i18n="board.newGameBtn">↺ משחק חדש</button>
+    </div>
+
+    <!-- Live message -->
+    <div class="msg" id="msgBox" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+  </section>
+
+</main>
+
+<!-- ══ Confirm Restart Modal ══ -->
+<div class="overlay" id="confirmOverlay" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div class="modal">
+    <h2 id="confirmTitle" data-i18n="modals.confirmTitle">⚠️ יציאה מהמשחק</h2>
+    <p data-i18n="modals.confirmBody">המשחק הנוכחי יאבד. להמשיך?</p>
+    <button class="btn btn-check"   id="confirmYes" data-i18n="modals.confirmYes">כן, צא</button>
+    <button class="btn btn-restart" id="confirmNo"  data-i18n="modals.confirmNo">לא, חזור</button>
+  </div>
+</div>
+
+<!-- ══ Win Modal ══ -->
+<div class="overlay" id="winOverlay" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+  <div class="modal">
+    <h2 id="winTitle" data-i18n="modals.winTitle">🎉 כל הכבוד!</h2>
+    <div id="winStars" role="img" aria-label="דירוג כוכבים" data-i18n-aria="modals.winStarsAriaLabel"></div>
+    <p id="winBody" data-i18n="modals.winBody">פתרת את הלוח בהצלחה!</p>
+    <button class="btn btn-success" id="shareBtn" onclick="shareResult()" data-i18n="win.shareBtn">📤 שתף תוצאה</button>
+    <button class="btn btn-check"   onclick="sameSettings()" data-i18n="modals.winPlayAgain">↺ שחק שוב – אותן הגדרות</button>
+    <button class="btn btn-restart" onclick="goSetup()"      data-i18n="modals.winNewGame">🎮 הגדרות חדשות</button>
+  </div>
+</div>
+
+<!-- ══ Lose Modal ══ -->
+<div class="overlay" id="loseOverlay" role="dialog" aria-modal="true" aria-labelledby="loseTitle">
+  <div class="modal">
+    <h2 id="loseTitle" data-i18n="modals.loseTitle">😕 נגמרו הניסיונות</h2>
+    <p id="loseBody" data-i18n="modals.loseBody">הגעת למקסימום הטעויות.</p>
+    <button class="btn btn-success" id="showSolutionBtn" data-i18n="modals.loseShow">👁️ הצג פתרון בלוח</button>
+    <button class="btn btn-check"   onclick="sameSettings()" data-i18n="modals.loseTryAgain">↺ נסה שוב</button>
+    <button class="btn btn-restart" onclick="goSetup()"      data-i18n="modals.loseNewGame">🎮 הגדרות חדשות</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   Internationalisation (i18n)
+══════════════════════════════════════════════ */
+const STRINGS = {
+  he: {
+    pageTitle: 'de-du | דדו — גלה את המכפילים',
+    skipLink: 'דלג לתוכן הראשי',
+    headerSubtitle: 'גלו את הכופל והנכפל וחשפו את המספרים בלוח!',
+    setup: {
+      heading: 'הגדרות משחק',
+      boardSizeLegend: 'גודל הלוח',
+      boardSizeAriaLabel: 'בחר גודל לוח',
+      diffLegend: 'רמת קושי',
+      diffAriaLabel: 'בחר רמת קושי',
+      startBtn: 'התחל משחק ▶',
+    },
+    rules: {
+      intro: '<strong>המטרה:</strong> למלא את כל התאים החסרים בלוח עם המכפלה הנכונה.<br><br><strong>איך משחקים?</strong><br>בשורה העליונה ובטור הימני המקווקווים מסתתרות <strong>ספרות סודיות</strong> (כופל ונכפל). כל תא בלוח הוא תוצאת הכפל של <strong>הספרה שבראש עמודתו</strong> (כופל) × <strong>הספרה שבראש שורתו</strong> (נכפל).<br>',
+      outro: 'חלק מהתאים כבר גלויים — את השאר <strong>עליך למלא</strong>!<br><br>השורה והטור הריקים יכולים לשמש כ<strong>מחברת עזר</strong> לגילוי הספרות הנסתרות.<br><br>💡 כל ניחוש נבדק מיד — <strong>ניחוש שגוי נספר כטעות</strong>. ניתן גם להשתמש בכפתור <strong>בדוק הכל</strong>.',
+    },
+    svg: { multiplier: 'כופל', notes: '✏️ עזר', multiplicand: 'נכפל' },
+    diff: { easy: 'קל', medium: 'בינוני', hard: 'קשה' },
+    stats: {
+      settingsAriaLabel: 'הגדרות משחק',
+      timerAriaLabel: 'זמן משחק',
+      mistakesAriaLabel: 'מספר טעויות — כל ניחוש שגוי נספר',
+      mistakesTitle: 'כל ניחוש שגוי נספר כטעות',
+      mistakesLabel: '❌ טעויות:',
+      hintsAriaLabel: 'רמזים שנותרו',
+      hintsLabel: '💡 רמזים:',
+      correctAriaLabel: 'ניחושים נכונים',
+      correctLabel: '✓ נכון:',
+      rangeAriaLabel: 'טווח מספרי הכפל',
+      rangeLabel: '🔢 טווח:',
+    },
+    board: {
+      tableAriaLabel: 'לוח הכפל',
+      caption: 'לוח כפל. מלא את התאים הכחולים עם המכפלה הנכונה.',
+      cornerCell: '✏️<br>עזר',
+      hintBtn: '💡 רמז',
+      checkAllBtn: '✓ בדוק הכל',
+      newGameBtn: '↺ משחק חדש',
+      cellShownAriaLabel: (r, c, val) => `שורה ${r+1} עמודה ${c+1}: ${val}`,
+      cellInputAriaLabel: (r, c) => `תא שורה ${r+1} עמודה ${c+1} — הכנס את המכפלה`,
+      colHelperAriaLabel: (i) => `שדה עזר לעמודה ${i+1} (אופציונלי)`,
+      rowHelperAriaLabel: (i) => `שדה עזר לשורה ${i+1} (אופציונלי)`,
+    },
+    messages: {
+      enterPositive: 'הכנס מספר חיובי',
+      correct: '✓ נכון!',
+      incorrect: '✗ לא נכון – נסה שוב',
+      fillFirst: 'מלא לפחות תא אחד לפני הבדיקה',
+      allCorrect: (n) => `✓ כל ${n} הניחושים שהכנסת נכונים!`,
+      errorsFound: (w, n) => `נמצאו ${w} טעויות מתוך ${n} ניחושים`,
+      noHints: 'אין יותר רמזים זמינים',
+      allFilled: 'כל התאים כבר מולאו!',
+      hintMsg: (r, c, val) => `💡 רמז: שורה ${r+1} × עמודה ${c+1} = ${val}`,
+      rangeBanner: (max) => `מספרי הכפולות האפשריים: הספרות <span>1 עד ${max}</span>`,
+    },
+    modals: {
+      confirmTitle: '⚠️ יציאה מהמשחק',
+      confirmBody: 'המשחק הנוכחי יאבד. להמשיך?',
+      confirmYes: 'כן, צא',
+      confirmNo: 'לא, חזור',
+      winTitle: '🎉 כל הכבוד!',
+      winStarsAriaLabel: 'דירוג כוכבים',
+      winBody: 'פתרת את הלוח בהצלחה!',
+      winPlayAgain: '↺ שחק שוב – אותן הגדרות',
+      winNewGame: '🎮 הגדרות חדשות',
+      loseTitle: '😕 נגמרו הניסיונות',
+      loseBody: 'הגעת למקסימום הטעויות.',
+      loseShow: '👁️ הצג פתרון בלוח',
+      loseTryAgain: '↺ נסה שוב',
+      loseNewGame: '🎮 הגדרות חדשות',
+    },
+    win: {
+      starsLabel: (n) => `${n} כוכבים מתוך 3`,
+      stats: (t, m, h) => `זמן: ${t} | טעויות: ${m} | רמזים שנוצלו: ${h}`,
+      streak: (n) => `🔥 סטריק ${n} ימים — כל הכבוד, המשך כך!`,
+      streakWarning: (n) => `🔥 יש לך סטריק של ${n} ימים — שחק היום כדי לשמור עליו!`,
+      streakStart: '👋 בוא תשמור על הרצף — שחק עכשיו!',
+      comboWins: (w) => `${w} ניצחון${w !== 1 ? 'ות' : ''}`,
+      bestStars: (n) => `מקסימום ${n}★`,
+      badgeStreak: 'סטריק יומי',
+      badgeStars: 'סה״כ כוכבים',
+      badgeWins: 'סה״כ ניצחונות',
+      shareBtn: '📤 שתף תוצאה',
+      shareCopied: '✓ הועתק!',
+      shareText: (n, diff, stars, t, m, h) => `de-du ${n}×${n} · ${diff} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
+    },
+    langToggleLabel: '🌐 EN',
+    langToggleAriaLabel: 'Switch to English',
+  },
+  en: {
+    pageTitle: 'de-du | Discover the Multipliers',
+    skipLink: 'Skip to main content',
+    headerSubtitle: 'Find the multiplier and multiplicand — reveal the numbers on the board!',
+    setup: {
+      heading: 'Game Settings',
+      boardSizeLegend: 'Board Size',
+      boardSizeAriaLabel: 'Choose board size',
+      diffLegend: 'Difficulty',
+      diffAriaLabel: 'Choose difficulty',
+      startBtn: 'Start Game ▶',
+    },
+    rules: {
+      intro: '<strong>Goal:</strong> Fill all the missing cells with the correct product.<br><br><strong>How to play?</strong><br>Hidden in the dashed top row and side column are <strong>secret numbers</strong> (multiplier and multiplicand). Each cell equals <strong>the number at the top of its column</strong> × <strong>the number at the start of its row</strong>.<br>',
+      outro: 'Some cells are already shown — you must <strong>fill in the rest</strong>!<br><br>The empty row and column work as a <strong>scratch pad</strong> to help find the hidden numbers.<br><br>💡 Every guess is checked immediately — <strong>a wrong guess counts as a mistake</strong>. You can also use the <strong>Check All</strong> button.',
+    },
+    svg: { multiplier: 'Mult.', notes: '✏️ Notes', multiplicand: 'Mcand.' },
+    diff: { easy: 'Easy', medium: 'Medium', hard: 'Hard' },
+    stats: {
+      settingsAriaLabel: 'Game settings',
+      timerAriaLabel: 'Game time',
+      mistakesAriaLabel: 'Number of mistakes — every wrong guess counts',
+      mistakesTitle: 'Every wrong guess counts as a mistake',
+      mistakesLabel: '❌ Mistakes:',
+      hintsAriaLabel: 'Hints remaining',
+      hintsLabel: '💡 Hints:',
+      correctAriaLabel: 'Correct guesses',
+      correctLabel: '✓ Correct:',
+      rangeAriaLabel: 'Multiplication number range',
+      rangeLabel: '🔢 Range:',
+    },
+    board: {
+      tableAriaLabel: 'Multiplication board',
+      caption: 'Multiplication board. Fill the blue cells with the correct product.',
+      cornerCell: '✏️<br>Notes',
+      hintBtn: '💡 Hint',
+      checkAllBtn: '✓ Check All',
+      newGameBtn: '↺ New Game',
+      cellShownAriaLabel: (r, c, val) => `Row ${r+1} Column ${c+1}: ${val}`,
+      cellInputAriaLabel: (r, c) => `Cell Row ${r+1} Column ${c+1} — enter the product`,
+      colHelperAriaLabel: (i) => `Helper field for column ${i+1} (optional)`,
+      rowHelperAriaLabel: (i) => `Helper field for row ${i+1} (optional)`,
+    },
+    messages: {
+      enterPositive: 'Enter a positive number',
+      correct: '✓ Correct!',
+      incorrect: '✗ Incorrect – try again',
+      fillFirst: 'Fill at least one cell before checking',
+      allCorrect: (n) => `✓ All ${n} guesses are correct!`,
+      errorsFound: (w, n) => `Found ${w} mistakes out of ${n} guesses`,
+      noHints: 'No hints remaining',
+      allFilled: 'All cells are already filled!',
+      hintMsg: (r, c, val) => `💡 Hint: Row ${r+1} × Column ${c+1} = ${val}`,
+      rangeBanner: (max) => `Possible multiplication numbers: <span>1 to ${max}</span>`,
+    },
+    modals: {
+      confirmTitle: '⚠️ Exit Game',
+      confirmBody: 'The current game will be lost. Continue?',
+      confirmYes: 'Yes, exit',
+      confirmNo: 'No, go back',
+      winTitle: '🎉 Well done!',
+      winStarsAriaLabel: 'Star rating',
+      winBody: 'You solved the board successfully!',
+      winPlayAgain: '↺ Play again – same settings',
+      winNewGame: '🎮 New settings',
+      loseTitle: '😕 Out of attempts',
+      loseBody: 'You reached the maximum number of mistakes.',
+      loseShow: '👁️ Show solution on board',
+      loseTryAgain: '↺ Try again',
+      loseNewGame: '🎮 New settings',
+    },
+    win: {
+      starsLabel: (n) => `${n} stars out of 3`,
+      stats: (t, m, h) => `Time: ${t} | Mistakes: ${m} | Hints used: ${h}`,
+      streak: (n) => `🔥 ${n}-day streak — great job, keep it up!`,
+      streakWarning: (n) => `🔥 You have a ${n}-day streak — play today to keep it!`,
+      streakStart: '👋 Keep your streak going — play now!',
+      comboWins: (w) => `${w} win${w !== 1 ? 's' : ''}`,
+      bestStars: (n) => `best ${n}★`,
+      badgeStreak: 'Daily Streak',
+      badgeStars: 'Total Stars',
+      badgeWins: 'Total Wins',
+      shareBtn: '📤 Share result',
+      shareCopied: '✓ Copied!',
+      shareText: (n, diff, stars, t, m, h) => `de-du ${n}×${n} · ${diff} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
+    },
+    langToggleLabel: '🌐 עב',
+    langToggleAriaLabel: 'Switch to Hebrew',
+  },
+};
+
+let currentLang = 'he';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+  const str = STRINGS[lang];
+  document.documentElement.lang = lang;
+  document.documentElement.dir  = lang === 'he' ? 'rtl' : 'ltr';
+  document.title = str.pageTitle;
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const val = el.dataset.i18n.split('.').reduce((o, k) => o?.[k], str);
+    if (typeof val === 'string') el.textContent = val;
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const val = el.dataset.i18nHtml.split('.').reduce((o, k) => o?.[k], str);
+    if (typeof val === 'string') el.innerHTML = val;
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+    const val = el.dataset.i18nAria.split('.').reduce((o, k) => o?.[k], str);
+    if (typeof val === 'string') el.setAttribute('aria-label', val);
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const val = el.dataset.i18nTitle.split('.').reduce((o, k) => o?.[k], str);
+    if (typeof val === 'string') el.setAttribute('title', val);
+  });
+
+  const tb = document.getElementById('lang-toggle');
+  if (tb) {
+    tb.textContent = str.langToggleLabel;
+    tb.setAttribute('aria-label', str.langToggleAriaLabel);
+  }
+
+  // Update active game elements
+  if (G && G.n) {
+    const cc = document.getElementById('corner-cell');
+    if (cc) cc.innerHTML = str.board.cornerCell;
+    if (G.poolMax !== undefined)
+      document.getElementById('rangeBanner').innerHTML = str.messages.rangeBanner(G.poolMax);
+    document.getElementById('gameSettingsVal').textContent =
+      `${G.n}×${G.n} · ${str.diff[G.diff]}`;
+    // Re-render win stats in the correct language
+    if (G.winStats) {
+      document.getElementById('winBody').textContent =
+        str.win.stats(G.winStats.t, G.winStats.m, G.winStats.h);
+    }
+  }
+  renderSetupProgress();
+}
+
+/* ══════════════════════════════════════════════
+   Configuration
+══════════════════════════════════════════════ */
+const DIFF_CFG = {
+  //                                                   5×5 pool   9×9 pool
+  easy:   { revealPct: 0.72, maxMistakes: Infinity, maxHints: 5, poolMax5: 5,  poolMax9: 9  },
+  medium: { revealPct: 0.45, maxMistakes: 5,        maxHints: 3, poolMax5: 7,  poolMax9: 12 },
+  hard:   { revealPct: 0.20, maxMistakes: 3,        maxHints: 1, poolMax5: 9,  poolMax9: 15 },
+};
+
+const STAR_THRESHOLDS = {
+  '5-easy':   { time: 120, mistakes: 0, hintsUsed: 0 },
+  '5-medium': { time: 180, mistakes: 1, hintsUsed: 1 },
+  '5-hard':   { time: 240, mistakes: 2, hintsUsed: 1 },
+  '9-easy':   { time: 300, mistakes: 0, hintsUsed: 0 },
+  '9-medium': { time: 480, mistakes: 2, hintsUsed: 2 },
+  '9-hard':   { time: 600, mistakes: 3, hintsUsed: 2 },
+};
+
+/* ══════════════════════════════════════════════
+   State
+══════════════════════════════════════════════ */
+let G = {};   // game state
+
+/* ══════════════════════════════════════════════
+   Setup UI
+══════════════════════════════════════════════ */
+let chosenSize = 5;
+let chosenDiff = 'easy';
+
+document.querySelectorAll('.option-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const type = btn.dataset.type;
+    document.querySelectorAll(`.option-btn[data-type="${type}"]`).forEach(b => {
+      b.setAttribute('aria-pressed', 'false');
+    });
+    btn.setAttribute('aria-pressed', 'true');
+    if (type === 'size') chosenSize = parseInt(btn.dataset.val, 10);
+    else                  chosenDiff = btn.dataset.val;
+    renderSetupProgress();
+  });
+  // Keyboard: Space/Enter already handled by button default
+});
+
+document.getElementById('startBtn').addEventListener('click', () => startGame(chosenSize, chosenDiff));
+document.getElementById('hintBtn').addEventListener('click',  giveHint);
+document.getElementById('checkBtn').addEventListener('click', checkAll);
+document.getElementById('restartBtn').addEventListener('click', goSetup);
+document.getElementById('confirmYes').addEventListener('click', _doGoSetup);
+document.getElementById('confirmNo').addEventListener('click', () =>
+  document.getElementById('confirmOverlay').classList.remove('active')
+);
+document.getElementById('showSolutionBtn').addEventListener('click', () =>
+  document.getElementById('loseOverlay').classList.remove('active')
+);
+
+// Initial progress display on page load
+renderSetupProgress();
+
+/* ══════════════════════════════════════════════
+   Modal accessibility: focus trap + Escape
+══════════════════════════════════════════════ */
+const MODAL_IDS = ['confirmOverlay', 'winOverlay', 'loseOverlay'];
+
+// Escape closes the topmost open modal
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  // Find last active overlay (topmost)
+  for (let i = MODAL_IDS.length - 1; i >= 0; i--) {
+    const ov = document.getElementById(MODAL_IDS[i]);
+    if (ov && ov.classList.contains('active')) {
+      // Only close dismissible modals (not win/lose — user must make a choice)
+      if (MODAL_IDS[i] === 'confirmOverlay') {
+        ov.classList.remove('active');
+      }
+      break;
+    }
+  }
+});
+
+// Focus trap for each modal
+MODAL_IDS.forEach(id => {
+  const ov = document.getElementById(id);
+  if (!ov) return;
+  ov.addEventListener('keydown', e => {
+    if (e.key !== 'Tab') return;
+    const focusable = Array.from(
+      ov.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+    ).filter(el => !el.disabled);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last  = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+    }
+  });
+});
+
+/* ══════════════════════════════════════════════
+   Helpers
+══════════════════════════════════════════════ */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = (Math.random() * (i + 1)) | 0;
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function range(n) { return Array.from({ length: n }, (_, i) => i + 1); }
+
+/* ══════════════════════════════════════════════
+   Game initialisation
+══════════════════════════════════════════════ */
+function startGame(n, diff) {
+  const cfg = DIFF_CFG[diff];
+
+  // Generate secret permutations
+  // For 5×5: pick n numbers from 1..poolMax5 based on difficulty
+  // For 9×9: always 1..9
+  const poolMax = n === 9 ? cfg.poolMax9 : cfg.poolMax5;
+  const pool    = shuffle(range(poolMax)).slice(0, n);
+  const rowNums = shuffle([...pool]);
+  const colNums = shuffle([...pool]);
+
+  // Build product board
+  const board = rowNums.map(r => colNums.map(c => r * c));
+
+  // Decide which cells to reveal
+  const revealed = pickRevealedCells(board, n, pool, cfg.revealPct);
+
+  const hiddenCount = revealed.reduce((s, row) => s + row.filter(v => !v).length, 0);
+  const maxProduct  = Math.max(...pool) * Math.max(...pool);
+  document.getElementById('rangeVal').textContent = `1–${poolMax}`;
+  document.getElementById('rangeBanner').innerHTML =
+    STRINGS[currentLang].messages.rangeBanner(poolMax);
+  document.getElementById('gameSettingsVal').textContent =
+    `${n}×${n} · ${STRINGS[currentLang].diff[diff]}`;
+
+  G = {
+    n, diff, cfg,
+    rowNums, colNums, board, revealed,
+    hiddenCount, maxProduct, poolMax,
+    filledCells: 0,
+    mistakes:  0,
+    hintsLeft: cfg.maxHints,
+    seconds:   0,
+    timerID:   null,
+    over:      false,
+  };
+
+  renderBoard();
+  updateStats();
+
+  // Show game screen
+  document.getElementById('setupScreen').style.display = 'none';
+  const gs = document.getElementById('gameScreen');
+  gs.style.display = 'flex';
+  gs.classList.add('active');
+
+  // Focus first unfilled board cell
+  const first = document.querySelector('.cell-input:not([readonly])');
+  if (first) first.focus();
+
+  // Start timer
+  clearInterval(G.timerID);
+  G.timerID = setInterval(tick, 1000);
+
+  clearMsg();
+}
+
+/* ══════════════════════════════════════════════
+   Cell reveal strategy
+══════════════════════════════════════════════ */
+function pickRevealedCells(board, n, pool, pct) {
+  const total   = n * n;
+  const target  = Math.round(total * pct);
+  const revealed = Array.from({ length: n }, () => new Array(n).fill(false));
+
+  // Score each cell by number of (a,b) pairs from pool×pool that produce the same product.
+  // Score=1 means unique factorization → easy clue. High score = ambiguous → hard clue.
+  const factorPairs = {};
+  for (const a of pool)
+    for (const b of pool) {
+      const p = a * b;
+      factorPairs[p] = (factorPairs[p] || 0) + 1;
+    }
+
+  const cells = [];
+  for (let r = 0; r < n; r++)
+    for (let c = 0; c < n; c++)
+      cells.push({ r, c, score: factorPairs[board[r][c]] || 1 });
+
+  // Sort: prefer unique products (score=1) for easy, common for hard
+  // Then shuffle within same-score groups for variety
+  const groups = {};
+  cells.forEach(cell => {
+    (groups[cell.score] = groups[cell.score] || []).push(cell);
+  });
+
+  const sorted = [];
+  const scores = Object.keys(groups).map(Number).sort((a, b) =>
+    pct >= 0.5 ? a - b : b - a   // easy: unique first; hard: common first
+  );
+  scores.forEach(s => sorted.push(...shuffle(groups[s])));
+
+  // Always guarantee at least one clue per row and column for solvability
+  const rowCovered = new Array(n).fill(false);
+  const colCovered = new Array(n).fill(false);
+  const picked = [];
+
+  // Pass 1: guaranteed coverage
+  for (const cell of sorted) {
+    if (!rowCovered[cell.r] || !colCovered[cell.c]) {
+      revealed[cell.r][cell.c] = true;
+      rowCovered[cell.r] = true;
+      colCovered[cell.c] = true;
+      picked.push(cell);
+    }
+    if (picked.length >= target) break;
+  }
+
+  // Pass 2: fill remaining quota
+  for (const cell of sorted) {
+    if (picked.length >= target) break;
+    if (!revealed[cell.r][cell.c]) {
+      revealed[cell.r][cell.c] = true;
+      picked.push(cell);
+    }
+  }
+
+  return revealed;
+}
+
+/* ══════════════════════════════════════════════
+   Board rendering
+══════════════════════════════════════════════ */
+function renderBoard() {
+  const { n, board, revealed } = G;
+  const tbl = document.getElementById('boardTable');
+  tbl.innerHTML = '';
+  tbl.className = n === 9 ? 'board board-9' : 'board';
+
+  // ── Top header row (column values) ──
+  const headTR = document.createElement('tr');
+
+  // Corner
+  const corner = document.createElement('td');
+  corner.className = 'cell-corner';
+  corner.setAttribute('aria-hidden', 'true');
+  corner.id = 'corner-cell';
+  corner.innerHTML = STRINGS[currentLang].board.cornerCell;
+  headTR.appendChild(corner);
+
+  for (let c = 0; c < n; c++) {
+    const th = document.createElement('th');
+    th.scope = 'col';
+    th.appendChild(makeHdrInput('col', c));
+    headTR.appendChild(th);
+  }
+  tbl.appendChild(headTR);
+
+  // ── Data rows ──
+  for (let r = 0; r < n; r++) {
+    const tr = document.createElement('tr');
+
+    // Row header (row values) – placed first = visual right in RTL
+    const th = document.createElement('th');
+    th.scope = 'row';
+    th.appendChild(makeHdrInput('row', r));
+    tr.appendChild(th);
+
+    // Product cells
+    for (let c = 0; c < n; c++) {
+      const td = document.createElement('td');
+      if (revealed[r][c]) {
+        // Shown cell — read-only display
+        const div = document.createElement('div');
+        div.className = 'cell-product shown';
+        div.id = `pc-${r}-${c}`;
+        div.textContent = board[r][c];
+        div.setAttribute('aria-label', STRINGS[currentLang].board.cellShownAriaLabel(r, c, board[r][c]));
+        td.appendChild(div);
+      } else {
+        // Hidden cell — editable input
+        const inp = document.createElement('input');
+        inp.type = 'number';
+        inp.inputMode = 'numeric';
+        inp.min = '1';
+        inp.max = String(G.maxProduct);
+        inp.className = 'cell-input';
+        inp.id = `ci-${r}-${c}`;
+        inp.setAttribute('aria-label', STRINGS[currentLang].board.cellInputAriaLabel(r, c));
+        inp.addEventListener('blur',    () => validateCell(r, c, inp));
+        inp.addEventListener('keydown', e => {
+          if (e.key === 'Enter') { e.preventDefault(); validateCell(r, c, inp); return; }
+          const moves = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, 1], ArrowRight: [0, -1] };
+          if (moves[e.key]) {
+            e.preventDefault();
+            const [dr, dc] = moves[e.key];
+            for (let step = 1; step < G.n; step++) {
+              const next = document.getElementById(`ci-${r + dr * step}-${c + dc * step}`);
+              if (next) { next.focus(); break; }
+            }
+          }
+        });
+        td.appendChild(inp);
+      }
+      tr.appendChild(td);
+    }
+
+    tbl.appendChild(tr);
+  }
+}
+
+function makeHdrInput(type, idx) {
+  const inp = document.createElement('input');
+  inp.type  = 'number';
+  inp.inputMode = 'numeric';
+  inp.min   = '1';
+  inp.max   = String(G.poolMax);
+  inp.className = 'hdr-input';
+  inp.id    = `hdr-${type}-${idx}`;
+  inp.setAttribute('aria-label',
+    type === 'col'
+      ? STRINGS[currentLang].board.colHelperAriaLabel(idx)
+      : STRINGS[currentLang].board.rowHelperAriaLabel(idx)
+  );
+  inp.placeholder = '?';
+  // Scratch pad — no validation
+  return inp;
+}
+
+/* ══════════════════════════════════════════════
+   Validation — board cells
+══════════════════════════════════════════════ */
+function validateCell(r, c, inp) {
+  if (G.over || inp.readOnly) return;
+  const raw = inp.value.trim();
+  if (!raw) return;
+
+  const val     = parseInt(raw, 10);
+  const correct = G.board[r][c];
+
+  if (isNaN(val) || val < 1) {
+    inp.value = '';
+    showMsg(STRINGS[currentLang].messages.enterPositive, 'warn');
+    return;
+  }
+
+  if (val === correct) {
+    inp.classList.remove('wrong');
+    inp.classList.add('correct');
+    inp.readOnly = true;
+    G.filledCells++;
+    showMsg(STRINGS[currentLang].messages.correct, 'success');
+    updateStats();
+    checkWin();
+  } else {
+    inp.classList.add('wrong');
+    inp.value = '';
+    G.mistakes++;
+    updateStats();
+    showMsg(STRINGS[currentLang].messages.incorrect, 'error');
+    setTimeout(() => inp.classList.remove('wrong'), 450);
+    if (G.cfg.maxMistakes !== Infinity && G.mistakes >= G.cfg.maxMistakes) {
+      gameLose();
+    }
+  }
+}
+
+/* ══════════════════════════════════════════════
+   Check All button
+══════════════════════════════════════════════ */
+function checkAll() {
+  if (G.over) return;
+
+  let checked = 0, wrongs = 0;
+
+  for (let r = 0; r < G.n; r++) {
+    for (let c = 0; c < G.n; c++) {
+      const inp = document.getElementById(`ci-${r}-${c}`);
+      if (!inp || inp.readOnly || !inp.value.trim()) continue;
+      checked++;
+      const val     = parseInt(inp.value, 10);
+      const correct = G.board[r][c];
+      if (val === correct) {
+        inp.classList.remove('wrong');
+        inp.classList.add('correct');
+        inp.readOnly = true;
+        G.filledCells++;
+      } else {
+        wrongs++;
+        G.mistakes++;
+        inp.classList.add('wrong');
+        inp.value = '';
+        setTimeout(() => inp.classList.remove('wrong'), 450);
+      }
+    }
+  }
+
+  updateStats();
+
+  if (checked === 0) {
+    showMsg(STRINGS[currentLang].messages.fillFirst, 'info');
+  } else if (wrongs === 0) {
+    showMsg(STRINGS[currentLang].messages.allCorrect(checked), 'success');
+    checkWin();
+  } else {
+    showMsg(STRINGS[currentLang].messages.errorsFound(wrongs, checked), 'error');
+    if (G.cfg.maxMistakes !== Infinity && G.mistakes >= G.cfg.maxMistakes) {
+      gameLose();
+    }
+  }
+}
+
+/* ══════════════════════════════════════════════
+   Hint
+══════════════════════════════════════════════ */
+function giveHint() {
+  if (G.over) return;
+  if (G.hintsLeft <= 0) {
+    showMsg(STRINGS[currentLang].messages.noHints, 'warn');
+    return;
+  }
+
+  // Collect unfilled board cells
+  const candidates = [];
+  for (let r = 0; r < G.n; r++)
+    for (let c = 0; c < G.n; c++) {
+      const inp = document.getElementById(`ci-${r}-${c}`);
+      if (inp && !inp.readOnly) candidates.push({ r, c, inp });
+    }
+
+  if (candidates.length === 0) {
+    showMsg(STRINGS[currentLang].messages.allFilled, 'info');
+    return;
+  }
+
+  const pick = candidates[(Math.random() * candidates.length) | 0];
+  pick.inp.value    = G.board[pick.r][pick.c];
+  pick.inp.readOnly = true;
+  pick.inp.classList.add('correct');
+  G.filledCells++;
+  G.hintsLeft--;
+
+  updateStats();
+  showMsg(STRINGS[currentLang].messages.hintMsg(pick.r, pick.c, G.board[pick.r][pick.c]), 'info');
+  checkWin();
+}
+
+/* ══════════════════════════════════════════════
+   Progression — localStorage stats
+══════════════════════════════════════════════ */
+function todayISO() { return new Date().toISOString().slice(0, 10); }
+
+function defaultStats() {
+  return { version: 1, lastPlayed: null, currentStreak: 0,
+           totalWins: 0, totalGames: 0, totalStars: 0, combos: {} };
+}
+
+function loadStats() {
+  try { return JSON.parse(localStorage.getItem('dedu-stats')) || defaultStats(); }
+  catch { return defaultStats(); }
+}
+
+function saveStats(s) {
+  try { localStorage.setItem('dedu-stats', JSON.stringify(s)); } catch {}
+}
+
+function ensureCombo(s, key) {
+  if (!s.combos[key]) s.combos[key] = { wins: 0, bestStars: 0 };
+}
+
+function calcStars(n, diff, elapsed, mistakes, hintsUsed) {
+  const key = `${n}-${diff}`;
+  const t = STAR_THRESHOLDS[key];
+  if (!t) return 1;
+  const passed = [elapsed <= t.time, mistakes <= t.mistakes, hintsUsed <= t.hintsUsed]
+                   .filter(Boolean).length;
+  return passed === 3 ? 3 : passed >= 1 ? 2 : 1;
+}
+
+function recordWin(stars) {
+  const s    = loadStats();
+  const today     = todayISO();
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const key  = `${G.n}-${G.diff}`;
+  // streak logic
+  if (s.lastPlayed === today) { /* already played today — don't double-count streak */ }
+  else if (s.lastPlayed === yesterday) s.currentStreak++;
+  else s.currentStreak = 1;
+  s.lastPlayed = today;
+  // totals
+  s.totalWins++;
+  s.totalGames++;
+  s.totalStars += stars;
+  ensureCombo(s, key);
+  s.combos[key].wins++;
+  if (stars > s.combos[key].bestStars) s.combos[key].bestStars = stars;
+  saveStats(s);
+}
+
+function recordLoss() {
+  const s    = loadStats();
+  const today = todayISO();
+  s.totalGames++;
+  if (s.lastPlayed !== today) { s.currentStreak = 0; s.lastPlayed = today; }
+  saveStats(s);
+}
+
+/* ── Stars display ── */
+function starHTML(filled) {
+  return [0, 1, 2].map(i =>
+    `<span class="star ${i < filled ? 'filled' : 'empty'}" aria-hidden="true">★</span>`
+  ).join('');
+}
+
+function renderWinStars(stars) {
+  const el = document.getElementById('winStars');
+  if (!el) return;
+  el.setAttribute('aria-label', STRINGS[currentLang].win.starsLabel(stars));
+  el.innerHTML = starHTML(stars);
+}
+
+/* ── Setup progress summary ── */
+
+function renderSetupProgress() {
+  const el = document.getElementById('progressSummary');
+  if (!el) return;
+  const s = loadStats();
+  if (s.totalGames === 0) { el.innerHTML = ''; return; }
+
+  const today     = todayISO();
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const activeToday = s.lastPlayed === today;
+
+  const W = STRINGS[currentLang].win;
+  let msg = '';
+  if (s.currentStreak >= 2) {
+    msg = activeToday ? W.streak(s.currentStreak) : W.streakWarning(s.currentStreak);
+  } else if (s.lastPlayed === yesterday && !activeToday) {
+    msg = W.streakStart;
+  }
+
+  const key   = `${chosenSize}-${chosenDiff}`;
+  const combo = s.combos[key];
+  const diffLabel = STRINGS[currentLang].diff[chosenDiff];
+  const comboLine = combo
+    ? `${chosenSize}×${chosenSize} · ${diffLabel}: ${W.comboWins(combo.wins)}, ${W.bestStars(combo.bestStars)}`
+    : '';
+
+  el.innerHTML = `<div class="progress-summary">
+    ${s.currentStreak > 0 ? `<span class="progress-badge streak" title="${W.badgeStreak}">🔥 ${s.currentStreak}</span>` : ''}
+    <span class="progress-badge" title="${W.badgeStars}">⭐ ${s.totalStars}</span>
+    <span class="progress-badge" title="${W.badgeWins}">🏆 ${s.totalWins}</span>
+    ${comboLine ? `<p class="progress-combo">${comboLine}</p>` : ''}
+    ${msg ? `<p class="progress-welcome">${msg}</p>` : ''}
+  </div>`;
+}
+
+/* ══════════════════════════════════════════════
+   Confetti
+══════════════════════════════════════════════ */
+function launchConfetti() {
+  const colors = ['#6366f1', '#f59e0b', '#16a34a', '#ef4444', '#8b5cf6', '#06b6d4'];
+  const container = document.createDocumentFragment();
+  for (let i = 0; i < 65; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left            = `${Math.random() * 100}vw`;
+    el.style.width           = `${6 + Math.random() * 8}px`;
+    el.style.height          = `${6 + Math.random() * 8}px`;
+    el.style.background      = colors[Math.floor(Math.random() * colors.length)];
+    el.style.animationDuration  = `${1.8 + Math.random() * 1.8}s`;
+    el.style.animationDelay     = `${Math.random() * 0.6}s`;
+    container.appendChild(el);
+  }
+  document.body.appendChild(container);
+  setTimeout(() => document.querySelectorAll('.confetti-piece').forEach(el => el.remove()), 4000);
+}
+
+/* ══════════════════════════════════════════════
+   Win / Lose
+══════════════════════════════════════════════ */
+function checkWin() {
+  if (G.filledCells >= G.hiddenCount) gameWin();
+}
+
+function gameWin() {
+  G.over = true;
+  clearInterval(G.timerID);
+  launchConfetti();
+
+  const hdl   = G.cfg.maxHints - G.hintsLeft;
+  const stars = calcStars(G.n, G.diff, G.seconds, G.mistakes, hdl);
+  recordWin(stars);
+  renderWinStars(stars);
+
+  const t = fmtTime(G.seconds);
+  G.winStats = { t, m: G.mistakes, h: hdl };
+  document.getElementById('winBody').textContent =
+    STRINGS[currentLang].win.stats(t, G.mistakes, hdl);
+
+  const ov = document.getElementById('winOverlay');
+  ov.classList.add('active');
+  ov.querySelector('button').focus();
+}
+
+function gameLose() {
+  G.over = true;
+  clearInterval(G.timerID);
+  recordLoss();
+
+  // Reveal all hidden board cells
+  for (let r = 0; r < G.n; r++) {
+    for (let c = 0; c < G.n; c++) {
+      const inp = document.getElementById(`ci-${r}-${c}`);
+      if (!inp || inp.readOnly) continue;
+      inp.value    = G.board[r][c];
+      inp.readOnly = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+    }
+  }
+
+  // Reveal header multipliers so the full solution is visible
+  for (let i = 0; i < G.n; i++) {
+    ['row', 'col'].forEach(type => {
+      const inp = document.getElementById(`hdr-${type}-${i}`);
+      if (!inp) return;
+      inp.value = type === 'row' ? G.rowNums[i] : G.colNums[i];
+      inp.style.borderColor  = '#7c3aed';
+      inp.style.color        = '#4338ca';
+      inp.style.fontWeight   = '900';
+      inp.style.background   = '#ede9fe';
+    });
+  }
+
+  const ov = document.getElementById('loseOverlay');
+  ov.classList.add('active');
+  ov.querySelector('button').focus();
+}
+
+/* ══════════════════════════════════════════════
+   Share result
+══════════════════════════════════════════════ */
+function shareResult() {
+  const W    = STRINGS[currentLang].win;
+  const diff = STRINGS[currentLang].diff[G.diff];
+  const hdl  = G.cfg.maxHints - G.hintsLeft;
+  const stars = calcStars(G.n, G.diff, G.seconds, G.mistakes, hdl);
+  const text  = W.shareText(G.n, diff, stars, G.winStats.t, G.mistakes, hdl);
+
+  const btn = document.getElementById('shareBtn');
+  const reset = () => {
+    btn.textContent = STRINGS[currentLang].win.shareBtn;
+  };
+
+  (navigator.clipboard
+    ? navigator.clipboard.writeText(text)
+    : Promise.resolve(document.execCommand('copy', false, text) || Promise.reject())
+  ).then(() => {
+    btn.textContent = W.shareCopied;
+    setTimeout(reset, 2000);
+  }).catch(() => {
+    // fallback: select a temp textarea
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-999px;left:-999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); btn.textContent = W.shareCopied; setTimeout(reset, 2000); } catch {}
+    ta.remove();
+  });
+}
+
+/* ══════════════════════════════════════════════
+   Navigation helpers
+══════════════════════════════════════════════ */
+function goSetup() {
+  if (!G.over && G.filledCells > 0) {
+    document.getElementById('confirmOverlay').classList.add('active');
+    document.getElementById('confirmYes').focus();
+    return;
+  }
+  _doGoSetup();
+}
+
+function _doGoSetup() {
+  clearInterval(G.timerID);
+  ['winOverlay', 'loseOverlay', 'confirmOverlay'].forEach(id =>
+    document.getElementById(id).classList.remove('active')
+  );
+  document.getElementById('gameScreen').style.display = 'none';
+  document.getElementById('gameScreen').classList.remove('active');
+  document.getElementById('setupScreen').style.display = '';
+  renderSetupProgress();
+  document.getElementById('startBtn').focus();
+}
+
+function sameSettings() {
+  ['winOverlay', 'loseOverlay', 'confirmOverlay'].forEach(id =>
+    document.getElementById(id).classList.remove('active')
+  );
+  startGame(G.n, G.diff);
+}
+
+/* ══════════════════════════════════════════════
+   Stats & Timer
+══════════════════════════════════════════════ */
+function tick() {
+  G.seconds++;
+  document.getElementById('timerVal').textContent = fmtTime(G.seconds);
+}
+
+function fmtTime(s) {
+  const m = (s / 60) | 0;
+  return `${m}:${String(s % 60).padStart(2, '0')}`;
+}
+
+function updateStats() {
+  const cfg = G.cfg;
+
+  // Mistakes
+  document.getElementById('mistakesVal').textContent = G.mistakes;
+  document.getElementById('mistakesMax').textContent =
+    cfg.maxMistakes === Infinity ? '' : ` / ${cfg.maxMistakes}`;
+
+  // Hints
+  document.getElementById('hintsVal').textContent = G.hintsLeft;
+  document.getElementById('hintsMax').textContent = ` / ${cfg.maxHints}`;
+
+  // Filled board cells
+  document.getElementById('correctVal').textContent = G.filledCells;
+  document.getElementById('correctMax').textContent = ` / ${G.hiddenCount}`;
+
+  // Disable hint button if no hints left
+  document.getElementById('hintBtn').disabled = G.hintsLeft <= 0;
+}
+
+/* ══════════════════════════════════════════════
+   Message helper
+══════════════════════════════════════════════ */
+let _msgTimer = null;
+function showMsg(text, type) {
+  const el = document.getElementById('msgBox');
+  el.textContent = text;
+  el.className   = `msg ${type}`;
+  clearTimeout(_msgTimer);
+  _msgTimer = setTimeout(clearMsg, 3500);
+}
+function clearMsg() {
+  const el = document.getElementById('msgBox');
+  el.textContent = '';
+  el.className   = 'msg';
+}
+
+// Language initialisation — detect from localStorage or browser
+(function initLang() {
+  const saved = localStorage.getItem('lang');
+  currentLang = (saved === 'he' || saved === 'en') ? saved
+              : (navigator.language?.startsWith('he') ? 'he' : 'en');
+  setLang(currentLang);
+})();
+</script>
+
+<!-- PWA Service Worker registration -->
+<script>
+  if ('serviceWorker' in navigator)
+    navigator.serviceWorker.register('./sw.js');
+</script>
+</body>
+</html>
