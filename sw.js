@@ -3,7 +3,10 @@ const CACHE = 'dedu-v1';
 const ASSETS = [
   './index.html',
   './manifest.json',
-  './icon.svg'
+  './icon.svg',
+  './icon192.png',
+  './icon512.png',
+  './dedu_white.jpeg'
 ];
 
 self.addEventListener('install', e => {

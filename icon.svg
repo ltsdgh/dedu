@@ -1,38 +1,181 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <!-- Background -->
-  <rect width="512" height="512" rx="96" fill="#4338ca"/>
+  <defs>
 
-  <!-- Subtle grid pattern — 3×3 cells representing the multiplication board -->
-  <!-- Row 1 -->
-  <rect x="68"  y="68"  width="112" height="112" rx="18" fill="#6366f1" opacity=".55"/>
-  <rect x="200" y="68"  width="112" height="112" rx="18" fill="#6366f1" opacity=".55"/>
-  <rect x="332" y="68"  width="112" height="112" rx="18" fill="#a5b4fc" opacity=".35"/>
+    <!-- ── Shadows ── -->
+    <filter id="sh1" x="-22%" y="-22%" width="144%" height="144%">
+      <feDropShadow dx="0" dy="8" stdDeviation="9"  flood-color="#0d2c40" flood-opacity="0.28"/>
+    </filter>
+    <filter id="sh2" x="-24%" y="-24%" width="148%" height="148%">
+      <feDropShadow dx="0" dy="10" stdDeviation="11" flood-color="#0d2c40" flood-opacity="0.30"/>
+    </filter>
+    <!--
+      Tight drop-shadow for the 12 tile: purely downward (dx=0),
+      small stdDeviation so it doesn't bleed onto the tiles above/beside.
+    -->
+    <filter id="sh12" x="-30%" y="-10%" width="160%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="10" flood-color="#0d2c40" flood-opacity="0.55"/>
+    </filter>
+    <!-- Glow for 12 aura -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="14" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- Trail softener -->
+    <filter id="tf" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+    <!-- Sparkle -->
+    <filter id="sf" x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
 
-  <!-- Row 2 -->
-  <rect x="68"  y="200" width="112" height="112" rx="18" fill="#6366f1" opacity=".55"/>
-  <!-- centre cell: "revealed" — bright with a number -->
-  <rect x="200" y="200" width="112" height="112" rx="18" fill="#eef2ff"/>
-  <text x="256" y="274" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif"
-        font-size="64" font-weight="900" fill="#4338ca">6</text>
-  <rect x="332" y="200" width="112" height="112" rx="18" fill="#818cf8" opacity=".6"/>
+    <!-- ── Gradients ── -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0.5" y2="1">
+      <stop offset="0%"   stop-color="#e2f2fa"/>
+      <stop offset="100%" stop-color="#c8e4f4"/>
+    </linearGradient>
 
-  <!-- Row 3 -->
-  <!-- hidden cell with "?" -->
-  <rect x="68"  y="332" width="112" height="112" rx="18" fill="#818cf8" opacity=".6"/>
-  <text x="124" y="406" text-anchor="middle" font-family="'Segoe UI',Arial,sans-serif"
-        font-size="56" font-weight="900" fill="#c7d2fe">?</text>
-  <rect x="200" y="332" width="112" height="112" rx="18" fill="#6366f1" opacity=".55"/>
-  <rect x="332" y="332" width="112" height="112" rx="18" fill="#6366f1" opacity=".55"/>
+    <!-- Trail: tip transparent, head bright -->
+    <linearGradient id="tg" x1="80" y1="80" x2="238" y2="238" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#88c43a" stop-opacity="0"/>
+      <stop offset="45%"  stop-color="#aada40" stop-opacity="0.60"/>
+      <stop offset="100%" stop-color="#ccee50" stop-opacity="0.88"/>
+    </linearGradient>
 
-  <!-- App name: de·du split across two "header" areas -->
-  <!-- "de" top-right corner hint -->
-  <text x="444" y="52" text-anchor="end" font-family="'Segoe UI',Arial,sans-serif"
-        font-size="38" font-weight="900" fill="#c7d2fe" letter-spacing="2">de</text>
-  <!-- "du" bottom-left corner hint -->
-  <text x="68" y="498" text-anchor="start" font-family="'Segoe UI',Arial,sans-serif"
-        font-size="38" font-weight="900" fill="#c7d2fe" letter-spacing="2">du</text>
+    <!--
+      Corner letter tiles now share the SAME mint-green palette as the 12 tile.
+      cg_letter: slightly more vivid so letters contrast well on larger surface.
+    -->
+    <linearGradient id="cg_letter" x1="0.05" y1="0" x2="0.95" y2="1">
+      <stop offset="0%"   stop-color="#e6f8e6"/>
+      <stop offset="100%" stop-color="#8aca8a"/>
+    </linearGradient>
 
-  <!-- Thin separator line suggesting row/col headers -->
-  <line x1="68" y1="58" x2="444" y2="58" stroke="#a5b4fc" stroke-width="3" opacity=".4"/>
-  <line x1="58" y1="68" x2="58" y2="444" stroke="#a5b4fc" stroke-width="3" opacity=".4"/>
+    <linearGradient id="wg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e0e0e0"/>
+    </linearGradient>
+
+    <!--
+      12 top face: radial gradient simulating light from directly above
+      (bright apex at top-center, darker at edges → pyramid-face lighting).
+    -->
+    <radialGradient id="cg12" cx="0.48" cy="0.22" r="0.78">
+      <stop offset="0%"   stop-color="#f4fff4"/>
+      <stop offset="55%"  stop-color="#c2e4c2"/>
+      <stop offset="100%" stop-color="#78b478"/>
+    </radialGradient>
+
+  </defs>
+
+  <!-- ══ BACKGROUND ══ -->
+  <rect width="512" height="512" fill="url(#bg)"/>
+
+  <!-- ══ COMET TRAIL — drawn BEFORE all tiles so letters aren't shadowed ══ -->
+  <polygon points="80,80 220,256 256,220" fill="url(#tg)" filter="url(#tf)"/>
+  <circle cx="118" cy="118" r="8"  fill="#ccee55" opacity="0.60" filter="url(#sf)"/>
+  <circle cx="155" cy="155" r="11" fill="#bbee44" opacity="0.65" filter="url(#sf)"/>
+  <circle cx="192" cy="192" r="9"  fill="#ddff77" opacity="0.70" filter="url(#sf)"/>
+
+  <!-- ══ NUMBER TILES ══ -->
+
+  <rect x="186" y="30"  width="140" height="140" rx="24" fill="url(#wg)"
+        stroke="#182840" stroke-width="5" stroke-dasharray="13 9" filter="url(#sh1)"/>
+  <text x="256" y="100"
+        font-family="'Arial Rounded MT Bold','Nunito','Varela Round',Arial,sans-serif"
+        font-weight="700" font-size="98" fill="#182840"
+        text-anchor="middle" dominant-baseline="central">6</text>
+
+  <rect x="30"  y="186" width="140" height="140" rx="24" fill="url(#wg)"
+        stroke="#182840" stroke-width="5" stroke-dasharray="13 9" filter="url(#sh1)"/>
+  <text x="100" y="256"
+        font-family="'Arial Rounded MT Bold','Nunito','Varela Round',Arial,sans-serif"
+        font-weight="700" font-size="98" fill="#182840"
+        text-anchor="middle" dominant-baseline="central">4</text>
+
+  <rect x="342" y="186" width="140" height="140" rx="24" fill="url(#wg)"
+        stroke="#182840" stroke-width="5" stroke-dasharray="13 9" filter="url(#sh1)"/>
+  <text x="412" y="256"
+        font-family="'Arial Rounded MT Bold','Nunito','Varela Round',Arial,sans-serif"
+        font-weight="700" font-size="98" fill="#182840"
+        text-anchor="middle" dominant-baseline="central">3</text>
+
+  <rect x="186" y="342" width="140" height="140" rx="24" fill="url(#wg)"
+        stroke="#182840" stroke-width="5" stroke-dasharray="13 9" filter="url(#sh1)"/>
+  <text x="256" y="412"
+        font-family="'Arial Rounded MT Bold','Nunito','Varela Round',Arial,sans-serif"
+        font-weight="700" font-size="98" fill="#182840"
+        text-anchor="middle" dominant-baseline="central">2</text>
+
+  <!-- ══ CORNER LETTER TILES — SAME mint-green background as the 12 tile ══ -->
+
+  <rect x="30"  y="30"  width="140" height="140" rx="24" fill="url(#cg_letter)" filter="url(#sh2)"/>
+  <rect x="32"  y="32"  width="136" height="136" rx="23" fill="none"
+        stroke="white" stroke-width="2.5" opacity="0.45"/>
+  <text x="100" y="100"
+        font-family="'Arial Rounded MT Bold','Nunito','Varela Round',Arial,sans-serif"
+        font-weight="700" font-size="106" fill="#1a3820"
+        text-anchor="middle" dominant-baseline="central">d</text>
+
+  <rect x="342" y="30"  width="140" height="140" rx="24" fill="url(#cg_letter)" filter="url(#sh2)"/>
+  <rect x="344" y="32"  width="136" height="136" rx="23" fill="none"
+        stroke="white" stroke-width="2.5" opacity="0.45"/>
+  <text x="412" y="100"
+        font-family="'Arial Rounded MT Bold','Nunito','Varela Round',Arial,sans-serif"
+        font-weight="700" font-size="106" fill="#1a3820"
+        text-anchor="middle" dominant-baseline="central">e</text>
+
+  <rect x="30"  y="342" width="140" height="140" rx="24" fill="url(#cg_letter)" filter="url(#sh2)"/>
+  <rect x="32"  y="344" width="136" height="136" rx="23" fill="none"
+        stroke="white" stroke-width="2.5" opacity="0.45"/>
+  <text x="100" y="412"
+        font-family="'Arial Rounded MT Bold','Nunito','Varela Round',Arial,sans-serif"
+        font-weight="700" font-size="106" fill="#1a3820"
+        text-anchor="middle" dominant-baseline="central">d</text>
+
+  <rect x="342" y="342" width="140" height="140" rx="24" fill="url(#cg_letter)" filter="url(#sh2)"/>
+  <rect x="344" y="344" width="136" height="136" rx="23" fill="none"
+        stroke="white" stroke-width="2.5" opacity="0.45"/>
+  <text x="412" y="412"
+        font-family="'Arial Rounded MT Bold','Nunito','Varela Round',Arial,sans-serif"
+        font-weight="700" font-size="106" fill="#1a3820"
+        text-anchor="middle" dominant-baseline="central">u</text>
+
+  <!--
+    ══ PYRAMID — 7 stepped layers rising from wide dark base to small bright apex.
+    All layers centred at (256,256). Each ring is 22 px wider than the next (11 px per side).
+    Colours graduate from dark forest-green at the base to bright lime near the top,
+    giving the impression of a real elevation rise.
+    Drawn AFTER surrounding tiles so the rings are fully visible.
+  -->
+  <!-- Base (darkest, widest) → apex (lightest, narrowest) -->
+  <rect x="124" y="124" width="264" height="264" rx="46" fill="#1a5820"/>
+  <rect x="135" y="135" width="242" height="242" rx="42" fill="#22702a"/>
+  <rect x="146" y="146" width="220" height="220" rx="38" fill="#2c8a34"/>
+  <rect x="157" y="157" width="198" height="198" rx="34" fill="#38a440"/>
+  <rect x="168" y="168" width="176" height="176" rx="30" fill="#46be4c"/>
+  <rect x="179" y="179" width="154" height="154" rx="26" fill="#58d460"/>
+  <rect x="190" y="190" width="132" height="132" rx="22" fill="#6ce876"/>
+
+  <!-- Glow aura (wider than base, atmospheric) -->
+  <rect x="112" y="112" width="288" height="288" rx="56"
+        fill="#20b020" opacity="0.22" filter="url(#glow)"/>
+
+  <!--
+    Top face (apex) — smaller tile, brighter radial gradient.
+    Shadow drops straight down, contained within the grid.
+  -->
+  <rect x="201" y="201" width="110" height="110" rx="18"
+        fill="url(#cg12)" stroke="#16a016" stroke-width="5" filter="url(#sh12)"/>
+
+  <!-- Inner highlight: light rim on the apex -->
+  <rect x="204" y="204" width="104" height="104" rx="16" fill="none"
+        stroke="white" stroke-width="3" opacity="0.68"/>
+
+  <!-- Number -->
+  <text x="256" y="257"
+        font-family="'Arial Rounded MT Bold','Nunito','Varela Round',Arial,sans-serif"
+        font-weight="700" font-size="64" fill="#1a3820"
+        text-anchor="middle" dominant-baseline="central">12</text>
+
 </svg>
