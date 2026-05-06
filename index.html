@@ -480,7 +480,7 @@
         #ddd6fe 8px
       );
       border: 1.5px dashed #a78bfa;
-      color: #7c3aed;
+      color: #1e1b4b;
       font-weight: 700;
     }
 
@@ -902,7 +902,7 @@
 <header class="site-header" role="banner">
   <h1>
     <img src="logo.png" alt="de-du — Deduction Games"
-         style="height:clamp(70px,18vw,110px);width:auto;max-width:100%;display:block;margin:0 auto;border-radius:1.2rem;box-shadow:0 4px 16px rgba(67,56,202,.12);" />
+         style="height:clamp(70px,18vw,110px);width:auto;max-width:100%;display:block;margin:0 auto;border-radius:1.2rem;box-shadow:0 4px 16px rgba(67,56,202,.12);filter:hue-rotate(90deg);" />
   </h1>
   <span class="logo-wordmark" aria-hidden="true">de<span>-</span>du</span>
   <p data-i18n="headerSubtitle">גלו את הכופל והנכפל וחשפו את המספרים בלוח!</p>
@@ -944,6 +944,8 @@
         </button>
       </div>
     </fieldset>
+
+    <button class="btn-start" id="startBtn" data-i18n="setup.startBtn">התחל משחק ▶</button>
 
     <div class="rules-box" role="note">
       <span data-i18n-html="rules.intro"></span>
@@ -988,7 +990,6 @@
 
     <button class="btn-daily" id="dailyBtn" data-i18n="setup.dailyBtn">📅 אתגר היום</button>
     <button class="btn btn-success" id="resumeGameBtn" style="display:none;width:100%;padding:.75rem;font-size:1rem;margin-bottom:.5rem;" data-i18n="setup.resumeBtn">▶ המשך משחק קודם</button>
-    <button class="btn-start" id="startBtn" data-i18n="setup.startBtn">התחל משחק ▶</button>
   </section>
 
   <!-- ══ Game Screen ══ -->
@@ -2314,7 +2315,7 @@ function gameLose() {
       inp.value = type === 'row' ? G.rowNums[i] : G.colNums[i];
       inp.readOnly = true;
       inp.style.borderColor  = '#7c3aed';
-      inp.style.color        = '#4338ca';
+      inp.style.color        = '#1e1b4b';
       inp.style.fontWeight   = '900';
       inp.style.background   = '#ede9fe';
     });
