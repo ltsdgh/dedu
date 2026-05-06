@@ -365,7 +365,7 @@
       padding: 2px;
     }
 
-    /* Header inputs — scratch pad (no validation) */
+    /* Header inputs — the goal: enter the secret multipliers */
     .hdr-input {
       display: block;
       width: 62px;
@@ -373,23 +373,34 @@
       text-align: center;
       font-size: 1.1rem;
       font-weight: 700;
-      border: 2px dashed var(--clr-border-bright);
+      border: 2.5px dashed var(--clr-primary);
       border-radius: var(--radius-cell);
-      background: transparent;
-      color: var(--clr-primary);
+      background: var(--clr-primary-lt);
+      color: var(--clr-primary-dk);
       padding: 0;
       transition: border-color .15s, background .15s;
       -moz-appearance: textfield;
       font-family: var(--font-num);
-      opacity: 0.6;
     }
     .hdr-input::-webkit-inner-spin-button,
     .hdr-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     .hdr-input:focus {
       outline: none;
       border-color: var(--clr-primary);
-      background: var(--clr-primary-lt);
-      opacity: 1;
+      background: #fff;
+      box-shadow: 0 0 0 3px var(--clr-primary-glow);
+    }
+    .hdr-input.correct {
+      background: var(--clr-success-bg);
+      border-color: var(--clr-success);
+      border-style: solid;
+      color: var(--clr-success);
+    }
+    .hdr-input.wrong {
+      background: var(--clr-error-bg);
+      border-color: var(--clr-error);
+      color: var(--clr-error);
+      animation: shake .35s;
     }
 
     @keyframes shake {
@@ -427,6 +438,21 @@
         0 4px 0 rgba(67,56,202,.2),
         0 6px 14px rgba(67,56,202,.1);
     }
+    .cell-product.hidden-clue {
+      background: #f1f5f9;
+      border: 1.5px dashed #cbd5e1;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+    .theme-dark .cell-product.hidden-clue {
+      background: rgba(255,255,255,.04);
+      border-color: rgba(255,255,255,.12);
+      color: #475569;
+    }
+
     .theme-dark .cell-product.shown {
       border-color: rgba(99,102,241,.3);
       color: #a0a8cc;
@@ -1109,10 +1135,10 @@ const STRINGS = {
       skip: 'דלג על ההדרכה',
     },
     rules: {
-      intro: '<strong>המטרה:</strong> למלא את כל התאים החסרים בלוח עם המכפלה הנכונה.<br><br><strong>איך משחקים?</strong><br>בשורה העליונה ובטור הימני המקווקווים מסתתרות <strong>ספרות סודיות</strong> (כופל ונכפל). כל תא בלוח הוא תוצאת הכפל של <strong>הספרה שבראש עמודתו</strong> (כופל) × <strong>הספרה שבראש שורתו</strong> (נכפל).<br>',
-      outro: 'חלק מהתאים כבר גלויים — את השאר <strong>עליך למלא</strong>!<br><br>השורה והטור הריקים יכולים לשמש כ<strong>מחברת עזר</strong> לגילוי הספרות הנסתרות.<br><br>💡 כל ניחוש נבדק מיד — <strong>ניחוש שגוי נספר כטעות</strong>. ניתן גם להשתמש בכפתור <strong>בדוק הכל</strong>.',
+      intro: '<strong>המטרה:</strong> לגלות את <strong>המכפילים הסודיים</strong> — הספרות בראש כל שורה ועמודה.<br><br><strong>איך משחקים?</strong><br>הלוח מציג תוצאות הכפל — אלה הם <strong>הרמזים שלך</strong>! כל תא שווה <strong>המכפיל של השורה</strong> × <strong>המכפיל של העמודה</strong>.<br>',
+      outro: 'נתח את המספרים בלוח, מצא את הדפוסים, והקלד את המכפילים בשורה העליונה ובטור הצדדי.<br><br>💡 כל ניחוש נבדק מיד — <strong>ניחוש שגוי נספר כטעות</strong>. ניתן גם להשתמש בכפתור <strong>בדוק הכל</strong>.',
     },
-    svg: { multiplier: 'כופל', notes: '✏️ עזר', multiplicand: 'נכפל' },
+    svg: { multiplier: 'כופל', notes: '?', multiplicand: 'נכפל' },
     diff: { easy: 'קל', medium: 'בינוני', hard: 'קשה' },
     stats: {
       settingsAriaLabel: 'הגדרות משחק',
@@ -1122,15 +1148,15 @@ const STRINGS = {
       mistakesLabel: '❌ טעויות:',
       hintsAriaLabel: 'רמזים שנותרו',
       hintsLabel: '💡 רמזים:',
-      correctAriaLabel: 'ניחושים נכונים',
-      correctLabel: '✓ נכון:',
+      correctAriaLabel: 'מכפילים שנמצאו',
+      correctLabel: '✓ נמצאו:',
       rangeAriaLabel: 'טווח מספרי הכפל',
       rangeLabel: '🔢 טווח:',
     },
     board: {
-      tableAriaLabel: 'לוח הכפל',
-      caption: 'לוח כפל. מלא את התאים הכחולים עם המכפלה הנכונה.',
-      cornerCell: '✏️<br>עזר',
+      tableAriaLabel: 'לוח הכפל — הרמזים',
+      caption: 'לוח הכפל. המספרים הם הרמזים — גלה את המכפילים.',
+      cornerCell: '×',
       hintBtn: '💡 רמז',
       pauseBtn: '⏸ הפסקה',
       resumeBtn: '▶ המשך',
@@ -1138,22 +1164,22 @@ const STRINGS = {
       checkAllBtn: '✓ בדוק הכל',
       newGameBtn: '↺ משחק חדש',
       cellShownAriaLabel: (r, c, val) => `שורה ${r+1} עמודה ${c+1}: ${val}`,
-      cellInputAriaLabel: (r, c) => `תא שורה ${r+1} עמודה ${c+1} — הכנס את המכפלה`,
-      colHelperAriaLabel: (i) => `שדה עזר לעמודה ${i+1} (אופציונלי)`,
-      rowHelperAriaLabel: (i) => `שדה עזר לשורה ${i+1} (אופציונלי)`,
+      cellHiddenAriaLabel: (r, c) => `שורה ${r+1} עמודה ${c+1}: נסתר`,
+      colHelperAriaLabel: (i) => `מכפיל עמודה ${i+1} — הכנס את הספרה`,
+      rowHelperAriaLabel: (i) => `מכפיל שורה ${i+1} — הכנס את הספרה`,
     },
     messages: {
       enterPositive: 'הכנס מספר חיובי',
       correct: '✓ נכון!',
       incorrect: '✗ לא נכון – נסה שוב',
-      fillFirst: 'מלא לפחות תא אחד לפני הבדיקה',
-      allCorrect: (n) => `✓ כל ${n} הניחושים שהכנסת נכונים!`,
+      fillFirst: 'הכנס לפחות מכפיל אחד לפני הבדיקה',
+      allCorrect: (n) => `✓ כל ${n} המכפילים שהכנסת נכונים!`,
       errorsFound: (w, n) => `נמצאו ${w} טעויות מתוך ${n} ניחושים`,
       noHints: 'אין יותר רמזים זמינים',
-      allFilled: 'כל התאים כבר מולאו!',
-      hintMsg: (r, c, val) => `💡 רמז: שורה ${r+1} × עמודה ${c+1} = ${val}`,
-      rangeBanner: (max) => `מספרי הכפולות האפשריים: הספרות <span>1 עד ${max}</span>`,
-      scratchpadTip: '✏️ שדה עזר — רשום כאן ניחושים לכופל/נכפל. אין אימות, זה בשבילך בלבד.',
+      allFilled: 'כל המכפילים כבר נמצאו!',
+      hintMsg: (type, i, val) => `💡 רמז: מכפיל ${type === 'row' ? 'שורה' : 'עמודה'} ${i+1} = ${val}`,
+      rangeBanner: (max) => `המכפילים הסודיים הם ספרות בין <span>1 ל-${max}</span>`,
+      scratchpadTip: '',
     },
     modals: {
       confirmTitle: '⚠️ יציאה מהמשחק',
@@ -1217,10 +1243,10 @@ const STRINGS = {
       skip: 'Skip tutorial',
     },
     rules: {
-      intro: '<strong>Goal:</strong> Fill all the missing cells with the correct product.<br><br><strong>How to play?</strong><br>Hidden in the dashed top row and side column are <strong>secret numbers</strong> (multiplier and multiplicand). Each cell equals <strong>the number at the top of its column</strong> × <strong>the number at the start of its row</strong>.<br>',
-      outro: 'Some cells are already shown — you must <strong>fill in the rest</strong>!<br><br>The empty row and column work as a <strong>scratch pad</strong> to help find the hidden numbers.<br><br>💡 Every guess is checked immediately — <strong>a wrong guess counts as a mistake</strong>. You can also use the <strong>Check All</strong> button.',
+      intro: '<strong>Goal:</strong> Discover the <strong>secret multipliers</strong> — the numbers at the top of each column and the start of each row.<br><br><strong>How to play?</strong><br>The board shows multiplication products — those are your <strong>clues</strong>! Each cell equals <strong>the row multiplier</strong> × <strong>the column multiplier</strong>.<br>',
+      outro: 'Analyse the numbers on the board, spot the patterns, and type the multipliers into the top row and side column.<br><br>💡 Every guess is checked immediately — <strong>a wrong guess counts as a mistake</strong>. You can also use the <strong>Check All</strong> button.',
     },
-    svg: { multiplier: 'Mult.', notes: '✏️ Notes', multiplicand: 'Mcand.' },
+    svg: { multiplier: 'Mult.', notes: '?', multiplicand: 'Mcand.' },
     diff: { easy: 'Easy', medium: 'Medium', hard: 'Hard' },
     stats: {
       settingsAriaLabel: 'Game settings',
@@ -1230,15 +1256,15 @@ const STRINGS = {
       mistakesLabel: '❌ Mistakes:',
       hintsAriaLabel: 'Hints remaining',
       hintsLabel: '💡 Hints:',
-      correctAriaLabel: 'Correct guesses',
-      correctLabel: '✓ Correct:',
+      correctAriaLabel: 'Multipliers found',
+      correctLabel: '✓ Found:',
       rangeAriaLabel: 'Multiplication number range',
       rangeLabel: '🔢 Range:',
     },
     board: {
-      tableAriaLabel: 'Multiplication board',
-      caption: 'Multiplication board. Fill the blue cells with the correct product.',
-      cornerCell: '✏️<br>Notes',
+      tableAriaLabel: 'Multiplication board — clues',
+      caption: 'Multiplication board. The numbers are clues — discover the multipliers.',
+      cornerCell: '×',
       hintBtn: '💡 Hint',
       pauseBtn: '⏸ Pause',
       resumeBtn: '▶ Resume',
@@ -1246,22 +1272,22 @@ const STRINGS = {
       checkAllBtn: '✓ Check All',
       newGameBtn: '↺ New Game',
       cellShownAriaLabel: (r, c, val) => `Row ${r+1} Column ${c+1}: ${val}`,
-      cellInputAriaLabel: (r, c) => `Cell Row ${r+1} Column ${c+1} — enter the product`,
-      colHelperAriaLabel: (i) => `Helper field for column ${i+1} (optional)`,
-      rowHelperAriaLabel: (i) => `Helper field for row ${i+1} (optional)`,
+      cellHiddenAriaLabel: (r, c) => `Row ${r+1} Column ${c+1}: hidden`,
+      colHelperAriaLabel: (i) => `Column ${i+1} multiplier — enter the number`,
+      rowHelperAriaLabel: (i) => `Row ${i+1} multiplier — enter the number`,
     },
     messages: {
       enterPositive: 'Enter a positive number',
       correct: '✓ Correct!',
       incorrect: '✗ Incorrect – try again',
-      fillFirst: 'Fill at least one cell before checking',
-      allCorrect: (n) => `✓ All ${n} guesses are correct!`,
+      fillFirst: 'Enter at least one multiplier before checking',
+      allCorrect: (n) => `✓ All ${n} multipliers you entered are correct!`,
       errorsFound: (w, n) => `Found ${w} mistakes out of ${n} guesses`,
       noHints: 'No hints remaining',
-      allFilled: 'All cells are already filled!',
-      hintMsg: (r, c, val) => `💡 Hint: Row ${r+1} × Column ${c+1} = ${val}`,
-      rangeBanner: (max) => `Possible multiplication numbers: <span>1 to ${max}</span>`,
-      scratchpadTip: '✏️ Scratch pad — jot down your guesses for multiplier/multiplicand. No validation, just for you.',
+      allFilled: 'All multipliers already found!',
+      hintMsg: (type, i, val) => `💡 Hint: ${type === 'row' ? 'Row' : 'Column'} ${i+1} multiplier = ${val}`,
+      rangeBanner: (max) => `The secret multipliers are numbers between <span>1 and ${max}</span>`,
+      scratchpadTip: '',
     },
     modals: {
       confirmTitle: '⚠️ Exit Game',
@@ -1354,9 +1380,9 @@ function setLang(lang) {
 ══════════════════════════════════════════════ */
 const DIFF_CFG = {
   //                                                   5×5 pool   9×9 pool
-  easy:   { revealPct: 0.72, maxMistakes: Infinity, maxHints: 5, poolMax5: 5, poolMax7: 7,  poolMax9: 9  },
-  medium: { revealPct: 0.45, maxMistakes: 5,        maxHints: 3, poolMax5: 7, poolMax7: 9,  poolMax9: 12 },
-  hard:   { revealPct: 0.20, maxMistakes: 3,        maxHints: 1, poolMax5: 9, poolMax7: 12, poolMax9: 15 },
+  easy:   { revealPct: 1.00, maxMistakes: Infinity, maxHints: 5, poolMax5: 5, poolMax7: 7,  poolMax9: 9  },
+  medium: { revealPct: 0.55, maxMistakes: 5,        maxHints: 3, poolMax5: 7, poolMax7: 9,  poolMax9: 12 },
+  hard:   { revealPct: 0.25, maxMistakes: 3,        maxHints: 1, poolMax5: 9, poolMax7: 12, poolMax9: 15 },
 };
 
 const STAR_THRESHOLDS = {
@@ -1550,8 +1576,6 @@ function startGame(n, diff, randFn = Math.random) {
   // Decide which cells to reveal
   const revealed = pickRevealedCells(board, n, pool, cfg.revealPct);
 
-  const hiddenCount = revealed.reduce((s, row) => s + row.filter(v => !v).length, 0);
-  const maxProduct  = Math.max(...pool) * Math.max(...pool);
   document.getElementById('rangeVal').textContent = `1–${poolMax}`;
   document.getElementById('rangeBanner').innerHTML =
     STRINGS[currentLang].messages.rangeBanner(poolMax);
@@ -1561,8 +1585,9 @@ function startGame(n, diff, randFn = Math.random) {
   G = {
     n, diff, cfg,
     rowNums, colNums, board, revealed,
-    hiddenCount, maxProduct, poolMax,
-    filledCells: 0,
+    poolMax,
+    filledHeaders: 0,
+    totalHeaders:  n * 2,
     mistakes:  0,
     hintsLeft: cfg.maxHints,
     seconds:   0,
@@ -1584,8 +1609,8 @@ function startGame(n, diff, randFn = Math.random) {
   gs.style.display = 'flex';
   gs.classList.add('active');
 
-  // Focus first unfilled board cell
-  const first = document.querySelector('.cell-input:not([readonly])');
+  // Focus first unfilled header input
+  const first = document.querySelector('.hdr-input:not([readonly])');
   if (first) first.focus();
 
   // Start timer
@@ -1701,43 +1726,22 @@ function renderBoard() {
     th.appendChild(makeHdrInput('row', r));
     tr.appendChild(th);
 
-    // Product cells
+    // Product cells — all read-only; revealed show the number, hidden show ?
     for (let c = 0; c < n; c++) {
       const td = document.createElement('td');
+      const div = document.createElement('div');
       if (revealed[r][c]) {
-        // Shown cell — read-only display
-        const div = document.createElement('div');
         div.className = 'cell-product shown';
         div.id = `pc-${r}-${c}`;
         div.textContent = board[r][c];
         div.setAttribute('aria-label', STRINGS[currentLang].board.cellShownAriaLabel(r, c, board[r][c]));
-        td.appendChild(div);
       } else {
-        // Hidden cell — editable input
-        const inp = document.createElement('input');
-        inp.type = 'number';
-        inp.inputMode = 'numeric';
-        inp.min = '1';
-        inp.max = String(G.maxProduct);
-        inp.className = 'cell-input';
-        inp.placeholder = '?';
-        inp.id = `ci-${r}-${c}`;
-        inp.setAttribute('aria-label', STRINGS[currentLang].board.cellInputAriaLabel(r, c));
-        inp.addEventListener('blur',    () => validateCell(r, c, inp));
-        inp.addEventListener('keydown', e => {
-          if (e.key === 'Enter') { e.preventDefault(); validateCell(r, c, inp); return; }
-          const moves = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, 1], ArrowRight: [0, -1] };
-          if (moves[e.key]) {
-            e.preventDefault();
-            const [dr, dc] = moves[e.key];
-            for (let step = 1; step < G.n; step++) {
-              const next = document.getElementById(`ci-${r + dr * step}-${c + dc * step}`);
-              if (next) { next.focus(); break; }
-            }
-          }
-        });
-        td.appendChild(inp);
+        div.className = 'cell-product hidden-clue';
+        div.id = `pc-${r}-${c}`;
+        div.textContent = '?';
+        div.setAttribute('aria-label', STRINGS[currentLang].board.cellHiddenAriaLabel(r, c));
       }
+      td.appendChild(div);
       tr.appendChild(td);
     }
 
@@ -1745,15 +1749,8 @@ function renderBoard() {
   }
 }
 
-function onFirstHdrFocus() {
-  if (localStorage.getItem('dedu-hdr-tip')) return;
-  localStorage.setItem('dedu-hdr-tip', '1');
-  showMsg(STRINGS[currentLang].messages.scratchpadTip, 'info');
-  const corner = document.getElementById('corner-cell');
-  if (corner) { corner.style.animation = 'cornerPulse 0.6s 2'; }
-}
-
 function makeHdrInput(type, idx) {
+  const isRow = type === 'row';
   const inp = document.createElement('input');
   inp.type  = 'number';
   inp.inputMode = 'numeric';
@@ -1761,37 +1758,30 @@ function makeHdrInput(type, idx) {
   inp.max   = String(G.poolMax);
   inp.className = 'hdr-input';
   inp.id    = `hdr-${type}-${idx}`;
+  inp.placeholder = '?';
   inp.setAttribute('aria-label',
-    type === 'col'
-      ? STRINGS[currentLang].board.colHelperAriaLabel(idx)
-      : STRINGS[currentLang].board.rowHelperAriaLabel(idx)
+    isRow
+      ? STRINGS[currentLang].board.rowHelperAriaLabel(idx)
+      : STRINGS[currentLang].board.colHelperAriaLabel(idx)
   );
-  inp.addEventListener('focus', onFirstHdrFocus);
-  // Scratch pad — no validation
+  inp.addEventListener('blur',    () => validateHeader(isRow, idx, inp));
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); validateHeader(isRow, idx, inp); }
+  });
   return inp;
 }
 
 /* ══════════════════════════════════════════════
-   Validation — board cells
+   Validation — header multipliers (the goal)
 ══════════════════════════════════════════════ */
-function focusNextCell(r, c) {
-  const n = G.n;
-  for (let step = 1; step < n * n; step++) {
-    const idx = r * n + c + step;
-    const nr = Math.floor(idx / n);
-    const nc = idx % n;
-    if (nr >= n) break;
-    const next = document.getElementById(`ci-${nr}-${nc}`);
-    if (next && !next.readOnly) { next.focus(); return; }
-  }
-}
-function validateCell(r, c, inp) {
+function validateHeader(isRow, idx, inp) {
+  if (!inp) inp = document.getElementById(`hdr-${isRow ? 'row' : 'col'}-${idx}`);
   if (G.over || inp.readOnly) return;
   const raw = inp.value.trim();
   if (!raw) return;
 
   const val     = parseInt(raw, 10);
-  const correct = G.board[r][c];
+  const correct = isRow ? G.rowNums[idx] : G.colNums[idx];
 
   if (isNaN(val) || val < 1) {
     inp.value = '';
@@ -1803,13 +1793,12 @@ function validateCell(r, c, inp) {
     inp.classList.remove('wrong');
     inp.classList.add('correct');
     inp.readOnly = true;
-    G.filledCells++;
+    G.filledHeaders++;
     playSound('correct');
     showMsg(STRINGS[currentLang].messages.correct, 'success');
     updateStats();
     saveGameState();
     checkWin();
-    focusNextCell(r, c);
   } else {
     inp.classList.add('wrong');
     inp.value = '';
@@ -1825,25 +1814,25 @@ function validateCell(r, c, inp) {
 }
 
 /* ══════════════════════════════════════════════
-   Check All button
+   Check All button — validates all header inputs
 ══════════════════════════════════════════════ */
 function checkAll() {
   if (G.over) return;
 
   let checked = 0, wrongs = 0;
 
-  for (let r = 0; r < G.n; r++) {
-    for (let c = 0; c < G.n; c++) {
-      const inp = document.getElementById(`ci-${r}-${c}`);
+  for (let i = 0; i < G.n; i++) {
+    for (const type of ['row', 'col']) {
+      const inp = document.getElementById(`hdr-${type}-${i}`);
       if (!inp || inp.readOnly || !inp.value.trim()) continue;
       checked++;
       const val     = parseInt(inp.value, 10);
-      const correct = G.board[r][c];
+      const correct = type === 'row' ? G.rowNums[i] : G.colNums[i];
       if (val === correct) {
         inp.classList.remove('wrong');
         inp.classList.add('correct');
         inp.readOnly = true;
-        G.filledCells++;
+        G.filledHeaders++;
       } else {
         wrongs++;
         G.mistakes++;
@@ -1880,41 +1869,32 @@ function giveHint() {
     return;
   }
 
-  // Collect unfilled board cells
+  // Collect unfilled header inputs
   const candidates = [];
-  for (let r = 0; r < G.n; r++)
-    for (let c = 0; c < G.n; c++) {
-      const inp = document.getElementById(`ci-${r}-${c}`);
-      if (inp && !inp.readOnly) candidates.push({ r, c, inp });
+  for (let i = 0; i < G.n; i++) {
+    for (const type of ['row', 'col']) {
+      const inp = document.getElementById(`hdr-${type}-${i}`);
+      if (inp && !inp.readOnly) candidates.push({ type, i, inp });
     }
+  }
 
   if (candidates.length === 0) {
     showMsg(STRINGS[currentLang].messages.allFilled, 'info');
     return;
   }
 
-  // Smart hint: prefer cells in rows/cols with the most unfilled cells
-  const rowUnfilled = new Array(G.n).fill(0);
-  const colUnfilled = new Array(G.n).fill(0);
-  for (const { r, c } of candidates) { rowUnfilled[r]++; colUnfilled[c]++; }
-  let bestScore = -1;
-  const bestCands = [];
-  for (const cand of candidates) {
-    const score = rowUnfilled[cand.r] + colUnfilled[cand.c];
-    if (score > bestScore) { bestScore = score; bestCands.length = 0; }
-    if (score === bestScore) bestCands.push(cand);
-  }
-  const pick = bestCands[(Math.random() * bestCands.length) | 0];
-  pick.inp.value    = G.board[pick.r][pick.c];
+  const pick = candidates[(Math.random() * candidates.length) | 0];
+  const val  = pick.type === 'row' ? G.rowNums[pick.i] : G.colNums[pick.i];
+  pick.inp.value    = val;
   pick.inp.readOnly = true;
   pick.inp.classList.add('correct');
-  G.filledCells++;
+  G.filledHeaders++;
   G.hintsLeft--;
 
   updateStats();
   saveGameState();
   playSound('hint');
-  showMsg(STRINGS[currentLang].messages.hintMsg(pick.r, pick.c, G.board[pick.r][pick.c]), 'info');
+  showMsg(STRINGS[currentLang].messages.hintMsg(pick.type, pick.i, val), 'info');
   checkWin();
 }
 
@@ -1972,7 +1952,7 @@ function tutorialNext() {
 function closeTutorial() {
   localStorage.setItem('dedu-tutorial-done', '1');
   document.getElementById('tutorialOverlay').classList.remove('active');
-  const first = document.querySelector('.cell-input:not([readonly])');
+  const first = document.querySelector('.hdr-input:not([readonly])');
   if (first) first.focus();
 }
 
@@ -1981,21 +1961,22 @@ function closeTutorial() {
 ══════════════════════════════════════════════ */
 function saveGameState() {
   if (!G.n || G.over) return;
-  const cellValues = {};
-  for (let r = 0; r < G.n; r++)
-    for (let c = 0; c < G.n; c++) {
-      const inp = document.getElementById(`ci-${r}-${c}`);
+  const headerValues = {};
+  for (let i = 0; i < G.n; i++) {
+    for (const type of ['row', 'col']) {
+      const inp = document.getElementById(`hdr-${type}-${i}`);
       if (inp && inp.readOnly && inp.classList.contains('correct'))
-        cellValues[`${r}_${c}`] = G.board[r][c];
+        headerValues[`${type}_${i}`] = parseInt(inp.value, 10);
     }
+  }
   const snapshot = {
     n: G.n, diff: G.diff,
     rowNums: G.rowNums, colNums: G.colNums,
     board: G.board, revealed: G.revealed,
-    hiddenCount: G.hiddenCount, maxProduct: G.maxProduct, poolMax: G.poolMax,
-    filledCells: G.filledCells, mistakes: G.mistakes,
-    hintsLeft: G.hintsLeft, seconds: G.seconds,
-    cellValues,
+    poolMax: G.poolMax,
+    filledHeaders: G.filledHeaders, totalHeaders: G.totalHeaders,
+    mistakes: G.mistakes, hintsLeft: G.hintsLeft, seconds: G.seconds,
+    headerValues,
   };
   try { localStorage.setItem('dedu-active-game', JSON.stringify(snapshot)); } catch {}
 }
@@ -2028,9 +2009,10 @@ function resumeGame(saved) {
     n: saved.n, diff: saved.diff, cfg,
     rowNums: saved.rowNums, colNums: saved.colNums,
     board: saved.board, revealed: saved.revealed,
-    hiddenCount: saved.hiddenCount, maxProduct: saved.maxProduct, poolMax: saved.poolMax,
-    filledCells: saved.filledCells, mistakes: saved.mistakes,
-    hintsLeft: saved.hintsLeft, seconds: saved.seconds,
+    poolMax: saved.poolMax,
+    filledHeaders: saved.filledHeaders || 0,
+    totalHeaders:  saved.totalHeaders  || saved.n * 2,
+    mistakes: saved.mistakes, hintsLeft: saved.hintsLeft, seconds: saved.seconds,
     timerID: null, over: false, paused: false,
   };
 
@@ -2042,10 +2024,10 @@ function resumeGame(saved) {
 
   renderBoard();
 
-  // Restore correctly filled cells
-  for (const [key, val] of Object.entries(saved.cellValues || {})) {
-    const [r, c] = key.split('_').map(Number);
-    const inp = document.getElementById(`ci-${r}-${c}`);
+  // Restore correctly found headers
+  for (const [key, val] of Object.entries(saved.headerValues || {})) {
+    const [type, idx] = key.split('_');
+    const inp = document.getElementById(`hdr-${type}-${idx}`);
     if (inp) { inp.value = val; inp.readOnly = true; inp.classList.add('correct'); }
   }
 
@@ -2057,7 +2039,7 @@ function resumeGame(saved) {
   document.getElementById('pauseOverlayBoard').classList.remove('active');
   document.getElementById('pauseBtn').textContent = STRINGS[currentLang].board.pauseBtn;
 
-  const first = document.querySelector('.cell-input:not([readonly])');
+  const first = document.querySelector('.hdr-input:not([readonly])');
   if (first) first.focus();
 
   clearInterval(G.timerID);
@@ -2239,7 +2221,7 @@ function launchConfetti() {
    Win / Lose
 ══════════════════════════════════════════════ */
 function checkWin() {
-  if (G.filledCells >= G.hiddenCount) gameWin();
+  if (G.filledHeaders >= G.totalHeaders) gameWin();
 }
 
 function gameWin() {
@@ -2279,24 +2261,13 @@ function gameLose() {
   clearGameState();
   recordLoss();
 
-  // Reveal all hidden board cells
-  for (let r = 0; r < G.n; r++) {
-    for (let c = 0; c < G.n; c++) {
-      const inp = document.getElementById(`ci-${r}-${c}`);
-      if (!inp || inp.readOnly) continue;
-      inp.value    = G.board[r][c];
-      inp.readOnly = true;
-      inp.classList.remove('wrong');
-      inp.classList.add('correct');
-    }
-  }
-
-  // Reveal header multipliers so the full solution is visible
+  // Reveal all unfound header multipliers
   for (let i = 0; i < G.n; i++) {
     ['row', 'col'].forEach(type => {
       const inp = document.getElementById(`hdr-${type}-${i}`);
-      if (!inp) return;
+      if (!inp || inp.readOnly) return;
       inp.value = type === 'row' ? G.rowNums[i] : G.colNums[i];
+      inp.readOnly = true;
       inp.style.borderColor  = '#7c3aed';
       inp.style.color        = '#4338ca';
       inp.style.fontWeight   = '900';
@@ -2348,7 +2319,7 @@ function shareResult() {
    Navigation helpers
 ══════════════════════════════════════════════ */
 function goSetup() {
-  if (!G.over && G.filledCells > 0) {
+  if (!G.over && G.filledHeaders > 0) {
     document.getElementById('confirmOverlay').classList.add('active');
     document.getElementById('confirmYes').focus();
     return;
@@ -2422,9 +2393,9 @@ function updateStats() {
   document.getElementById('hintsVal').textContent = G.hintsLeft;
   document.getElementById('hintsMax').textContent = ` / ${cfg.maxHints}`;
 
-  // Filled board cells
-  document.getElementById('correctVal').textContent = G.filledCells;
-  document.getElementById('correctMax').textContent = ` / ${G.hiddenCount}`;
+  // Found header multipliers
+  document.getElementById('correctVal').textContent = G.filledHeaders;
+  document.getElementById('correctMax').textContent = ` / ${G.totalHeaders}`;
 
   // Disable hint button if no hints left
   document.getElementById('hintBtn').disabled = G.hintsLeft <= 0;
