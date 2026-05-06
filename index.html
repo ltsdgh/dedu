@@ -439,18 +439,27 @@
         0 6px 14px rgba(67,56,202,.1);
     }
     .cell-product.hidden-clue {
-      background: #f1f5f9;
-      border: 1.5px dashed #cbd5e1;
-      color: #94a3b8;
+      background: repeating-linear-gradient(
+        45deg,
+        #eef2ff,
+        #eef2ff 4px,
+        #e0e7ff 4px,
+        #e0e7ff 8px
+      );
+      border: 1.5px dashed #a5b4fc;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
     }
     .theme-dark .cell-product.hidden-clue {
-      background: rgba(255,255,255,.04);
-      border-color: rgba(255,255,255,.12);
-      color: #475569;
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(99,102,241,.08),
+        rgba(99,102,241,.08) 4px,
+        rgba(99,102,241,.04) 4px,
+        rgba(99,102,241,.04) 8px
+      );
+      border-color: rgba(99,102,241,.25);
     }
 
     .theme-dark .cell-product.shown {
@@ -1177,7 +1186,7 @@ const STRINGS = {
       errorsFound: (w, n) => `נמצאו ${w} טעויות מתוך ${n} ניחושים`,
       noHints: 'אין יותר רמזים זמינים',
       allFilled: 'כל המכפילים כבר נמצאו!',
-      hintMsg: (type, i, val) => `💡 רמז: מכפיל ${type === 'row' ? 'שורה' : 'עמודה'} ${i+1} = ${val}`,
+      hintMsg: (r, c, val) => `💡 רמז: שורה ${r+1} × עמודה ${c+1} = ${val}`,
       rangeBanner: (max) => `המכפילים הסודיים הם ספרות בין <span>1 ל-${max}</span>`,
       scratchpadTip: '',
     },
@@ -1285,7 +1294,7 @@ const STRINGS = {
       errorsFound: (w, n) => `Found ${w} mistakes out of ${n} guesses`,
       noHints: 'No hints remaining',
       allFilled: 'All multipliers already found!',
-      hintMsg: (type, i, val) => `💡 Hint: ${type === 'row' ? 'Row' : 'Column'} ${i+1} multiplier = ${val}`,
+      hintMsg: (r, c, val) => `💡 Hint: Row ${r+1} × Column ${c+1} = ${val}`,
       rangeBanner: (max) => `The secret multipliers are numbers between <span>1 and ${max}</span>`,
       scratchpadTip: '',
     },
@@ -1665,7 +1674,7 @@ function pickRevealedCells(board, n, pool, pct) {
   const colCovered = new Array(n).fill(false);
   const picked = [];
 
-  // Pass 1: guaranteed coverage
+  // Pass 1: ensure at least one clue per row AND per column (no quota limit here)
   for (const cell of sorted) {
     if (!rowCovered[cell.r] || !colCovered[cell.c]) {
       revealed[cell.r][cell.c] = true;
@@ -1673,7 +1682,7 @@ function pickRevealedCells(board, n, pool, pct) {
       colCovered[cell.c] = true;
       picked.push(cell);
     }
-    if (picked.length >= target) break;
+    if (rowCovered.every(Boolean) && colCovered.every(Boolean)) break;
   }
 
   // Pass 2: fill remaining quota
@@ -1738,7 +1747,6 @@ function renderBoard() {
       } else {
         div.className = 'cell-product hidden-clue';
         div.id = `pc-${r}-${c}`;
-        div.textContent = '?';
         div.setAttribute('aria-label', STRINGS[currentLang].board.cellHiddenAriaLabel(r, c));
       }
       td.appendChild(div);
@@ -1860,7 +1868,7 @@ function checkAll() {
 }
 
 /* ══════════════════════════════════════════════
-   Hint
+   Hint — reveals a hidden board product as an extra clue
 ══════════════════════════════════════════════ */
 function giveHint() {
   if (G.over) return;
@@ -1869,33 +1877,45 @@ function giveHint() {
     return;
   }
 
-  // Collect unfilled header inputs
+  // Collect hidden board cells
   const candidates = [];
-  for (let i = 0; i < G.n; i++) {
-    for (const type of ['row', 'col']) {
-      const inp = document.getElementById(`hdr-${type}-${i}`);
-      if (inp && !inp.readOnly) candidates.push({ type, i, inp });
-    }
-  }
+  for (let r = 0; r < G.n; r++)
+    for (let c = 0; c < G.n; c++)
+      if (!G.revealed[r][c]) candidates.push({ r, c });
 
   if (candidates.length === 0) {
     showMsg(STRINGS[currentLang].messages.allFilled, 'info');
     return;
   }
 
-  const pick = candidates[(Math.random() * candidates.length) | 0];
-  const val  = pick.type === 'row' ? G.rowNums[pick.i] : G.colNums[pick.i];
-  pick.inp.value    = val;
-  pick.inp.readOnly = true;
-  pick.inp.classList.add('correct');
-  G.filledHeaders++;
+  // Pick the hidden cell in the row/column with the fewest visible clues
+  const rowVis = Array.from({ length: G.n }, (_, r) =>
+    G.revealed[r].filter(Boolean).length);
+  const colVis = Array.from({ length: G.n }, (_, c) =>
+    G.revealed.map(row => row[c]).filter(Boolean).length);
+  let bestScore = Infinity;
+  for (const cand of candidates) {
+    const score = rowVis[cand.r] + colVis[cand.c];
+    if (score < bestScore) bestScore = score;
+  }
+  const best = candidates.filter(({ r, c }) => rowVis[r] + colVis[c] === bestScore);
+  const pick = best[(Math.random() * best.length) | 0];
+
+  // Reveal it
+  G.revealed[pick.r][pick.c] = true;
+  const cell = document.getElementById(`pc-${pick.r}-${pick.c}`);
+  if (cell) {
+    cell.className = 'cell-product shown';
+    cell.textContent = G.board[pick.r][pick.c];
+    cell.setAttribute('aria-label',
+      STRINGS[currentLang].board.cellShownAriaLabel(pick.r, pick.c, G.board[pick.r][pick.c]));
+  }
   G.hintsLeft--;
 
   updateStats();
   saveGameState();
   playSound('hint');
-  showMsg(STRINGS[currentLang].messages.hintMsg(pick.type, pick.i, val), 'info');
-  checkWin();
+  showMsg(STRINGS[currentLang].messages.hintMsg(pick.r, pick.c, G.board[pick.r][pick.c]), 'info');
 }
 
 /* ══════════════════════════════════════════════
