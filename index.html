@@ -471,6 +471,31 @@
         0 6px 14px rgba(0,0,0,.3);
     }
 
+    .cell-product.was-hidden {
+      background: repeating-linear-gradient(
+        45deg,
+        #ede9fe,
+        #ede9fe 4px,
+        #ddd6fe 4px,
+        #ddd6fe 8px
+      );
+      border: 1.5px dashed #a78bfa;
+      color: #7c3aed;
+      font-weight: 700;
+    }
+
+    .theme-dark .cell-product.was-hidden {
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(109,40,217,.18),
+        rgba(109,40,217,.18) 4px,
+        rgba(109,40,217,.08) 4px,
+        rgba(109,40,217,.08) 8px
+      );
+      border-color: rgba(167,139,250,.4);
+      color: #c4b5fd;
+    }
+
     /* Board input cells — hidden cells become editable */
     .cell-input {
       display: block;
@@ -2293,6 +2318,19 @@ function gameLose() {
       inp.style.fontWeight   = '900';
       inp.style.background   = '#ede9fe';
     });
+  }
+
+  // Reveal hidden board cells with a distinct "was-hidden" style
+  for (let r = 0; r < G.n; r++) {
+    for (let c = 0; c < G.n; c++) {
+      if (!G.revealed[r][c]) {
+        const cell = document.getElementById(`pc-${r}-${c}`);
+        if (cell) {
+          cell.className = 'cell-product was-hidden';
+          cell.textContent = G.board[r][c];
+        }
+      }
+    }
   }
 
   const ov = document.getElementById('loseOverlay');
