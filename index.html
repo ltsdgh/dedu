@@ -279,19 +279,19 @@
       display: block;
       width: 100%;
       padding: .9rem;
-      background: var(--clr-primary);
-      color: #fff;
-      border: none;
+      background: var(--clr-primary-lt);
+      color: var(--clr-primary-dk);
+      border: 2px solid var(--clr-primary);
       border-radius: 14px;
       font-size: 1.05rem;
       font-weight: 700;
       font-family: var(--font-ui);
       cursor: pointer;
       transition: all .15s;
-      box-shadow: var(--shadow-btn);
+      box-shadow: inset 0 0 0 1px var(--clr-primary), var(--shadow-btn);
       letter-spacing: .02em;
     }
-    .btn-start:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .btn-start:hover { background: var(--clr-primary); color: #fff; transform: translateY(-1px); }
     .btn-start:active { transform: scale(.98); }
     .btn-start:focus { outline: 3px solid var(--clr-primary-dk); outline-offset: 2px; }
 
