@@ -217,16 +217,22 @@
     }
     .option-btn:hover  { border-color: var(--clr-primary); }
     .option-btn:focus  { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
+    /* Selected state: dark text on light background — same direction as body text, no inversion */
     .option-btn[aria-pressed="true"] {
       border-color: var(--clr-primary);
-      background: var(--clr-primary);
-      color: #fff;
-      box-shadow: 0 4px 16px var(--clr-primary-glow), 0 2px 0 var(--clr-primary-dk);
+      border-width: 2.5px;
+      background: var(--clr-primary-lt);
+      color: var(--clr-primary-dk);
+      box-shadow: inset 0 0 0 1px var(--clr-primary);
+      font-weight: 700;
     }
-    /* Non-color selection indicator for high-contrast / inverted-color modes */
+    /* Non-color selection indicator: checkmark prefix */
     .option-btn:not(.diff-card)[aria-pressed="true"]::before {
       content: '✓ ';
-      font-size: .85em;
+    }
+    .diff-card[aria-pressed="true"] .diff-icon::after {
+      content: ' ✓';
+      font-size: .7em;
     }
     @media (forced-colors: active) {
       .option-btn[aria-pressed="true"] {
@@ -248,7 +254,7 @@
     .diff-card .diff-icon { font-size: 17px; }
     .diff-card .diff-name { font-size: 13px; font-weight: 700; }
     .diff-card .diff-hint { font-size: 10px; color: var(--clr-muted); line-height: 1.3; }
-    .diff-card[aria-pressed="true"] .diff-hint { color: rgba(255,255,255,.75); }
+    .diff-card[aria-pressed="true"] .diff-hint { color: var(--clr-primary); opacity: .8; }
 
     /* Difficulty group: 3-column grid */
     .diff-option-group {
