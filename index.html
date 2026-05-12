@@ -223,6 +223,17 @@
       color: #fff;
       box-shadow: 0 4px 16px var(--clr-primary-glow), 0 2px 0 var(--clr-primary-dk);
     }
+    /* Non-color selection indicator for high-contrast / inverted-color modes */
+    .option-btn:not(.diff-card)[aria-pressed="true"]::before {
+      content: '✓ ';
+      font-size: .85em;
+    }
+    @media (forced-colors: active) {
+      .option-btn[aria-pressed="true"] {
+        outline: 3px solid ButtonText;
+        outline-offset: 2px;
+      }
+    }
 
     /* Difficulty card layout */
     .diff-card {
@@ -441,25 +452,33 @@
     .cell-product.hidden-clue {
       background: repeating-linear-gradient(
         45deg,
-        #eef2ff,
-        #eef2ff 4px,
-        #e0e7ff 4px,
-        #e0e7ff 8px
+        #c7d2fe,
+        #c7d2fe 4px,
+        #a5b4fc 4px,
+        #a5b4fc 8px
       );
-      border: 1.5px dashed #a5b4fc;
+      border: 2px solid #6366f1;
       display: flex;
       align-items: center;
       justify-content: center;
+      color: #4338ca;
+      font-weight: 700;
+    }
+    .cell-product.hidden-clue::after {
+      content: '?';
+      font-size: 1.1em;
+      opacity: .75;
     }
     .theme-dark .cell-product.hidden-clue {
       background: repeating-linear-gradient(
         45deg,
-        rgba(99,102,241,.08),
-        rgba(99,102,241,.08) 4px,
-        rgba(99,102,241,.04) 4px,
-        rgba(99,102,241,.04) 8px
+        rgba(99,102,241,.30),
+        rgba(99,102,241,.30) 4px,
+        rgba(99,102,241,.15) 4px,
+        rgba(99,102,241,.15) 8px
       );
-      border-color: rgba(99,102,241,.25);
+      border-color: rgba(99,102,241,.65);
+      color: #a5b4fc;
     }
 
     .theme-dark .cell-product.shown {
@@ -713,6 +732,23 @@
       font-size: .85rem;
     }
     .progress-badge.streak { background: var(--clr-warn-bg); color: var(--clr-warn); border-color: rgba(146,64,14,.2); }
+    .badge-legend {
+      width: 100%; text-align: center;
+      font-size: .72rem; color: var(--clr-muted);
+      margin: .1rem 0 .25rem; opacity: .8;
+    }
+    @keyframes suggest-glow {
+      0%, 100% { box-shadow: none; }
+      50% { box-shadow: 0 0 10px rgba(245,158,11,.4); }
+    }
+    .suggest-pulse { animation: suggest-glow 2s ease-in-out infinite; }
+    .btn-buy-hint {
+      background: var(--clr-warn-bg);
+      color: var(--clr-warn);
+      border-color: rgba(146,64,14,.25);
+      font-size: .82rem;
+    }
+    .btn-buy-hint:hover:not(:disabled) { filter: brightness(.95); }
     .progress-combo {
       width: 100%; text-align: center;
       font-size: .8rem; color: var(--clr-muted); margin: .15rem 0;
@@ -930,17 +966,17 @@
         <button class="option-btn diff-card" data-type="diff" data-val="easy" aria-pressed="true">
           <span class="diff-icon">🟢</span>
           <span class="diff-name" data-i18n="diff.easy">קל</span>
-          <span class="diff-hint">72% גלוי · ∞ טעויות</span>
+          <span class="diff-hint" id="easyDiffHint" data-i18n="diff.easyHint">100% גלוי · מספרים 1-5</span>
         </button>
         <button class="option-btn diff-card" data-type="diff" data-val="medium" aria-pressed="false">
           <span class="diff-icon">🟡</span>
           <span class="diff-name" data-i18n="diff.medium">בינוני</span>
-          <span class="diff-hint">45% גלוי · 5 טעויות</span>
+          <span class="diff-hint" data-i18n="diff.mediumHint">55% גלוי · מספרים 1-7 · 5 טעויות</span>
         </button>
         <button class="option-btn diff-card" data-type="diff" data-val="hard" aria-pressed="false">
           <span class="diff-icon">🔴</span>
           <span class="diff-name" data-i18n="diff.hard">קשה</span>
-          <span class="diff-hint">20% גלוי · 3 טעויות</span>
+          <span class="diff-hint" data-i18n="diff.hardHint">25% גלוי · מספרים 1-9 · 3 טעויות</span>
         </button>
       </div>
     </fieldset>
@@ -1010,7 +1046,7 @@
         <span class="val" id="mistakesVal">0</span>
         <span class="lbl" id="mistakesMax"></span>
       </div>
-      <div class="stat" aria-label="רמזים שנותרו" data-i18n-aria="stats.hintsAriaLabel">
+      <div id="hintRow" class="stat" aria-label="רמזים שנותרו" data-i18n-aria="stats.hintsAriaLabel">
         <span class="lbl" data-i18n="stats.hintsLabel">💡 רמזים:</span>
         <span class="val" id="hintsVal">0</span>
         <span class="lbl" id="hintsMax"></span>
@@ -1048,6 +1084,7 @@
     <!-- Buttons -->
     <div class="action-bar">
       <button class="btn btn-hint"    id="hintBtn"    data-i18n="board.hintBtn">💡 רמז</button>
+      <button class="btn btn-buy-hint" id="buyHintBtn" style="display:none;" onclick="buyHint()" data-i18n="board.buyHintBtn">🌟 10⭐ → רמז</button>
       <button class="btn btn-pause"   id="pauseBtn"   data-i18n="board.pauseBtn">⏸ הפסקה</button>
       <button class="btn btn-mute"    id="muteBtn"    aria-label="השתק צלילים" title="השתק / הפעל צלילים">🔊</button>
       <button class="btn btn-check"   id="checkBtn"   data-i18n="board.checkAllBtn">✓ בדוק הכל</button>
@@ -1174,7 +1211,13 @@ const STRINGS = {
       outro: 'נתח את המספרים בלוח, מצא את הדפוסים, והקלד את המכפילים בשורה העליונה ובטור הצדדי.<br><br>💡 כל ניחוש נבדק מיד — <strong>ניחוש שגוי נספר כטעות</strong>. ניתן גם להשתמש בכפתור <strong>בדוק הכל</strong>.',
     },
     svg: { multiplier: 'כופל', notes: '?', multiplicand: 'נכפל' },
-    diff: { easy: 'קל', medium: 'בינוני', hard: 'קשה' },
+    diff: {
+      easy: 'קל', medium: 'בינוני', hard: 'קשה',
+      easyHint: '100% גלוי · מספרים 1-5',
+      easyHintNew: '100% גלוי · מספרים 1-5 · מומלץ למתחילים ⭐',
+      mediumHint: '55% גלוי · מספרים 1-7 · 5 טעויות',
+      hardHint: '25% גלוי · מספרים 1-9 · 3 טעויות',
+    },
     stats: {
       settingsAriaLabel: 'הגדרות משחק',
       timerAriaLabel: 'זמן משחק',
@@ -1193,6 +1236,8 @@ const STRINGS = {
       caption: 'לוח הכפל. המספרים הם הרמזים — גלה את המכפילים.',
       cornerCell: '×',
       hintBtn: '💡 רמז',
+      buyHintBtn: '🌟 10⭐ → רמז',
+      buyHintNotEnough: (n) => `אין מספיק כוכבים — יש ${n} ⭐, דרושים 10`,
       pauseBtn: '⏸ הפסקה',
       resumeBtn: '▶ המשך',
       pausedLabel: 'המשחק מושהה',
@@ -1240,9 +1285,17 @@ const STRINGS = {
       streakStart: '👋 בוא תשמור על הרצף — שחק עכשיו!',
       comboWins: (w) => `${w} ניצחון${w !== 1 ? 'ות' : ''}`,
       bestStars: (n) => `מקסימום ${n}★`,
-      badgeStreak: 'סטריק יומי',
+      badgeStreak: 'ימים ברצף',
       badgeStars: 'סה״כ כוכבים',
       badgeWins: 'סה״כ ניצחונות',
+      badgeLegend: '🔥 ימים ברצף · ⭐ כוכבים · 🏆 ניצחונות',
+      dailyLevel: '5×5 · בינוני',
+      dailyPersonalBest: (t) => `🏅 שיא אישי: ${t}`,
+      dailyNewRecord: '🎉 שיא אישי חדש!',
+      tiers: ['🥉 מתחיל', '🥈 מתקדם', '🥇 מומחה', '👑 אלוף'],
+      tierProgress: (cur, next, rem) => `${cur} → ${next} עוד ${rem} ניצחון${rem !== 1 ? 'ות' : ''}`,
+      tierMax: (cur) => `${cur} — רמת שיא!`,
+      suggestNow: 'נסה עכשיו ←',
       shareBtn: '📤 שתף תוצאה',
       shareCopied: '✓ הועתק!',
       shareText: (n, diff, stars, t, m, h) => `de-du ${n}×${n} · ${diff} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
@@ -1282,7 +1335,13 @@ const STRINGS = {
       outro: 'Analyse the numbers on the board, spot the patterns, and type the multipliers into the top row and side column.<br><br>💡 Every guess is checked immediately — <strong>a wrong guess counts as a mistake</strong>. You can also use the <strong>Check All</strong> button.',
     },
     svg: { multiplier: 'Mult.', notes: '?', multiplicand: 'Mcand.' },
-    diff: { easy: 'Easy', medium: 'Medium', hard: 'Hard' },
+    diff: {
+      easy: 'Easy', medium: 'Medium', hard: 'Hard',
+      easyHint: '100% revealed · numbers 1-5',
+      easyHintNew: '100% revealed · numbers 1-5 · Recommended for beginners ⭐',
+      mediumHint: '55% revealed · numbers 1-7 · 5 mistakes',
+      hardHint: '25% revealed · numbers 1-9 · 3 mistakes',
+    },
     stats: {
       settingsAriaLabel: 'Game settings',
       timerAriaLabel: 'Game time',
@@ -1301,6 +1360,8 @@ const STRINGS = {
       caption: 'Multiplication board. The numbers are clues — discover the multipliers.',
       cornerCell: '×',
       hintBtn: '💡 Hint',
+      buyHintBtn: '🌟 10⭐ → Hint',
+      buyHintNotEnough: (n) => `Not enough stars — you have ${n} ⭐, need 10`,
       pauseBtn: '⏸ Pause',
       resumeBtn: '▶ Resume',
       pausedLabel: 'Game Paused',
@@ -1348,9 +1409,17 @@ const STRINGS = {
       streakStart: '👋 Keep your streak going — play now!',
       comboWins: (w) => `${w} win${w !== 1 ? 's' : ''}`,
       bestStars: (n) => `best ${n}★`,
-      badgeStreak: 'Daily Streak',
+      badgeStreak: 'Day streak',
       badgeStars: 'Total Stars',
       badgeWins: 'Total Wins',
+      badgeLegend: '🔥 day streak · ⭐ stars · 🏆 wins',
+      dailyLevel: '5×5 · Medium',
+      dailyPersonalBest: (t) => `🏅 Personal best: ${t}`,
+      dailyNewRecord: '🎉 New personal record!',
+      tiers: ['🥉 Beginner', '🥈 Learner', '🥇 Expert', '👑 Champion'],
+      tierProgress: (cur, next, rem) => `${cur} → ${next} (${rem} win${rem !== 1 ? 's' : ''} to go)`,
+      tierMax: (cur) => `${cur} — top rank!`,
+      suggestNow: '→ Try now',
       shareBtn: '📤 Share result',
       shareCopied: '✓ Copied!',
       shareText: (n, diff, stars, t, m, h) => `de-du ${n}×${n} · ${diff} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
@@ -1415,10 +1484,17 @@ function setLang(lang) {
 ══════════════════════════════════════════════ */
 const DIFF_CFG = {
   //                                                   5×5 pool   9×9 pool
-  easy:   { revealPct: 1.00, maxMistakes: Infinity, maxHints: 5, poolMax5: 5, poolMax7: 7,  poolMax9: 9  },
+  easy:   { revealPct: 1.00, maxMistakes: Infinity, maxHints: 0, poolMax5: 5, poolMax7: 7,  poolMax9: 9  },
   medium: { revealPct: 0.55, maxMistakes: 5,        maxHints: 3, poolMax5: 7, poolMax7: 9,  poolMax9: 12 },
   hard:   { revealPct: 0.25, maxMistakes: 3,        maxHints: 1, poolMax5: 9, poolMax7: 12, poolMax9: 15 },
 };
+
+const TIERS = [
+  { wins: 0,  idx: 0 },
+  { wins: 3,  idx: 1 },
+  { wins: 10, idx: 2 },
+  { wins: 25, idx: 3 },
+];
 
 const STAR_THRESHOLDS = {
   '5-easy':   { time: 120, mistakes: 0, hintsUsed: 0 },
@@ -1456,6 +1532,20 @@ document.querySelectorAll('.option-btn').forEach(btn => {
   });
   // Keyboard: Space/Enter already handled by button default
 });
+
+function selectDiff(diff, size) {
+  chosenDiff = diff;
+  document.querySelectorAll('.option-btn[data-type="diff"]').forEach(b => {
+    b.setAttribute('aria-pressed', b.dataset.val === diff ? 'true' : 'false');
+  });
+  if (size) {
+    chosenSize = size;
+    document.querySelectorAll('.option-btn[data-type="size"]').forEach(b => {
+      b.setAttribute('aria-pressed', parseInt(b.dataset.val) === size ? 'true' : 'false');
+    });
+  }
+  renderSetupProgress();
+}
 
 document.getElementById('startBtn').addEventListener('click', () => startGame(chosenSize, chosenDiff));
 document.getElementById('resumeGameBtn').addEventListener('click', () => {
@@ -1545,12 +1635,21 @@ function getDailySeed() {
   return parseInt(todayISO().replace(/-/g, ''), 10);
 }
 
-function saveDailyResult(stars, t, mistakes, hints) {
+function saveDailyResult(stars, t, mistakes, hints, rawSeconds) {
   try {
     localStorage.setItem('dedu-daily', JSON.stringify({
       date: todayISO(), stars, t, mistakes, hints,
     }));
   } catch {}
+  // Track personal best across all days
+  if (rawSeconds !== undefined) {
+    try {
+      const best = JSON.parse(localStorage.getItem('dedu-daily-best') || 'null');
+      if (!best || rawSeconds < best.seconds) {
+        localStorage.setItem('dedu-daily-best', JSON.stringify({ seconds: rawSeconds, t }));
+      }
+    } catch {}
+  }
   updateDailyBtn();
 }
 
@@ -1568,12 +1667,17 @@ function updateDailyBtn() {
   const str = STRINGS[currentLang];
   if (result) {
     const stars = '⭐'.repeat(result.stars) + '☆'.repeat(3 - result.stars);
-    btn.textContent = `📅 ${str.setup.dailyBtn.replace('📅 ', '')} — ${stars} ⏱ ${result.t}`;
+    let bestStr = '';
+    try {
+      const best = JSON.parse(localStorage.getItem('dedu-daily-best') || 'null');
+      if (best) bestStr = ` | ${str.win.dailyPersonalBest(best.t)}`;
+    } catch {}
+    btn.innerHTML = `📅 ${str.setup.dailyBtn.replace('📅 ', '')} — ${stars} ⏱ ${result.t}${bestStr}`;
     btn.style.background = 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)';
     btn.style.borderColor = '#34d399';
     btn.style.color = '#065f46';
   } else {
-    btn.textContent = str.setup.dailyBtn;
+    btn.innerHTML = `${str.setup.dailyBtn}<br><small style="font-size:.78em;opacity:.75;">${str.win.dailyLevel}</small>`;
     btn.style.background = '';
     btn.style.borderColor = '';
     btn.style.color = '';
@@ -1631,9 +1735,10 @@ function startGame(n, diff, randFn = Math.random) {
     paused:    false,
     isDaily:   false,
   };
-  // Reset pause state
+  // Reset pause state and action buttons
   document.getElementById('pauseOverlayBoard').classList.remove('active');
   document.getElementById('pauseBtn').textContent = STRINGS[currentLang].board.pauseBtn;
+  document.getElementById('checkBtn').disabled = false;
 
   renderBoard();
   updateStats();
@@ -1945,6 +2050,24 @@ function giveHint() {
 }
 
 /* ══════════════════════════════════════════════
+   Buy hint with stars (#2)
+══════════════════════════════════════════════ */
+function buyHint() {
+  if (G.over) return;
+  const s = loadStats();
+  const str = STRINGS[currentLang];
+  if (s.totalStars < 10) {
+    showMsg(str.board.buyHintNotEnough(s.totalStars), 'warn');
+    return;
+  }
+  s.totalStars -= 10;
+  saveStats(s);
+  G.hintsLeft++;
+  updateStats();
+  giveHint();
+}
+
+/* ══════════════════════════════════════════════
    Tutorial
 ══════════════════════════════════════════════ */
 let _tutorialStep = 0;
@@ -2192,6 +2315,14 @@ function renderSetupProgress() {
   const el = document.getElementById('progressSummary');
   if (!el) return;
   const s = loadStats();
+
+  // #11 — update easy diff-hint before potential early return (first-time players need the hint)
+  const easyHintEl = document.getElementById('easyDiffHint');
+  if (easyHintEl) {
+    const str = STRINGS[currentLang];
+    easyHintEl.textContent = s.totalGames === 0 ? str.diff.easyHintNew : str.diff.easyHint;
+  }
+
   if (s.totalGames === 0) { el.innerHTML = ''; return; }
 
   const today     = todayISO();
@@ -2212,23 +2343,48 @@ function renderSetupProgress() {
   const comboTooltip = currentLang === 'he'
     ? 'Combo = ביצועים בשילוב גודל + קושי ספציפי'
     : 'Combo = your record for this board size + difficulty';
+
+  // Tier calculation (#3)
+  let tierLine = '';
+  if (combo) {
+    const tierLabels = STRINGS[currentLang].win.tiers;
+    let curTierIdx = 0;
+    for (const t of TIERS) {
+      if (combo.wins >= t.wins) curTierIdx = t.idx;
+    }
+    const nextTier = TIERS.find(t => t.idx === curTierIdx + 1);
+    const tierStr = nextTier
+      ? STRINGS[currentLang].win.tierProgress(tierLabels[curTierIdx], tierLabels[nextTier.idx], nextTier.wins - combo.wins)
+      : STRINGS[currentLang].win.tierMax(tierLabels[curTierIdx]);
+    tierLine = `<span style="font-size:.78rem;color:var(--clr-muted);">${tierStr}</span>`;
+  }
+
   const comboLine = combo
-    ? `<abbr title="${comboTooltip}" style="text-decoration:none;cursor:help;">🎯 Combo</abbr> ${chosenSize}×${chosenSize} · ${diffLabel}: ${W.comboWins(combo.wins)}, ${W.bestStars(combo.bestStars)}`
+    ? `<abbr title="${comboTooltip}" style="text-decoration:none;cursor:help;">🎯 Combo</abbr> ${chosenSize}×${chosenSize} · ${diffLabel}: ${W.comboWins(combo.wins)}, ${W.bestStars(combo.bestStars)} ${tierLine}`
     : '';
 
-  // Difficulty suggestion
+  // Difficulty suggestion (#12) — prominent with inline "Try now" button
   const NEXT_DIFF = { easy: 'medium', medium: 'hard', hard: null };
   const NEXT_SIZE = { 5: 7, 7: 9, 9: null };
   let suggestLine = '';
   if (combo && combo.wins >= 3 && combo.bestStars >= 2) {
     const nextDiff = NEXT_DIFF[chosenDiff];
     const nextSize = NEXT_SIZE[chosenSize];
+    let nextTarget = null, nextDiffVal = null;
+    let nextSizeVal = null;
     if (nextDiff) {
-      const nextLabel = STRINGS[currentLang].diff[nextDiff];
-      suggestLine = STRINGS[currentLang].setup.diffSuggest(`${chosenSize}×${chosenSize} ${nextLabel}`);
+      nextTarget = `${chosenSize}×${chosenSize} ${STRINGS[currentLang].diff[nextDiff]}`;
+      nextDiffVal = nextDiff;
     } else if (nextSize) {
-      const easyLabel = STRINGS[currentLang].diff['easy'];
-      suggestLine = STRINGS[currentLang].setup.diffSuggest(`${nextSize}×${nextSize} ${easyLabel}`);
+      nextTarget = `${nextSize}×${nextSize} ${STRINGS[currentLang].diff['easy']}`;
+      nextDiffVal = 'easy';
+      nextSizeVal = nextSize;
+    }
+    if (nextTarget) {
+      const tryNowLabel = STRINGS[currentLang].win.suggestNow;
+      const sizeArg = nextSizeVal ? `, ${nextSizeVal}` : '';
+      suggestLine = `${STRINGS[currentLang].setup.diffSuggest(nextTarget)}
+        <button class="btn suggest-try-btn" onclick="selectDiff('${nextDiffVal}'${sizeArg})" style="margin-top:.3rem;padding:.3rem .8rem;font-size:.8rem;">${tryNowLabel}</button>`;
     }
   }
 
@@ -2236,8 +2392,9 @@ function renderSetupProgress() {
     ${s.currentStreak > 0 ? `<span class="progress-badge streak" title="${W.badgeStreak}">🔥 ${s.currentStreak}</span>` : ''}
     <span class="progress-badge" title="${W.badgeStars}">⭐ ${s.totalStars}</span>
     <span class="progress-badge" title="${W.badgeWins}">🏆 ${s.totalWins}</span>
+    <p class="badge-legend">${W.badgeLegend}</p>
     ${comboLine ? `<p class="progress-combo">${comboLine}</p>` : ''}
-    ${suggestLine ? `<p class="progress-welcome" style="color:#7c3aed;">${suggestLine}</p>` : ''}
+    ${suggestLine ? `<p class="progress-welcome suggest-pulse" style="color:#b45309;background:rgba(251,191,36,.12);border-radius:8px;padding:.35rem .6rem;">${suggestLine}</p>` : ''}
     ${msg ? `<p class="progress-welcome">${msg}</p>` : ''}
   </div>`;
 }
@@ -2280,7 +2437,7 @@ function gameWin() {
   const hdl   = G.cfg.maxHints - G.hintsLeft;
   const stars = calcStars(G.n, G.diff, G.seconds, G.mistakes, hdl);
   const milestone = recordWin(stars);
-  if (G.isDaily) saveDailyResult(stars, fmtTime(G.seconds), G.mistakes, hdl);
+  if (G.isDaily) saveDailyResult(stars, fmtTime(G.seconds), G.mistakes, hdl, G.seconds);
   if (milestone) {
     const banner = document.createElement('div');
     banner.className = 'milestone-banner';
@@ -2295,6 +2452,8 @@ function gameWin() {
   G.winStats = { t, m: G.mistakes, h: hdl };
   document.getElementById('winBody').textContent =
     STRINGS[currentLang].win.stats(t, G.mistakes, hdl);
+
+  document.getElementById('checkBtn').disabled = true;
 
   const ov = document.getElementById('winOverlay');
   ov.classList.add('active');
@@ -2333,6 +2492,8 @@ function gameLose() {
       }
     }
   }
+
+  document.getElementById('checkBtn').disabled = true;
 
   const ov = document.getElementById('loseOverlay');
   ov.classList.add('active');
@@ -2448,16 +2609,26 @@ function updateStats() {
   document.getElementById('mistakesMax').textContent =
     cfg.maxMistakes === Infinity ? '' : ` / ${cfg.maxMistakes}`;
 
-  // Hints
-  document.getElementById('hintsVal').textContent = G.hintsLeft;
-  document.getElementById('hintsMax').textContent = ` / ${cfg.maxHints}`;
+  // Hints — hidden entirely in easy mode (maxHints === 0, no hidden cells to reveal)
+  const hasHints = cfg.maxHints > 0;
+  document.getElementById('hintRow').style.display = hasHints ? '' : 'none';
+  const hintBtn = document.getElementById('hintBtn');
+  hintBtn.style.display = hasHints ? '' : 'none';
+  if (hasHints) {
+    document.getElementById('hintsVal').textContent = G.hintsLeft;
+    document.getElementById('hintsMax').textContent = ` / ${cfg.maxHints}`;
+    hintBtn.disabled = G.hintsLeft <= 0;
+  }
+  // Buy-hint button: show when out of hints (non-easy) and game is active
+  const buyBtn = document.getElementById('buyHintBtn');
+  if (buyBtn) {
+    const showBuy = hasHints && !G.over && G.hintsLeft <= 0;
+    buyBtn.style.display = showBuy ? '' : 'none';
+  }
 
   // Found header multipliers
   document.getElementById('correctVal').textContent = G.filledHeaders;
   document.getElementById('correctMax').textContent = ` / ${G.totalHeaders}`;
-
-  // Disable hint button if no hints left
-  document.getElementById('hintBtn').disabled = G.hintsLeft <= 0;
 }
 
 /* ══════════════════════════════════════════════
