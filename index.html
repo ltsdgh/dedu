@@ -935,6 +935,65 @@
       80%  { opacity: 1; }
       100% { transform: translateY(100vh)  rotate(720deg) scaleX(0.3); opacity: 0; }
     }
+
+    /* ── Demo Animation ── */
+    .demo-section {
+      margin: 1rem 0 0;
+      text-align: center;
+    }
+    .demo-section-label {
+      font: 600 .72rem var(--font-ui);
+      color: var(--clr-muted);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-bottom: .6rem;
+    }
+    .demo-board-wrap { display: flex; justify-content: center; }
+    .demo-board { border-collapse: separate; border-spacing: 5px; }
+    .demo-cell {
+      width: 46px; height: 46px;
+      border-radius: 10px;
+      text-align: center; vertical-align: middle;
+      font: 700 1rem var(--font-num);
+      transition: background .35s, color .35s, border-color .35s, transform .25s;
+    }
+    .demo-cell-corner {
+      background: transparent;
+      color: var(--clr-muted);
+      font-size: 1.1rem;
+    }
+    .demo-cell-product {
+      background: var(--clr-cell-shown);
+      color: var(--clr-text);
+      border: 1px solid var(--clr-border);
+      box-shadow: inset 0 1px 3px rgba(0,0,0,.06);
+    }
+    .demo-cell-header {
+      background: var(--clr-primary-lt);
+      color: var(--clr-muted);
+      border: 2px dashed rgba(99,102,241,.45);
+      font-size: .85rem;
+    }
+    .demo-cell-header.filled {
+      color: var(--clr-primary);
+      border-style: solid;
+      border-color: var(--clr-primary);
+    }
+    .demo-cell-product.correct {
+      background: var(--clr-success-bg);
+      color: var(--clr-success);
+      border-color: var(--clr-success-border);
+      transform: scale(1.08);
+    }
+    .demo-win-msg {
+      margin-top: .55rem;
+      font: 700 .95rem var(--font-display);
+      color: var(--clr-primary);
+      opacity: 0;
+      transition: opacity .45s;
+      min-height: 1.4em;
+    }
+    .demo-win-msg.show { opacity: 1; }
   </style>
 </head>
 <body>
@@ -990,6 +1049,14 @@
     </fieldset>
 
     <button class="btn-start" id="startBtn" data-i18n="setup.startBtn">התחל משחק ▶</button>
+
+    <div class="demo-section" aria-hidden="true">
+      <p class="demo-section-label" id="demoLabel"></p>
+      <div class="demo-board-wrap">
+        <table class="demo-board" id="demoBoard"></table>
+      </div>
+      <p class="demo-win-msg" id="demoWinMsg"></p>
+    </div>
 
     <div class="rules-box" role="note">
       <span data-i18n-html="rules.intro"></span>
@@ -1204,6 +1271,8 @@ const STRINGS = {
       dailyBadge: '📅 אתגר יומי',
       milestone: (n) => `🏅 הישג! צברת ${n} כוכבים — כל הכבוד!`,
       diffSuggest: (next) => `🚀 מוכן לאתגר הבא? נסה <strong>${next}</strong>!`,
+      demoLabel: 'הדגמה',
+      demoWin: '✨ ניחשת את כל המכפילים!',
     },
     tutorial: {
       title: '🎓 איך משחקים?',
@@ -1328,6 +1397,8 @@ const STRINGS = {
       dailyBadge: '📅 Daily',
       milestone: (n) => `🏅 Achievement! You've collected ${n} stars — well done!`,
       diffSuggest: (next) => `🚀 Ready for the next challenge? Try <strong>${next}</strong>!`,
+      demoLabel: 'Demo',
+      demoWin: '✨ All multipliers found!',
     },
     tutorial: {
       title: '🎓 How to Play',
@@ -2754,6 +2825,134 @@ document.getElementById('muteBtn').addEventListener('click', toggleMute);
 (function initLang() {
   currentLang = navigator.language?.startsWith('he') ? 'he' : 'en';
   setLang(currentLang);
+})();
+
+/* ── Demo Animation ── */
+(function() {
+  const ROW_M = [3, 1, 2];
+  const COL_M = [2, 5, 4];
+  const N = 3;
+  let demoTimer = null;
+  const knownRows = new Set();
+  const knownCols = new Set();
+
+  function buildBoard() {
+    const table = document.getElementById('demoBoard');
+    if (!table) return;
+    table.innerHTML = '';
+    knownRows.clear();
+    knownCols.clear();
+
+    const headTr = table.insertRow();
+    const corner = headTr.insertCell();
+    corner.className = 'demo-cell demo-cell-corner';
+    corner.textContent = '×';
+    for (let c = 0; c < N; c++) {
+      const th = headTr.insertCell();
+      th.className = 'demo-cell demo-cell-header';
+      th.id = `dc-${c}`;
+      th.textContent = '?';
+    }
+    for (let r = 0; r < N; r++) {
+      const tr = table.insertRow();
+      const rh = tr.insertCell();
+      rh.className = 'demo-cell demo-cell-header';
+      rh.id = `dr-${r}`;
+      rh.textContent = '?';
+      for (let c = 0; c < N; c++) {
+        const td = tr.insertCell();
+        td.className = 'demo-cell demo-cell-product';
+        td.id = `dp-${r}-${c}`;
+        td.textContent = ROW_M[r] * COL_M[c];
+      }
+    }
+  }
+
+  function typeIn(el, val, onDone) {
+    el.textContent = '|';
+    el.classList.add('filled');
+    setTimeout(() => {
+      el.textContent = val;
+      if (onDone) onDone();
+    }, 420);
+  }
+
+  function fillCol(c) {
+    const el = document.getElementById(`dc-${c}`);
+    if (!el) return;
+    typeIn(el, COL_M[c], () => {
+      knownCols.add(c);
+      knownRows.forEach(r => {
+        const td = document.getElementById(`dp-${r}-${c}`);
+        if (td) td.classList.add('correct');
+      });
+    });
+  }
+
+  function fillRow(r) {
+    const el = document.getElementById(`dr-${r}`);
+    if (!el) return;
+    typeIn(el, ROW_M[r], () => {
+      knownRows.add(r);
+      knownCols.forEach(c => {
+        const td = document.getElementById(`dp-${r}-${c}`);
+        if (td) td.classList.add('correct');
+      });
+    });
+  }
+
+  function updateLabels() {
+    const str = (typeof STRINGS !== 'undefined' && STRINGS[currentLang || 'he']) ? STRINGS[currentLang || 'he'].setup : null;
+    const lbl = document.getElementById('demoLabel');
+    const win = document.getElementById('demoWinMsg');
+    if (lbl && str) lbl.textContent = str.demoLabel || 'הדגמה';
+    if (win && str) win.dataset.winText = str.demoWin || '✨ ניחשת!';
+  }
+
+  function schedule(fn, delay) {
+    const t = setTimeout(fn, delay);
+    demoTimer = t;
+    return t;
+  }
+
+  function runDemo() {
+    if (demoTimer) clearTimeout(demoTimer);
+    buildBoard();
+    updateLabels();
+    const win = document.getElementById('demoWinMsg');
+    if (win) { win.textContent = ''; win.classList.remove('show'); }
+
+    // Interleaved order — each entry reveals only newly-solved cells
+    const steps = [
+      [() => fillCol(2),  1800],
+      [() => fillRow(0),  1800],
+      [() => fillCol(0),  1600],
+      [() => fillRow(1),  1600],
+      [() => fillCol(1),  1600],
+      [() => fillRow(2),  1600],
+      [() => { if (win) { win.textContent = win.dataset.winText || '✨'; win.classList.add('show'); } }, 1200],
+    ];
+
+    let t = 1800; // pause before first move
+    steps.forEach(([fn, delay]) => {
+      t += delay;
+      schedule(fn, t);
+    });
+    schedule(runDemo, t + 4000); // longer pause at win screen
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const section = document.querySelector('.demo-section');
+    if (!section) return;
+    // Start only when visible, with a short grace delay
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        observer.disconnect();
+        schedule(runDemo, 1200);
+      }
+    }, { threshold: 0.5 });
+    observer.observe(section);
+  });
 })();
 </script>
 
