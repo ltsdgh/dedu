@@ -2996,7 +2996,7 @@ document.getElementById('muteBtn').addEventListener('click', toggleMute);
         observer.disconnect();
         demoTimers.push(setTimeout(runDemo, 1200));
       }
-    }, { threshold: 0.5 });
+    }, { threshold: 0 });
     observer.observe(section);
   });
 })();
