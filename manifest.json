@@ -16,6 +16,6 @@
   ],
   "categories": ["games", "education"],
   "screenshots": [
-    { "src": "width_550.png", "sizes": "550x550", "type": "image/png", "form_factor": "narrow" }
+    { "src": "width_550.png", "sizes": "412x914", "type": "image/png", "form_factor": "narrow" }
   ]
 }

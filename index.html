@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   <title>de-du | דדו — גלה את המכפילים</title>
 
   <!-- Favicon -->
@@ -15,6 +15,7 @@
   <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#6366f1" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="de-du" />
@@ -25,14 +26,15 @@
   <style>
     /* ── Design Tokens — Bold Light Theme (default) ── */
     :root {
-      --font-ui:      'Space Grotesk', 'Segoe UI', Arial, sans-serif;
+      --font-ui:      'Assistant', 'Segoe UI', Arial, sans-serif;
       --font-num:     'Space Mono', 'Courier New', monospace;
-      --font-display: 'Syne', 'Segoe UI', Arial, sans-serif;
+      --font-display: 'Syne', 'Assistant', 'Segoe UI', Arial, sans-serif;
 
-      --clr-primary:        #4338ca;
-      --clr-primary-dk:     #3730a3;
-      --clr-primary-lt:     rgba(67,56,202,.08);
-      --clr-primary-glow:   rgba(67,56,202,.18);
+      --clr-primary:        #5046E5;
+      --clr-primary-dk:     #3B31D4;
+      --clr-primary-lt:     rgba(80,70,229,.09);
+      --clr-primary-glow:   rgba(80,70,229,.22);
+      --clr-primary-end:    #6D28D9;
 
       --clr-success:        #047857;
       --clr-success-bg:     #d1fae5;
@@ -45,33 +47,34 @@
       --clr-info:           #075985;
       --clr-info-bg:        #e0f2fe;
 
-      --clr-bg:             #ffffff;
-      --clr-surface:        #ffffff;
-      --clr-text:           #0f0e1e;
-      --clr-muted:          #5a587a;
-      --clr-border:         rgba(30,28,80,.14);
-      --clr-border-bright:  #4338ca;
+      --clr-bg:             #F4F3FD;
+      --clr-surface:        #FFFFFF;
+      --clr-text:           #12111E;
+      --clr-muted:          #6B6890;
+      --clr-border:         rgba(80,70,229,.11);
+      --clr-border-bright:  #5046E5;
 
       --clr-cell-shown:     #ffffff;
-      --clr-cell-hidden:    #ebebf7;
+      --clr-cell-hidden:    #ECEAF8;
       --clr-header-input:   transparent;
 
-      --radius:        0.6rem;
-      --radius-cell:   14px;
-      --radius-board:  24px;
+      --radius:        0.75rem;
+      --radius-cell:   16px;
+      --radius-board:  28px;
       --radius-pill:   999px;
 
-      --shadow:        0 4px 24px rgba(67,56,202,.10), 0 2px 0 rgba(67,56,202,.06);
-      --shadow-btn:    0 4px 24px rgba(67,56,202,.28), 0 2px 0 #3730a3;
-      --shadow-modal:  0 24px 80px rgba(67,56,202,.2);
+      --shadow:        0 2px 12px rgba(80,70,229,.08), 0 1px 0 rgba(80,70,229,.04);
+      --shadow-btn:    0 4px 20px rgba(80,70,229,.30), 0 2px 0 #3B31D4;
+      --shadow-modal:  0 20px 60px rgba(80,70,229,.18);
     }
 
     /* ── Dark Theme ── */
     .theme-dark {
-      --clr-primary:        #6366f1;
-      --clr-primary-dk:     #4338ca;
-      --clr-primary-lt:     rgba(99,102,241,.15);
-      --clr-primary-glow:   rgba(99,102,241,.35);
+      --clr-primary:        #7B72FF;
+      --clr-primary-dk:     #5046E5;
+      --clr-primary-lt:     rgba(123,114,255,.14);
+      --clr-primary-glow:   rgba(123,114,255,.32);
+      --clr-primary-end:    #8B5CF6;
 
       --clr-success:        #10b981;
       --clr-success-bg:     rgba(16,185,129,.15);
@@ -84,19 +87,19 @@
       --clr-info:           #38bdf8;
       --clr-info-bg:        rgba(56,189,248,.12);
 
-      --clr-bg:             #0d0f1a;
-      --clr-surface:        #1e2440;
-      --clr-text:           #e8eaf6;
-      --clr-muted:          #8b92b8;
-      --clr-border:         rgba(99,102,241,.25);
-      --clr-border-bright:  rgba(99,102,241,.6);
+      --clr-bg:             #0B0B18;
+      --clr-surface:        #161625;
+      --clr-text:           #F3F0FF;
+      --clr-muted:          #B8B4D8;
+      --clr-border:         rgba(123,114,255,.20);
+      --clr-border-bright:  rgba(123,114,255,.55);
 
-      --clr-cell-shown:     #252b4a;
-      --clr-cell-hidden:    #1e2440;
+      --clr-cell-shown:     #1E1E35;
+      --clr-cell-hidden:    #161625;
       --clr-header-input:   transparent;
 
-      --shadow:       0 8px 40px rgba(0,0,0,.4), 0 2px 0 rgba(99,102,241,.2);
-      --shadow-btn:   0 4px 24px rgba(99,102,241,.4), 0 2px 0 #3730a3;
+      --shadow:       0 8px 32px rgba(0,0,0,.5), 0 2px 0 rgba(123,114,255,.18);
+      --shadow-btn:   0 4px 20px rgba(123,114,255,.35), 0 2px 0 #3B31D4;
       --shadow-modal: 0 24px 80px rgba(0,0,0,.5);
     }
 
@@ -130,12 +133,37 @@
     }
     .skip-link:focus { top: 0; }
 
-    /* ── Theme Toggle (fixed position) ── */
-    .theme-toggle {
+    /* ── Corner Controls (fixed container for top-right buttons) ── */
+    .corner-controls {
       position: fixed;
       top: 14px;
       right: 16px;
       z-index: 100;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* ── Help Corner Button ── */
+    .btn-help-corner {
+      width: 32px; height: 32px;
+      background: var(--clr-surface);
+      border: 1.5px solid var(--clr-border);
+      border-radius: 50%;
+      font-family: var(--font-ui);
+      font-size: 14px; font-weight: 700;
+      color: var(--clr-muted);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .btn-help-corner:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
+    .btn-help-corner:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
+
+    /* ── Theme Toggle ── */
+    .theme-toggle {
+      position: static;
       background: var(--clr-surface);
       border: 1.5px solid var(--clr-border);
       border-radius: var(--radius-pill);
@@ -157,24 +185,20 @@
     /* ── Header ── */
     .site-header {
       text-align: center;
-      margin-bottom: 1.75rem;
-      background: var(--clr-surface);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 1.1rem 2rem 1rem;
+      margin-bottom: 1.5rem;
+      padding: 1.75rem 2rem .75rem;
       width: 100%;
       max-width: 540px;
     }
-    .theme-dark .site-header { border: 1px solid var(--clr-border); }
     .site-header h1 { line-height: 1; margin: 0; }
-    .site-header p { color: var(--clr-muted); font-size: .9rem; margin-top: .35rem; }
+    .site-header p { color: var(--clr-text); font-size: .95rem; font-weight: 500; margin-top: .45rem; opacity: .7; }
     .logo-wordmark {
       font-family: var(--font-display);
-      font-size: 20px;
+      font-size: 34px;
       font-weight: 800;
-      letter-spacing: -.02em;
+      letter-spacing: -.03em;
       color: var(--clr-text);
-      margin-top: .4rem;
+      margin-top: 0;
       display: block;
     }
     .logo-wordmark span { color: var(--clr-primary); }
@@ -191,6 +215,18 @@
     .theme-dark .card { border: 1px solid var(--clr-border); }
 
     /* ── Setup Screen ── */
+    .setup-secondary {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+      margin-top: .75rem;
+    }
+    #resumeGameBtn {
+      width: 100%; padding: .75rem;
+      font-size: 1rem;
+    }
     #setupScreen fieldset {
       border: none;
       margin-bottom: 1.4rem;
@@ -222,14 +258,20 @@
     }
     .option-btn:hover  { border-color: var(--clr-primary); }
     .option-btn:focus  { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
-    /* Selected state: dark text on light background — same direction as body text, no inversion */
+    /* Selected state — light mode: כהה על בהיר */
     .option-btn[aria-pressed="true"] {
       border-color: var(--clr-primary);
-      border-width: 2.5px;
-      background: var(--clr-primary-lt);
-      color: var(--clr-primary-dk);
-      box-shadow: inset 0 0 0 1px var(--clr-primary);
+      border-width: 2px;
+      background: rgba(80,70,229,.11);
+      color: #3B31D4;
+      box-shadow: 0 2px 8px rgba(80,70,229,.14);
       font-weight: 700;
+    }
+    /* Dark mode: בהיר על כהה */
+    .theme-dark .option-btn[aria-pressed="true"] {
+      background: var(--clr-primary);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(123,114,255,.35);
     }
     /* Non-color selection indicator: checkmark prefix */
     .option-btn:not(.diff-card)[aria-pressed="true"]::before {
@@ -259,7 +301,8 @@
     .diff-card .diff-icon { font-size: 17px; }
     .diff-card .diff-name { font-size: 13px; font-weight: 700; }
     .diff-card .diff-hint { font-size: 10px; color: var(--clr-muted); line-height: 1.3; }
-    .diff-card[aria-pressed="true"] .diff-hint { color: var(--clr-primary); opacity: .8; }
+    .diff-card[aria-pressed="true"] .diff-hint { color: rgba(59,49,212,.7); opacity: 1; }
+    .theme-dark .diff-card[aria-pressed="true"] .diff-hint { color: rgba(255,255,255,.75); }
 
     /* Difficulty group: 3-column grid */
     .diff-option-group {
@@ -270,7 +313,7 @@
 
     .rules-box {
       background: var(--clr-primary-lt);
-      border: 1px solid rgba(67,56,202,.12);
+      border: 1px solid var(--clr-border);
       border-radius: .5rem;
       padding: 1rem 1.1rem;
       margin-bottom: 1.4rem;
@@ -284,19 +327,19 @@
       display: block;
       width: 100%;
       padding: .9rem;
-      background: var(--clr-primary-lt);
-      color: var(--clr-primary-dk);
-      border: 2px solid var(--clr-primary);
+      background: linear-gradient(135deg, #5046E5 0%, #6D28D9 100%);
+      color: #ffffff;
+      border: none;
       border-radius: 14px;
       font-size: 1.05rem;
       font-weight: 700;
       font-family: var(--font-ui);
       cursor: pointer;
-      transition: all .15s;
-      box-shadow: inset 0 0 0 1px var(--clr-primary), var(--shadow-btn);
+      transition: all .18s;
+      box-shadow: 0 4px 18px rgba(80,70,229,.35), 0 2px 0 #3B31D4;
       letter-spacing: .02em;
     }
-    .btn-start:hover { background: var(--clr-primary); color: #fff; transform: translateY(-1px); }
+    .btn-start:hover { background: linear-gradient(135deg, #5F54F0 0%, #7C3AED 100%); transform: translateY(-1px); box-shadow: 0 6px 22px rgba(80,70,229,.45), 0 2px 0 #3B31D4; }
     .btn-start:active { transform: scale(.98); }
     .btn-start:focus { outline: 3px solid var(--clr-primary-dk); outline-offset: 2px; }
 
@@ -308,7 +351,7 @@
     .stats-bar {
       display: flex;
       flex-wrap: nowrap;
-      gap: 4px;
+      gap: 6px;
       margin-bottom: .75rem;
       width: 100%;
     }
@@ -317,19 +360,20 @@
       min-width: 0;
       background: var(--clr-surface);
       border: 1px solid var(--clr-border);
-      border-radius: 10px;
-      padding: .3rem .2rem;
+      border-radius: 12px;
+      padding: .45rem .25rem;
       font-size: .78rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,.05);
+      box-shadow: 0 1px 4px rgba(80,70,229,.06);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: .05rem;
+      gap: .1rem;
     }
     .stat .lbl {
-      color: var(--clr-muted);
-      font-size: .68rem;
+      color: var(--clr-text);
+      font-size: .7rem;
+      font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -341,13 +385,14 @@
       display: flex;
       align-items: baseline;
       gap: .15rem;
+      direction: ltr;
     }
     .stat .val {
       font-family: var(--font-num);
       font-weight: 700;
       color: var(--clr-primary);
       font-variant-numeric: tabular-nums;
-      font-size: .82rem;
+      font-size: .88rem;
     }
     .stat.mistakes .val { color: var(--clr-error); }
 
@@ -357,7 +402,7 @@
       font-weight: 700;
       color: var(--clr-text);
       background: var(--clr-primary-lt);
-      border: 1.5px solid var(--clr-border-bright);
+      border: 1px solid var(--clr-primary);
       border-radius: var(--radius-pill);
       padding: .4rem 1.2rem;
       margin-bottom: .75rem;
@@ -367,22 +412,23 @@
       align-items: center;
       gap: .3rem;
     }
-    .range-banner span { color: var(--clr-text); font-family: var(--font-num); }
+    .range-banner { font-family: var(--font-ui); }
+    .range-banner .range-nums { font-family: var(--font-num); }
 
     /* Board */
     .board-scroll { overflow-x: auto; padding: .5rem; width: 100%; display: flex; justify-content: center; }
 
     .board-wrap {
-      background: #f4f4f8;
+      background: #ECEAF8;
       border-radius: var(--radius-board);
       padding: 1.3rem;
-      box-shadow: 0 8px 40px rgba(67,56,202,.12), 0 2px 0 rgba(67,56,202,.08);
-      border: 1.5px solid rgba(67,56,202,.1);
+      box-shadow: 0 8px 40px rgba(80,70,229,.10), 0 2px 0 rgba(80,70,229,.06);
+      border: 1.5px solid var(--clr-border);
     }
     .theme-dark .board-wrap {
-      background: #131629;
-      box-shadow: 0 8px 40px rgba(0,0,0,.5), 0 2px 0 rgba(99,102,241,.2);
-      border-color: rgba(99,102,241,.2);
+      background: #101020;
+      box-shadow: 0 8px 40px rgba(0,0,0,.5), 0 2px 0 rgba(123,114,255,.18);
+      border-color: rgba(123,114,255,.18);
     }
 
     .board {
@@ -422,12 +468,15 @@
       font-family: var(--font-num);
     }
     .hdr-input::placeholder { color: var(--clr-primary-dk); opacity: 1; }
+    /* Dark mode: הפוך צבעי hdr-input לבהיר על כהה */
+    .theme-dark .hdr-input { color: var(--clr-primary); }
+    .theme-dark .hdr-input::placeholder { color: var(--clr-primary); opacity: .8; }
     .hdr-input::-webkit-inner-spin-button,
     .hdr-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     .hdr-input:focus {
       outline: none;
       border-color: var(--clr-primary);
-      background: #fff;
+      background: var(--clr-surface);
       box-shadow: 0 0 0 3px var(--clr-primary-glow);
     }
     .hdr-input.correct {
@@ -468,80 +517,54 @@
     }
     .cell-product.shown {
       background: var(--clr-cell-shown);
-      border: 1.5px solid rgba(67,56,202,.15);
+      border: 1.5px solid var(--clr-border);
       color: var(--clr-text);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow:
-        inset 0 2px 0 rgba(255,255,255,.9),
-        0 4px 0 rgba(67,56,202,.2),
-        0 6px 14px rgba(67,56,202,.1);
+      box-shadow: 0 1px 3px rgba(80,70,229,.10);
     }
     .cell-product.hidden-clue {
-      background: repeating-linear-gradient(
-        45deg,
-        #c7d2fe,
-        #c7d2fe 4px,
-        #a5b4fc 4px,
-        #a5b4fc 8px
-      );
-      border: 2px solid #6366f1;
+      background-color: #DDD9F8;
+      background-image: radial-gradient(circle, rgba(59,49,212,.30) 1.5px, transparent 1.5px);
+      background-size: 12px 12px;
+      border: 1.5px solid rgba(59,49,212,.35);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #4338ca;
+      color: #3B31D4;
       font-weight: 700;
     }
     .cell-product.hidden-clue::after {
       content: '?';
       font-size: 1.1em;
-      opacity: .75;
+      opacity: .85;
     }
     .theme-dark .cell-product.hidden-clue {
-      background: repeating-linear-gradient(
-        45deg,
-        rgba(99,102,241,.30),
-        rgba(99,102,241,.30) 4px,
-        rgba(99,102,241,.15) 4px,
-        rgba(99,102,241,.15) 8px
-      );
-      border-color: rgba(99,102,241,.65);
-      color: #a5b4fc;
+      background-color: #1E1A3A;
+      background-image: radial-gradient(circle, rgba(123,114,255,.35) 1.5px, transparent 1.5px);
+      background-size: 12px 12px;
+      border-color: rgba(123,114,255,.45);
+      color: #A5A0F0;
     }
 
     .theme-dark .cell-product.shown {
-      border-color: rgba(99,102,241,.3);
-      color: #a0a8cc;
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.06),
-        0 4px 0 rgba(0,0,0,.5),
-        0 6px 14px rgba(0,0,0,.3);
+      border-color: var(--clr-border);
+      color: #C8C4E8;
+      box-shadow: 0 1px 4px rgba(0,0,0,.25);
     }
 
     .cell-product.was-hidden {
-      background: repeating-linear-gradient(
-        45deg,
-        #ede9fe,
-        #ede9fe 4px,
-        #ddd6fe 4px,
-        #ddd6fe 8px
-      );
-      border: 1.5px dashed #a78bfa;
-      color: #1e1b4b;
+      background: #EDE9FE;
+      border: 1.5px dashed rgba(80,70,229,.35);
+      color: #3B31D4;
       font-weight: 700;
     }
 
     .theme-dark .cell-product.was-hidden {
-      background: repeating-linear-gradient(
-        45deg,
-        rgba(109,40,217,.18),
-        rgba(109,40,217,.18) 4px,
-        rgba(109,40,217,.08) 4px,
-        rgba(109,40,217,.08) 8px
-      );
-      border-color: rgba(167,139,250,.4);
-      color: #c4b5fd;
+      background: rgba(80,70,229,.15);
+      border-color: rgba(123,114,255,.35);
+      color: #C4B5FD;
     }
 
     /* Board input cells — hidden cells become editable */
@@ -552,7 +575,7 @@
       text-align: center;
       font-size: 1.15rem;
       font-weight: 700;
-      border: 2px solid var(--clr-border-bright);
+      border: 1.5px solid var(--clr-border-bright);
       border-radius: var(--radius-cell);
       background: var(--clr-cell-hidden);
       color: var(--clr-primary);
@@ -561,18 +584,12 @@
       -moz-appearance: textfield;
       cursor: text;
       font-family: var(--font-num);
-      box-shadow:
-        inset 0 2px 4px rgba(67,56,202,.08),
-        0 4px 0 rgba(67,56,202,.25),
-        0 6px 14px rgba(67,56,202,.1);
+      box-shadow: 0 1px 4px rgba(80,70,229,.12);
     }
     .theme-dark .cell-input {
-      border-color: rgba(99,102,241,.5);
-      color: #c4c8f0;
-      box-shadow:
-        inset 0 2px 6px rgba(0,0,0,.3),
-        0 4px 0 rgba(0,0,0,.5),
-        0 6px 14px rgba(0,0,0,.2);
+      border-color: rgba(123,114,255,.5);
+      color: #DDD9FF;
+      box-shadow: 0 1px 6px rgba(0,0,0,.3);
     }
     .cell-input::-webkit-inner-spin-button,
     .cell-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
@@ -581,10 +598,7 @@
       border-color: var(--clr-primary);
       background: var(--clr-primary-lt);
       color: var(--clr-primary);
-      box-shadow:
-        0 0 0 3px var(--clr-primary-glow),
-        0 4px 0 var(--clr-primary),
-        0 6px 16px var(--clr-primary-glow);
+      box-shadow: 0 0 0 3px var(--clr-primary-glow);
       transform: translateY(-1px);
     }
     .cell-input::placeholder {
@@ -595,23 +609,17 @@
     }
     .cell-input.correct {
       background: var(--clr-success-bg);
-      border: 2px solid var(--clr-success);
+      border: 1.5px solid var(--clr-success);
       color: var(--clr-success);
-      box-shadow:
-        inset 0 2px 0 rgba(255,255,255,.5),
-        0 4px 0 var(--clr-success),
-        0 6px 16px rgba(4,120,87,.15);
+      box-shadow: 0 1px 6px rgba(4,120,87,.15);
       animation: correctPop .25s ease;
     }
     .cell-input.wrong {
       background: var(--clr-error-bg);
-      border: 2px solid var(--clr-error);
+      border: 1.5px solid var(--clr-error);
       color: var(--clr-error);
       animation: shake .35s;
-      box-shadow:
-        inset 0 2px 0 rgba(255,255,255,.3),
-        0 4px 0 var(--clr-error),
-        0 6px 16px rgba(190,18,60,.15);
+      box-shadow: 0 1px 6px rgba(190,18,60,.12);
     }
 
     /* Action buttons */
@@ -641,22 +649,32 @@
     .btn:hover:not(:disabled) { border-color: var(--clr-primary); color: var(--clr-primary); }
 
     .btn-hint {
-      background: var(--clr-warn-bg);
-      color: var(--clr-warn);
-      border-color: rgba(245,158,11,.5);
+      background: #fcd34d;
+      color: #451a03;
+      border-color: #b45309;
+      border-width: 1.5px;
       box-shadow: 0 2px 0 rgba(146,64,14,.2);
     }
-    .btn-hint:hover:not(:disabled) { filter: brightness(.95); border-color: var(--clr-warn); }
+    .btn-hint:hover:not(:disabled) { background: #fbbf24; border-color: #92400e; }
 
+    /* Light mode: כהה על בהיר */
     .btn-check {
-      background: var(--clr-primary-lt);
-      color: var(--clr-primary-dk);
+      background: rgba(80,70,229,.10);
+      color: #3B31D4;
       border-color: var(--clr-primary);
-      border-width: 2px;
-      box-shadow: inset 0 0 0 1px var(--clr-primary);
+      border-width: 1.5px;
+      box-shadow: 0 2px 6px rgba(80,70,229,.12);
       font-weight: 700;
     }
-    .btn-check:hover:not(:disabled) { background: var(--clr-primary); color: #fff; }
+    .btn-check:hover:not(:disabled) { background: rgba(80,70,229,.17); border-color: var(--clr-primary-dk); color: var(--clr-primary-dk); }
+    /* Dark mode: בהיר על כהה */
+    .theme-dark .btn-check {
+      background: var(--clr-primary);
+      color: #ffffff;
+      border-color: var(--clr-primary);
+      box-shadow: 0 2px 10px rgba(123,114,255,.35);
+    }
+    .theme-dark .btn-check:hover:not(:disabled) { background: var(--clr-primary-dk); border-color: var(--clr-primary-dk); }
 
     .btn-restart {
       background: var(--clr-surface);
@@ -723,50 +741,49 @@
     .overlay.active { display: flex; }
     .modal {
       background: var(--clr-surface);
-      border-radius: 20px;
-      padding: 2rem 2.25rem;
+      border-radius: 24px;
+      padding: 2.25rem 2.5rem;
       max-width: 380px;
       width: 100%;
       text-align: center;
       box-shadow: var(--shadow-modal);
       animation: popIn .3s cubic-bezier(.34,1.56,.64,1);
-      border: 1px solid rgba(67,56,202,.15);
+      border: 1px solid var(--clr-border);
     }
-    .theme-dark .modal { border-color: rgba(99,102,241,.25); }
+    @keyframes coinShake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-6px); }
+      40%     { transform: translateX(6px); }
+      60%     { transform: translateX(-4px); }
+      80%     { transform: translateX(4px); }
+    }
+    .coin-shake {
+      animation: coinShake .4s ease;
+      color: var(--clr-error) !important;
+      background: var(--clr-error-bg) !important;
+      border-radius: 6px;
+    }
+
     @keyframes popIn {
       from { transform: scale(.85) translateY(10px); opacity: 0; }
       to   { transform: scale(1)   translateY(0);    opacity: 1; }
     }
     .modal h2 {
       font-family: var(--font-display);
-      font-size: 1.7rem;
+      font-size: 1.85rem;
       font-weight: 800;
       margin-bottom: .4rem;
       color: var(--clr-text);
     }
-    .modal p  { color: var(--clr-muted); margin-bottom: 1.4rem; line-height: 1.6; }
-    .modal .btn { display: block; width: 100%; padding: .75rem; font-size: 1rem; margin-bottom: .5rem; }
+    .modal p  { color: var(--clr-muted); margin-bottom: 1.6rem; line-height: 1.6; }
+    .modal .btn { display: block; width: 100%; padding: .75rem; font-size: 1rem; margin-bottom: .6rem; }
+    #rulesModalTitle { font-family: var(--font-ui); font-size: 1.45rem; }
 
     /* ── Progress Summary (setup screen) ── */
     .progress-summary {
       display: flex; flex-wrap: wrap; gap: .5rem;
       align-items: center; justify-content: center;
-      margin: .75rem 0 1rem; font-size: .9rem;
-    }
-    .progress-badge {
-      background: var(--clr-primary-lt);
-      color: var(--clr-primary);
-      border: 1px solid rgba(67,56,202,.15);
-      border-radius: var(--radius-pill);
-      padding: .2rem .75rem;
-      font-weight: 700;
-      font-size: .85rem;
-    }
-    .progress-badge.streak { background: var(--clr-warn-bg); color: var(--clr-warn); border-color: rgba(146,64,14,.2); }
-    .badge-legend {
-      width: 100%; text-align: center;
-      font-size: .72rem; color: var(--clr-muted);
-      margin: .1rem 0 .25rem; opacity: .8;
+      margin: .25rem 0 0; font-size: .9rem;
     }
     @keyframes suggest-glow {
       0%, 100% { box-shadow: none; }
@@ -780,6 +797,12 @@
       font-size: .82rem;
     }
     .btn-buy-hint:hover:not(:disabled) { filter: brightness(.95); }
+    .btn-buy-hint:disabled { opacity: .45; cursor: not-allowed; }
+    .progress-divider {
+      width: 100%; border: none;
+      border-top: 1px solid var(--clr-border);
+      margin: .25rem 0;
+    }
     .progress-combo {
       width: 100%; text-align: center;
       font-size: .8rem; color: var(--clr-muted); margin: .15rem 0;
@@ -788,6 +811,12 @@
       width: 100%; text-align: center;
       font-size: .85rem; font-weight: 600;
       color: var(--clr-primary); margin: .2rem 0;
+      font-family: var(--font-ui);
+    }
+    /* make <strong> inside suggest line same weight, highlighted by color only */
+    .progress-welcome strong {
+      font-weight: 700;
+      font-family: var(--font-ui);
     }
 
     /* ── Win Stars ── */
@@ -860,7 +889,7 @@
       display: none;
       position: absolute;
       inset: 0;
-      background: rgba(238,242,255,.88);
+      background: rgba(236,234,248,.9);
       border-radius: var(--radius-board);
       z-index: 10;
       align-items: center;
@@ -890,29 +919,66 @@
     .tutorial-dot.active { background: var(--clr-primary); }
     .tutorial-svg-wrap { margin: .7rem auto; max-width: 200px; }
     .tutorial-icon { font-size: 2.5rem; margin-bottom: .3rem; }
+    .tutorial-nav { display: flex; gap: .5rem; margin-top: 1rem; }
+    .tutorial-nav .btn { flex: 1; }
+
+/* ── Hint cell reveal highlight ── */
+    @keyframes hintReveal {
+      0%   { box-shadow: 0 0 0 4px rgba(234,179,8,.7), 0 0 20px rgba(234,179,8,.4); background: #fefce8; }
+      100% { box-shadow: none; }
+    }
+    .hint-revealed { animation: hintReveal 1.6s ease-out forwards; }
 
     /* ── Daily Challenge button ── */
     .btn-daily {
       display: block;
       width: 100%;
-      padding: .75rem;
-      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-      color: #92400e;
-      border: 1.5px solid #fbbf24;
+      padding: .6rem .75rem;
+      background: transparent;
+      color: #b45309;
+      border: 2px solid #d97706;
       border-radius: 14px;
       font-family: var(--font-ui);
-      font-size: .95rem;
-      font-weight: 700;
+      font-size: .88rem;
+      font-weight: 600;
       cursor: pointer;
       margin-bottom: .6rem;
-      transition: filter .15s;
+      transition: background .15s, border-color .15s, color .15s;
+      box-shadow: none;
     }
-    .btn-daily:hover { filter: brightness(.97); }
+    .btn-daily:hover { background: #fef3c7; border-color: #b45309; color: #92400e; }
     .btn-daily:focus { outline: 3px solid #f59e0b; outline-offset: 2px; }
+
+    /* ── How to play inline button ── */
+    .btn-how-to-play--inline {
+      padding: .9rem .85rem;
+      background: var(--clr-surface);
+      border: 2px solid var(--clr-border);
+      border-radius: 14px;
+      font-size: .9rem;
+      font-family: var(--font-ui);
+      font-weight: 600;
+      color: var(--clr-muted);
+      cursor: pointer;
+      transition: background .15s, border-color .15s, color .15s;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .btn-how-to-play--inline:hover { background: var(--clr-bg); border-color: var(--clr-primary); color: var(--clr-primary); }
+    .btn-how-to-play--inline:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
+    /* dark mode: flip to light-on-dark */
+    .theme-dark .btn-daily {
+      background: transparent;
+      color: #fcd34d;
+      border-color: #d97706;
+      box-shadow: none;
+    }
+    .theme-dark .btn-daily:hover { background: rgba(245,158,11,.15); border-color: #fcd34d; color: #fef3c7; }
+    .theme-dark .btn-daily:focus { outline-color: #fcd34d; }
     .daily-badge {
       display: inline-block;
       background: #f59e0b;
-      color: #fff;
+      color: #451a03;
       border-radius: var(--radius-pill);
       font-size: .75rem;
       font-weight: 700;
@@ -920,8 +986,46 @@
       margin-inline-end: .4rem;
       vertical-align: middle;
     }
+    .theme-dark .daily-badge {
+      background: rgba(245,158,11,.25);
+      color: #fcd34d;
+    }
+
+    /* ── Coin icon ── */
+    .coin {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.25em; height: 1.25em;
+      background: radial-gradient(circle at 35% 35%, #fde68a, #f59e0b);
+      color: #78350f;
+      border-radius: 50%;
+      font-weight: 900;
+      font-size: .78em;
+      border: 1.5px solid #d97706;
+      vertical-align: middle;
+      line-height: 1;
+      user-select: none;
+    }
 
     /* ── Milestone badge ── */
+    .win-criteria {
+      display: flex;
+      gap: .5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: -.4rem 0 .8rem;
+      font-size: .8rem;
+    }
+    .win-crit {
+      padding: .2rem .55rem;
+      border-radius: 999px;
+      font-weight: 700;
+      direction: ltr;
+    }
+    .win-crit.pass { background: var(--clr-bg); color: var(--clr-text); border: 1.5px solid #86efac; }
+    .win-crit.fail { background: var(--clr-bg); color: var(--clr-text); border: 1.5px solid #fca5a5; }
+
     .milestone-banner {
       background: linear-gradient(135deg, #fef9c3, #fde68a);
       border: 2px solid #f59e0b;
@@ -959,20 +1063,10 @@
       100% { transform: translateY(100vh)  rotate(720deg) scaleX(0.3); opacity: 0; }
     }
 
-    /* ── Demo + Rules side-by-side ── */
-    .demo-rules-wrap {
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
-      margin: 1rem 0 1.4rem;
-    }
-    @media (max-width: 520px) {
-      .demo-rules-wrap { flex-direction: column; }
-    }
     .rules-text {
       flex: 1;
       background: var(--clr-primary-lt);
-      border: 1px solid rgba(67,56,202,.12);
+      border: 1px solid var(--clr-border);
       border-radius: .5rem;
       padding: .9rem 1rem;
       font-size: .875rem;
@@ -992,7 +1086,12 @@
       letter-spacing: .07em;
       margin-bottom: .6rem;
     }
-    .demo-board-wrap { display: flex; justify-content: center; }
+    .demo-board-wrap {
+      display: flex; justify-content: center;
+      background: #ECEAF8;
+      border-radius: 16px;
+      padding: .65rem;
+    }
     .demo-board { border-collapse: separate; border-spacing: 5px; }
     .demo-cell {
       width: 46px; height: 46px;
@@ -1001,33 +1100,52 @@
       font: 700 1rem var(--font-num);
       transition: background .35s, color .35s, border-color .35s, transform .25s;
     }
+    .theme-dark .demo-board-wrap { background: #101020; }
     .demo-cell-corner {
       background: transparent;
       color: var(--clr-muted);
       font-size: 1.1rem;
     }
     .demo-cell-product {
-      background: var(--clr-cell-shown);
-      color: var(--clr-text);
-      border: 1px solid var(--clr-border);
-      box-shadow: inset 0 1px 3px rgba(0,0,0,.06);
+      background: #ffffff;
+      color: #12111E;
+      border: 1.5px solid rgba(59,49,212,.18);
+    }
+    .theme-dark .demo-cell-product {
+      background: #1E1E35;
+      color: #F3F0FF;
+      border-color: rgba(123,114,255,.25);
     }
     .demo-cell-header {
       background: var(--clr-primary-lt);
-      color: var(--clr-muted);
-      border: 2px dashed rgba(99,102,241,.45);
+      color: var(--clr-primary-dk);
+      border: 2px dashed rgba(80,70,229,.45);
       font-size: .85rem;
     }
+    .theme-dark .demo-cell-header {
+      background: rgba(123,114,255,.18);
+      color: #C4B5FD;
+      border-color: rgba(123,114,255,.55);
+    }
     .demo-cell-header.filled {
-      color: var(--clr-primary);
+      color: var(--clr-primary-dk);
       border-style: solid;
       border-color: var(--clr-primary);
     }
+    .theme-dark .demo-cell-header.filled {
+      color: #C4B5FD;
+      border-color: #7B72FF;
+    }
     .demo-cell-product.correct {
-      background: var(--clr-success-bg);
-      color: var(--clr-success);
-      border-color: var(--clr-success-border);
+      background: #d1fae5;
+      color: #065f46;
+      border-color: #34d399;
       transform: scale(1.08);
+    }
+    .theme-dark .demo-cell-product.correct {
+      background: rgba(52,211,153,.18);
+      color: #6ee7b7;
+      border-color: #34d399;
     }
     .demo-win-msg {
       margin-top: .55rem;
@@ -1053,11 +1171,323 @@
       position: relative;
       animation: demoHintPulse 0.85s ease-in-out infinite alternate;
     }
+    .theme-dark .demo-cell-hint {
+      background: rgba(14,165,233,.22) !important;
+      border-color: #38bdf8 !important;
+      color: #7dd3fc !important;
+    }
+
+    /* demo candidate-row trial states */
+    .demo-cell-try-wrong {
+      background: #fee2e2 !important;
+      border-color: #ef4444 !important;
+      color: #991b1b !important;
+      transform: scale(1.08);
+    }
+    .theme-dark .demo-cell-try-wrong {
+      background: rgba(239,68,68,.22) !important;
+      border-color: #f87171 !important;
+      color: #fca5a5 !important;
+    }
+    .demo-cell-try-ok {
+      background: #d1fae5 !important;
+      border-color: #34d399 !important;
+      color: #065f46 !important;
+      transform: scale(1.08);
+    }
+    .theme-dark .demo-cell-try-ok {
+      background: rgba(52,211,153,.22) !important;
+      border-color: #34d399 !important;
+      color: #6ee7b7 !important;
+    }
+
+    /* demo section inside modal — center and compact */
+    #rulesOverlay .demo-section { text-align: center; }
+    #rulesOverlay .demo-board-wrap { display: inline-flex; }
+
+    /* ═══════════════════════════════════════════
+       UPGRADE P0 — Visual Design Polish
+    ═══════════════════════════════════════════ */
+
+    /* V1 – Header inputs: clearly "answer cells" */
+    .hdr-input {
+      border: 3px dashed var(--clr-primary);
+      background: rgba(80,70,229,.13);
+    }
+    .hdr-input::placeholder { font-size: 1.25rem; font-weight: 900; opacity: .72; }
+    .hdr-input:focus {
+      box-shadow: 0 0 0 4px var(--clr-primary-glow), 0 0 16px rgba(80,70,229,.15);
+    }
+    .theme-dark .hdr-input { background: rgba(123,114,255,.2); }
+    .theme-dark .hdr-input::placeholder { opacity: .6; }
+
+    /* V2 – Hidden cells: higher contrast */
+    .cell-product.hidden-clue {
+      background-color: #C6C3EC !important;
+      background-image: radial-gradient(circle, rgba(59,49,212,.25) 1.5px, transparent 1.5px) !important;
+    }
+    .cell-product.hidden-clue::after { font-size: 1.25em; }
+    .theme-dark .cell-product.hidden-clue {
+      background-color: #171430 !important;
+      background-image: radial-gradient(circle, rgba(123,114,255,.3) 1.5px, transparent 1.5px) !important;
+    }
+
+    /* V3 – Correct header: gradient green bg */
+    .hdr-input.correct {
+      background: linear-gradient(135deg, #d1fae5 0%, #bbf7d0 100%) !important;
+      border-style: solid !important;
+      border-width: 2px !important;
+      box-shadow: 0 2px 10px rgba(4,120,87,.22), 0 0 0 1px rgba(4,120,87,.12) !important;
+    }
+    .theme-dark .hdr-input.correct {
+      background: linear-gradient(135deg, rgba(52,211,153,.3) 0%, rgba(16,185,129,.18) 100%) !important;
+      box-shadow: 0 2px 12px rgba(52,211,153,.22) !important;
+    }
+
+    /* V4 – Range banner: gradient + shadow */
+    .range-banner {
+      background: linear-gradient(135deg, rgba(80,70,229,.11) 0%, rgba(109,40,217,.05) 100%);
+      box-shadow: 0 2px 8px rgba(80,70,229,.07);
+    }
+    .range-banner > span { font-weight: 900; color: var(--clr-primary); }
+
+    /* ═══════════════════════════════════════════
+       UPGRADE P1 — Quick UX Wins
+    ═══════════════════════════════════════════ */
+
+    /* Progress bar */
+    .progress-bar-wrap {
+      width: 100%;
+      height: 7px;
+      background: var(--clr-primary-lt);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: .6rem;
+      border: 1px solid var(--clr-border);
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--clr-primary) 0%, var(--clr-primary-end) 100%);
+      border-radius: 999px;
+      transition: width .45s cubic-bezier(.4,0,.2,1);
+      width: 0%;
+    }
+
+    /* Row / col correct flash */
+    @keyframes rowColFlash {
+      0%   { box-shadow: inset 0 0 0 0 rgba(4,120,87,.0); }
+      35%  { box-shadow: inset 0 0 0 3px rgba(4,120,87,.7); }
+      100% { box-shadow: inset 0 0 0 0 rgba(4,120,87,.0); }
+    }
+    .row-col-flash { animation: rowColFlash .65s ease-out !important; }
+
+    /* Mobile action bar: primary row + secondary row */
+    @media (max-width: 480px) {
+      #hintBtn, #checkBtn  { flex: 1 1 40%; order: 1; }
+      #buyHintBtn          { flex: 1 1 100%; order: 0; }
+      #pauseBtn, #muteBtn, #restartBtn {
+        flex: 1 1 26%; font-size: .78rem; padding: .5rem .4rem; order: 2;
+      }
+    }
+
+    /* Share preview modal text */
+    .share-preview-text {
+      background: var(--clr-bg);
+      border: 1px solid var(--clr-border);
+      border-radius: .5rem;
+      padding: .85rem 1rem;
+      font-family: var(--font-num);
+      font-size: .88rem;
+      white-space: pre-wrap;
+      color: var(--clr-text);
+      margin: 0 0 1rem;
+      line-height: 1.75;
+      text-align: start;
+      direction: ltr;
+    }
+
+    /* Streak badge on setup screen */
+    .streak-badge-setup {
+      display: inline-flex; align-items: center; gap: .3rem;
+      color: #b45309;
+      font-size: .85rem; font-weight: 600; font-family: var(--font-ui);
+    }
+    .theme-dark .streak-badge-setup { color: #fcd34d; }
+
+    /* ═══════════════════════════════════════════
+       UPGRADE P2 — Advanced Visual Design
+    ═══════════════════════════════════════════ */
+
+    /* D2 – Stats bar compact on mobile */
+    @media (max-width: 480px) {
+      .stat { padding: .36rem .16rem; }
+      .stat .lbl { font-size: .6rem; max-width: 50px; }
+      .stat .val { font-size: .9rem; }
+    }
+
+    /* D3 – Hidden cell hover feedback */
+    .cell-product.hidden-clue { transition: filter .15s, transform .15s; }
+    @media (hover: hover) {
+      .cell-product.hidden-clue:hover { filter: brightness(1.08); transform: scale(1.04); }
+    }
+
+    /* D4 – Board entrance animation */
+    @keyframes boardEnter {
+      from { opacity: 0; transform: scale(.96) translateY(6px); }
+      to   { opacity: 1; transform: scale(1)   translateY(0); }
+    }
+    .board-entering { animation: boardEnter .32s cubic-bezier(.34,1.2,.64,1); }
+
+    /* D5 – Win stars: staggered pop */
+    @keyframes starPop {
+      from { transform: scale(0) rotate(-25deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+    }
+
+    /* D6 – Primary action buttons: gradient hierarchy */
+    .btn-hint {
+      background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%) !important;
+      color: #451a03 !important;
+      border-color: transparent !important;
+      box-shadow: 0 3px 14px rgba(245,158,11,.4), 0 2px 0 #92400e !important;
+    }
+    .btn-hint:hover:not(:disabled) {
+      background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 5px 18px rgba(245,158,11,.5), 0 2px 0 #78350f !important;
+    }
+    .btn-hint:disabled { opacity: .4 !important; box-shadow: none !important; transform: none !important; }
+
+    .btn-check {
+      background: linear-gradient(135deg, #5046E5 0%, #6D28D9 100%) !important;
+      color: #ffffff !important;
+      border-color: transparent !important;
+      box-shadow: 0 4px 18px rgba(80,70,229,.4), 0 2px 0 #3B31D4 !important;
+    }
+    .btn-check:hover:not(:disabled) {
+      background: linear-gradient(135deg, #5F54F0 0%, #7C3AED 100%) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(80,70,229,.5), 0 2px 0 #3B31D4 !important;
+    }
+    .btn-check:disabled { opacity: .4 !important; box-shadow: none !important; transform: none !important; }
+    .theme-dark .btn-check { box-shadow: 0 4px 18px rgba(123,114,255,.4), 0 2px 0 #3B31D4 !important; }
+    .btn-hint:active:not(:disabled), .btn-check:active:not(:disabled) { transform: scale(.97) translateY(0) !important; }
+
+    /* ── Language toggle button ── */
+    .btn-lang-toggle {
+      background: var(--clr-surface);
+      border: 1.5px solid var(--clr-border);
+      border-radius: var(--radius-pill);
+      padding: 5px 12px;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--clr-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all .2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .btn-lang-toggle:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
+    .btn-lang-toggle:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
+
+    /* ── Undo button ── */
+    .btn-undo {
+      background: var(--clr-warn-bg);
+      color: var(--clr-warn);
+      border-color: rgba(146,64,14,.25);
+    }
+    .btn-undo:hover:not(:disabled) { filter: brightness(.95); }
+    .theme-dark .btn-undo {
+      background: rgba(245,158,11,.12);
+      color: #fbbf24;
+      border-color: rgba(245,158,11,.3);
+    }
+    @media (max-width: 480px) {
+      #undoBtn { flex: 1 1 40%; order: 1; }
+    }
+
+    /* ── Statistics modal ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .6rem;
+      margin: .75rem 0 1rem;
+    }
+    .stats-card {
+      background: var(--clr-bg);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius);
+      padding: .65rem .75rem;
+      text-align: center;
+    }
+    .stats-card .sc-val {
+      font-family: var(--font-num);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--clr-primary);
+      line-height: 1.1;
+    }
+    .stats-card .sc-lbl {
+      font-size: .72rem;
+      color: var(--clr-muted);
+      font-weight: 600;
+      margin-top: .15rem;
+    }
+    .stats-combo-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+      margin-bottom: 1rem;
+    }
+    .stats-combo-table th {
+      font-size: .7rem;
+      font-weight: 700;
+      color: var(--clr-muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: .3rem .5rem;
+      border-bottom: 1px solid var(--clr-border);
+      text-align: start;
+    }
+    .stats-combo-table td {
+      padding: .35rem .5rem;
+      border-bottom: 1px solid var(--clr-border);
+      color: var(--clr-text);
+    }
+    .stats-combo-table tr:last-child td { border-bottom: none; }
+    .combo-stars { display: inline-flex; gap: .1rem; line-height: 1; }
+    .combo-stars .cstar { font-size: 1rem; }
+    .combo-stars .cstar.filled { color: #f59e0b; filter: drop-shadow(0 0 3px rgba(245,158,11,.35)); }
+    .combo-stars .cstar.empty  { color: #d1d5db; opacity: .4; }
+    .stats-tier-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: var(--clr-primary-lt);
+      color: var(--clr-primary-dk);
+      border: 1.5px solid var(--clr-primary);
+      border-radius: var(--radius-pill);
+      padding: .35rem 1rem;
+      font-size: .9rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+    }
+    .theme-dark .stats-tier-badge { color: var(--clr-primary); }
   </style>
 </head>
 <body>
 
-<button class="theme-toggle" id="themeToggleBtn" aria-label="החלף ערכת צבעים">🌙 Dark</button>
+<div class="corner-controls">
+  <button class="btn-help-corner" id="helpBtn"
+          aria-label="איך משחקים?"
+          data-i18n-aria="help.ariaLabel"
+          onclick="showRules()">?</button>
+  <button class="btn-lang-toggle" id="langToggleBtn" aria-label="Switch to English">🌐 EN</button>
+  <button class="theme-toggle" id="themeToggleBtn" aria-label="החלף ערכת צבעים">🌙 Dark</button>
+</div>
 
 <a href="#main-content" class="skip-link" data-i18n="skipLink">דלג לתוכן הראשי</a>
 
@@ -1088,42 +1518,31 @@
         <button class="option-btn diff-card" data-type="diff" data-val="easy" aria-pressed="true">
           <span class="diff-icon">🟢</span>
           <span class="diff-name" data-i18n="diff.easy">קל</span>
-          <span class="diff-hint" id="easyDiffHint" data-i18n="diff.easyHint">100% גלוי · מספרים 1-5</span>
         </button>
         <button class="option-btn diff-card" data-type="diff" data-val="medium" aria-pressed="false">
           <span class="diff-icon">🟡</span>
           <span class="diff-name" data-i18n="diff.medium">בינוני</span>
-          <span class="diff-hint" data-i18n="diff.mediumHint">55% גלוי · מספרים 1-7 · 5 טעויות</span>
         </button>
         <button class="option-btn diff-card" data-type="diff" data-val="hard" aria-pressed="false">
           <span class="diff-icon">🔴</span>
           <span class="diff-name" data-i18n="diff.hard">קשה</span>
-          <span class="diff-hint" data-i18n="diff.hardHint">25% גלוי · מספרים 1-9 · 3 טעויות</span>
         </button>
       </div>
     </fieldset>
 
-    <button class="btn-start" id="startBtn" data-i18n="setup.startBtn">התחל משחק ▶</button>
-
-    <div class="demo-rules-wrap">
-      <div class="demo-section" aria-hidden="true">
-        <p class="demo-section-label" id="demoLabel"></p>
-        <div class="demo-board-wrap">
-          <table class="demo-board" id="demoBoard"></table>
-        </div>
-        <p class="demo-win-msg" id="demoWinMsg"></p>
-      </div>
-      <div class="rules-text" role="note">
-        <span data-i18n-html="rules.intro"></span>
-        <span data-i18n-html="rules.outro"></span>
-      </div>
+    <div style="display:flex;gap:.6rem;align-items:stretch;">
+      <button class="btn-start" id="startBtn" style="flex:1;margin-bottom:0;" data-i18n="setup.startBtn">התחל משחק ▶</button>
+      <button class="btn-how-to-play btn-how-to-play--inline" onclick="showRules()" aria-label="איך משחקים?" title="איך משחקים?">❓ <span class="how-to-play-label">איך משחקים?</span></button>
     </div>
-
-    <div id="progressSummary" aria-live="polite"></div>
-
-    <button class="btn-daily" id="dailyBtn" data-i18n="setup.dailyBtn">📅 אתגר היום</button>
-    <button class="btn btn-success" id="resumeGameBtn" style="display:none;width:100%;padding:.75rem;font-size:1rem;margin-bottom:.5rem;" data-i18n="setup.resumeBtn">▶ המשך משחק קודם</button>
   </section>
+
+  <div id="setupSecondary" class="setup-secondary">
+    <div id="streakBadgeSetup" style="text-align:center;margin-bottom:.2rem;"></div>
+    <button class="btn btn-restart" id="statsBtn" onclick="showStats()" style="display:none;width:100%;padding:.65rem;font-size:.88rem;">📊 הסטטיסטיקות שלי</button>
+    <button class="btn btn-success" id="resumeGameBtn" style="display:none;" data-i18n="setup.resumeBtn">▶ המשך משחק קודם</button>
+    <button class="btn-daily" id="dailyBtn" data-i18n="setup.dailyBtn">📅 אתגר היום</button>
+    <div id="progressSummary" aria-live="polite"></div>
+  </div>
 
   <!-- ══ Game Screen ══ -->
   <section id="gameScreen" aria-labelledby="game-heading">
@@ -1131,29 +1550,36 @@
 
     <!-- Stats -->
     <div class="stats-bar" role="status" aria-live="polite" aria-atomic="false">
-      <div class="stat" aria-label="הגדרות משחק" data-i18n-aria="stats.settingsAriaLabel">
-        <span class="val" id="gameSettingsVal"></span>
+      <div class="stat" aria-label="מכפילים שגילית" data-i18n-aria="stats.correctAriaLabel">
+        <span class="lbl" data-i18n="stats.correctLabel">🎯 גילית:</span>
+        <div class="stat-nums"><span class="val" id="correctVal">0</span><span class="lbl" id="correctMax"></span></div>
+      </div>
+      <div class="stat mistakes" aria-label="טעויות" title="כל ניחוש שגוי נספר כטעות" data-i18n-aria="stats.mistakesAriaLabel" data-i18n-title="stats.mistakesTitle">
+        <span class="lbl" data-i18n="stats.mistakesLabel">❌ טעויות:</span>
+        <div class="stat-nums"><span class="val" id="mistakesVal">0</span><span class="lbl" id="mistakesMax"></span></div>
+      </div>
+      <div id="hintRow" class="stat" aria-label="רמזים שנוצלו" data-i18n-aria="stats.hintsAriaLabel">
+        <span class="lbl" data-i18n="stats.hintsLabel">💡 רמזים:</span>
+        <div class="stat-nums"><span class="val" id="hintsVal">0</span><span class="lbl" id="hintsMax"></span></div>
+      </div>
+      <div id="coinRow" class="stat" aria-label="מטבעות" style="display:none;">
+        <span class="lbl">מטבעות:</span>
+        <span class="val" id="coinVal">0</span>
       </div>
       <div class="stat" aria-label="זמן משחק" data-i18n-aria="stats.timerAriaLabel">
         <span class="lbl">⏱</span>
         <span class="val" id="timerVal" aria-live="off">0:00</span>
       </div>
-      <div class="stat mistakes" aria-label="מספר טעויות — כל ניחוש שגוי נספר" title="כל ניחוש שגוי נספר כטעות" data-i18n-aria="stats.mistakesAriaLabel" data-i18n-title="stats.mistakesTitle">
-        <span class="lbl" data-i18n="stats.mistakesLabel">❌ טעויות:</span>
-        <div class="stat-nums"><span class="val" id="mistakesVal">0</span><span class="lbl" id="mistakesMax"></span></div>
-      </div>
-      <div id="hintRow" class="stat" aria-label="רמזים שנותרו" data-i18n-aria="stats.hintsAriaLabel">
-        <span class="lbl" data-i18n="stats.hintsLabel">💡 רמזים:</span>
-        <div class="stat-nums"><span class="val" id="hintsVal">0</span><span class="lbl" id="hintsMax"></span></div>
-      </div>
-      <div class="stat" aria-label="ניחושים נכונים" data-i18n-aria="stats.correctAriaLabel">
-        <span class="lbl" data-i18n="stats.correctLabel">✓ נכון:</span>
-        <div class="stat-nums"><span class="val" id="correctVal">0</span><span class="lbl" id="correctMax"></span></div>
-      </div>
       <div class="stat" aria-label="טווח מספרי הכפל" data-i18n-aria="stats.rangeAriaLabel" style="display:none">
         <span class="lbl" data-i18n="stats.rangeLabel">🔢 טווח:</span>
         <span class="val" id="rangeVal"></span>
       </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-bar-wrap" id="progressBarWrap" aria-hidden="true">
+      <div class="progress-bar-fill" id="progressBarFill"
+           role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
     </div>
 
     <!-- Range banner -->
@@ -1178,10 +1604,11 @@
     <!-- Buttons -->
     <div class="action-bar">
       <button class="btn btn-hint"    id="hintBtn"    data-i18n="board.hintBtn">💡 רמז</button>
-      <button class="btn btn-buy-hint" id="buyHintBtn" style="display:none;" onclick="buyHint()" data-i18n="board.buyHintBtn">🌟 10⭐ → רמז</button>
+      <button class="btn btn-buy-hint" id="buyHintBtn" style="display:none;" onclick="buyHint()">קנה רמז (5 מטבעות)</button>
+      <button class="btn btn-undo"    id="undoBtn"    style="display:none;" onclick="undoLastMistake()">↩ בטל טעות</button>
+      <button class="btn btn-check"   id="checkBtn"   data-i18n="board.checkAllBtn">✓ בדוק הכל</button>
       <button class="btn btn-pause"   id="pauseBtn"   data-i18n="board.pauseBtn">⏸ הפסקה</button>
       <button class="btn btn-mute"    id="muteBtn"    aria-label="השתק צלילים" title="השתק / הפעל צלילים">🔊</button>
-      <button class="btn btn-check"   id="checkBtn"   data-i18n="board.checkAllBtn">✓ בדוק הכל</button>
       <button class="btn btn-restart" id="restartBtn" data-i18n="board.newGameBtn">↺ משחק חדש</button>
     </div>
 
@@ -1207,9 +1634,12 @@
   <div class="modal">
     <h2 id="winTitle" data-i18n="modals.winTitle">🎉 כל הכבוד!</h2>
     <div id="winStars" role="img" aria-label="דירוג כוכבים" data-i18n-aria="modals.winStarsAriaLabel"></div>
+    <p id="winStarsEarned" style="font-size:1rem;font-weight:700;margin:-.2rem 0 .7rem;color:var(--clr-text);"></p>
+    <div id="winCriteria" class="win-criteria"></div>
     <p id="winBody" data-i18n="modals.winBody">פתרת את הלוח בהצלחה!</p>
-    <button class="btn btn-success" id="shareBtn" onclick="shareResult()" data-i18n="win.shareBtn">📤 שתף תוצאה</button>
-    <button class="btn btn-check"   onclick="sameSettings()" data-i18n="modals.winPlayAgain">↺ שחק שוב – אותן הגדרות</button>
+    <p id="winStarLine" style="font-size:.85rem;font-weight:600;margin:-.8rem 0 .8rem;color:var(--clr-muted);"></p>
+    <button class="btn btn-check"   id="shareBtn" onclick="shareResult()" data-i18n="win.shareBtn">📤 שתף תוצאה</button>
+    <button class="btn btn-restart" onclick="sameSettings()" data-i18n="modals.winPlayAgain">↺ שחק שוב – אותן הגדרות</button>
     <button class="btn btn-restart" onclick="goSetup()"      data-i18n="modals.winNewGame">🎮 הגדרות חדשות</button>
   </div>
 </div>
@@ -1264,8 +1694,60 @@
         <p data-i18n-html="tutorial.step3"></p>
       </div>
     </div>
-    <button class="btn btn-check" id="tutorialNextBtn" style="width:100%;margin-top:1rem;" data-i18n="tutorial.next" onclick="tutorialNext()">הבא ›</button>
+    <div class="tutorial-nav">
+      <button class="btn btn-restart" id="tutorialPrevBtn" style="display:none;font-size:.85rem;" data-i18n="tutorial.prev" onclick="tutorialPrev()">‹ הקודם</button>
+      <button class="btn btn-check" id="tutorialNextBtn" data-i18n="tutorial.next" onclick="tutorialNext()">הבא ›</button>
+    </div>
     <button class="btn btn-restart" style="width:100%;margin-top:.4rem;font-size:.85rem;" data-i18n="tutorial.skip" onclick="closeTutorial()">דלג על ההדרכה</button>
+  </div>
+</div>
+
+<!-- ══ Statistics Modal ══ -->
+<div class="overlay" id="statsOverlay" role="dialog" aria-modal="true" aria-labelledby="statsModalTitle"
+     onclick="if(event.target===this)closeStats()" style="align-items:flex-start;overflow-y:auto;">
+  <div class="modal" style="max-width:420px;margin:auto;">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:.25rem;">
+      <button onclick="closeStats()" aria-label="סגור" style="background:none;border:none;font-size:1.5rem;line-height:1;cursor:pointer;color:var(--clr-muted);padding:.1rem .4rem;border-radius:4px;">✕</button>
+    </div>
+    <h2 id="statsModalTitle" style="margin-bottom:.25rem;">📊 הסטטיסטיקות שלי</h2>
+    <div id="statsContent"></div>
+    <button class="btn btn-check" style="width:100%;padding:.75rem;" onclick="closeStats()">סגור</button>
+  </div>
+</div>
+
+<!-- ══ Share Preview Modal ══ -->
+<div class="overlay" id="sharePreviewOverlay" role="dialog" aria-modal="true" aria-labelledby="sharePreviewTitle">
+  <div class="modal">
+    <h2 id="sharePreviewTitle">📤 שתף תוצאה</h2>
+    <pre id="sharePreviewText" class="share-preview-text"></pre>
+    <button class="btn btn-check" id="sharePreviewCopyBtn" onclick="doShare()">📋 העתק</button>
+    <button class="btn btn-restart" onclick="closeSharePreview()">ביטול</button>
+  </div>
+</div>
+
+<!-- ══ Rules / Demo Modal ══ -->
+<div class="overlay" id="rulesOverlay" role="dialog" aria-modal="true" aria-labelledby="rulesModalTitle" onclick="if(event.target===this)closeRules()" style="align-items:flex-start;overflow-y:auto;">
+  <div class="modal" style="max-width:440px;margin:auto;">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:.25rem;">
+      <button onclick="closeRules()" aria-label="סגור" style="background:none;border:none;font-size:1.5rem;line-height:1;cursor:pointer;color:var(--clr-muted);padding:.1rem .4rem;border-radius:4px;" title="סגור">✕</button>
+    </div>
+    <h2 id="rulesModalTitle" data-i18n="rules.modalTitle">🎮 איך משחקים?</h2>
+
+    <div class="demo-section" aria-hidden="true" style="margin:.25rem 0 .75rem;">
+      <p class="demo-section-label" id="demoLabel"></p>
+      <div class="demo-board-wrap">
+        <table class="demo-board" id="demoBoard"></table>
+      </div>
+      <p class="demo-win-msg" id="demoWinMsg"></p>
+    </div>
+
+    <div class="rules-text" role="note" style="margin:0 0 1rem;">
+      <span data-i18n-html="rules.intro"></span>
+      <span data-i18n-html="rules.outro"></span>
+    </div>
+
+    <button class="btn btn-check" style="width:100%;"
+            data-i18n="rules.closeBtn" onclick="closeRules()">הבנתי, בוא נשחק! ▶</button>
   </div>
 </div>
 
@@ -1277,7 +1759,7 @@ const STRINGS = {
   he: {
     pageTitle: 'de-du | דדו — גלה את המכפילים',
     skipLink: 'דלג לתוכן הראשי',
-    headerSubtitle: 'גלו את הכופל והנכפל וחשפו את המספרים בלוח!',
+    headerSubtitle: 'גלו את המכפילים!',
     setup: {
       heading: 'הגדרות משחק',
       boardSizeLegend: 'גודל הלוח',
@@ -1287,25 +1769,30 @@ const STRINGS = {
       startBtn: 'התחל משחק ▶',
       resumeBtn: '▶ המשך משחק קודם',
       dailyBtn: '📅 אתגר היום',
+      howToPlay: '❓ איך משחקים?',
       dailyBadge: '📅 אתגר יומי',
-      milestone: (n) => `🏅 הישג! צברת ${n} כוכבים — כל הכבוד!`,
+      milestone: (n) => `🏅 הישג! צברת ${n} מטבעות — כל הכבוד!`,
       diffSuggest: (next) => `🚀 מוכן לאתגר הבא? נסה <strong>${next}</strong>!`,
       demoLabel: 'הדגמה',
       demoWin: '✨ ניחשת את כל המכפילים!',
     },
     tutorial: {
       title: '🎓 איך משחקים?',
-      step1: 'בלוח זה כל תא = <strong>כופל × נכפל</strong>.<br>הספרות הסודיות מסתתרות בשורה העליונה ובטור הצד (עם הקווים המקווקווים).',
-      step2: 'התאים <strong>הלבנים הגלויים</strong> הם הרמזים שלך.<br>התאים <strong>הכחולים</strong> ממתינים לניחוש שלך — חשב ומלא!<br><br>שדות העזר המקווקווים הם לרשימות שלך — רשום שם ניחושים לכופל ולנכפל.',
-      step3: 'מלא תא ולחץ <strong>Enter</strong> — המשחק בודק מיד.<br><br>💡 השתמש ב<strong>רמז</strong> אם נתקעת, וב<strong>בדוק הכל</strong> לאמת כמה תאים בבת אחת.<br><br>🎉 בהצלחה!',
+      step1: 'הלוח מציג <strong>תוצאות כפל</strong> — אלה הרמזים שלך.<br><br>המשימה: לגלות את <strong>המכפילים הסודיים</strong> המסתתרים בשורה העליונה ובטור הצד.<br><br>כל תא בלוח = <strong>מכפיל השורה × מכפיל העמודה</strong>.',
+      step2: 'נתח את הרמזים וחפש <strong>דפוסים</strong> בין המספרים.<br><br>💡 טיפ: שורה שכל תאיה ידועים תיתן לך את המכפיל שלה — ומשם כל שאר המכפילים הם חילוק פשוט.',
+      step3: 'הקלד מכפיל ולחץ <strong>Enter</strong> לבדיקה מיידית.<br><br>⚠️ <strong>כל מספר מופיע פעם אחת בלבד.</strong><br><br>💡 השתמש ב<strong>רמז</strong> אם נתקעת, וב<strong>בדוק הכל</strong> לאמת כמה בבת אחת.<br><br>🎉 בהצלחה!',
       next: 'הבא ›',
+      prev: '‹ הקודם',
       done: 'בוא נשחק! ▶',
       skip: 'דלג על ההדרכה',
     },
     rules: {
-      intro: '<strong>המטרה:</strong> לגלות את <strong>המכפילים הסודיים</strong> — הספרות בראש כל שורה ועמודה.<br><br><strong>איך משחקים?</strong><br>הלוח מציג תוצאות הכפל — אלה הם <strong>הרמזים שלך</strong>! כל תא שווה <strong>המכפיל של השורה</strong> × <strong>המכפיל של העמודה</strong>.<br>',
-      outro: 'נתח את המספרים בלוח, מצא את הדפוסים, והקלד את המכפילים בשורה העליונה ובטור הצדדי.<br><br>💡 כל ניחוש נבדק מיד — <strong>ניחוש שגוי נספר כטעות</strong>. ניתן גם להשתמש בכפתור <strong>בדוק הכל</strong>.',
+      intro: '<strong>גלו את המכפילים!</strong><br><br>הלוח מציג תוצאות כפל — אלה הרמזים שלך. כל תא = <strong>מכפיל השורה × מכפיל העמודה</strong>. כל מספר מופיע <strong>פעם אחת בלבד</strong>.<br>',
+      outro: 'נתח את הדפוסים והקלד את המכפילים בשורה העליונה ובטור הצדדי.<br><br>💡 כל ניחוש נבדק מיד — <strong>ניחוש שגוי נספר כטעות</strong>. ניתן גם להשתמש בכפתור <strong>בדוק הכל</strong>.<br><br>⭐ <strong>כוכבים:</strong> סיימו מהר, עם מעט טעויות ורמזים — וקבלו עד 3 כוכבים.',
+      modalTitle: '🎮 איך משחקים?',
+      closeBtn: 'הבנתי, בוא נשחק! ▶',
     },
+    help: { ariaLabel: 'איך משחקים?', btnLabel: '❓ איך משחקים?' },
     svg: { multiplier: 'כופל', notes: '?', multiplicand: 'נכפל' },
     diff: {
       easy: 'קל', medium: 'בינוני', hard: 'קשה',
@@ -1317,13 +1804,13 @@ const STRINGS = {
     stats: {
       settingsAriaLabel: 'הגדרות משחק',
       timerAriaLabel: 'זמן משחק',
-      mistakesAriaLabel: 'מספר טעויות — כל ניחוש שגוי נספר',
+      mistakesAriaLabel: 'טעויות',
       mistakesTitle: 'כל ניחוש שגוי נספר כטעות',
       mistakesLabel: '❌ טעויות:',
-      hintsAriaLabel: 'רמזים שנותרו',
+      hintsAriaLabel: 'רמזים שנוצלו',
       hintsLabel: '💡 רמזים:',
-      correctAriaLabel: 'מכפילים שנמצאו',
-      correctLabel: '✓ נמצאו:',
+      correctAriaLabel: 'מכפילים שגילית',
+      correctLabel: '🎯 גילית:',
       rangeAriaLabel: 'טווח מספרי הכפל',
       rangeLabel: '🔢 טווח:',
     },
@@ -1332,8 +1819,6 @@ const STRINGS = {
       caption: 'לוח הכפל. המספרים הם הרמזים — גלה את המכפילים.',
       cornerCell: '×',
       hintBtn: '💡 רמז',
-      buyHintBtn: '🌟 10⭐ → רמז',
-      buyHintNotEnough: (n) => `אין מספיק כוכבים — יש ${n} ⭐, דרושים 10`,
       pauseBtn: '⏸ הפסקה',
       resumeBtn: '▶ המשך',
       pausedLabel: 'המשחק מושהה',
@@ -1354,7 +1839,7 @@ const STRINGS = {
       noHints: 'אין יותר רמזים זמינים',
       allFilled: 'כל המכפילים כבר נמצאו!',
       hintMsg: (r, c, val) => `💡 רמז: שורה ${r+1} × עמודה ${c+1} = ${val}`,
-      rangeBanner: (max) => `טווח המכפילים: <span>1–${max}</span>`,
+      rangeBanner: (max, diff) => `${diff ? `<span>${diff}</span> · ` : ''}טווח מכפילים: <span>1–${max}</span>`,
       scratchpadTip: '',
     },
     modals: {
@@ -1375,21 +1860,23 @@ const STRINGS = {
     },
     win: {
       starsLabel: (n) => `${n} כוכבים מתוך 3`,
+      starsEarned: (n) => `השגת ${n} מתוך 3 כוכבים`,
       stats: (t, m, h) => `זמן: ${t} | טעויות: ${m} | רמזים שנוצלו: ${h}`,
       streak: (n) => `🔥 סטריק ${n} ימים — כל הכבוד, המשך כך!`,
       streakWarning: (n) => `🔥 יש לך סטריק של ${n} ימים — שחק היום כדי לשמור עליו!`,
       streakStart: '👋 בוא תשמור על הרצף — שחק עכשיו!',
-      comboWins: (w) => `${w} ניצחון${w !== 1 ? 'ות' : ''}`,
+      comboWins: (w) => `${w} ${w !== 1 ? 'ניצחונות' : 'ניצחון'}`,
       bestStars: (n) => `מקסימום ${n}★`,
       badgeStreak: 'ימים ברצף',
       badgeStars: 'סה״כ כוכבים',
       badgeWins: 'סה״כ ניצחונות',
-      badgeLegend: '🔥 ימים ברצף · ⭐ כוכבים · 🏆 ניצחונות',
+      badgeLegend: '',
+      comboLabel: 'שיא',
       dailyLevel: '5×5 · בינוני',
       dailyPersonalBest: (t) => `🏅 שיא אישי: ${t}`,
       dailyNewRecord: '🎉 שיא אישי חדש!',
       tiers: ['🥉 מתחיל', '🥈 מתקדם', '🥇 מומחה', '👑 אלוף'],
-      tierProgress: (cur, next, rem) => `${cur} → ${next} עוד ${rem} ניצחון${rem !== 1 ? 'ות' : ''}`,
+      tierProgress: (cur, next, rem) => `${cur} → ${next} עוד ${rem} ${rem !== 1 ? 'ניצחונות' : 'ניצחון'}`,
       tierMax: (cur) => `${cur} — רמת שיא!`,
       suggestNow: 'נסה עכשיו ←',
       shareBtn: '📤 שתף תוצאה',
@@ -1403,7 +1890,7 @@ const STRINGS = {
   en: {
     pageTitle: 'de-du | Discover the Multipliers',
     skipLink: 'Skip to main content',
-    headerSubtitle: 'Find the multiplier and multiplicand — reveal the numbers on the board!',
+    headerSubtitle: 'Discover the multipliers!',
     setup: {
       heading: 'Game Settings',
       boardSizeLegend: 'Board Size',
@@ -1413,25 +1900,30 @@ const STRINGS = {
       startBtn: 'Start Game ▶',
       resumeBtn: '▶ Resume Previous Game',
       dailyBtn: '📅 Daily Challenge',
+      howToPlay: '❓ How to play?',
       dailyBadge: '📅 Daily',
-      milestone: (n) => `🏅 Achievement! You've collected ${n} stars — well done!`,
+      milestone: (n) => `🏅 Achievement! You've collected ${n} coins — well done!`,
       diffSuggest: (next) => `🚀 Ready for the next challenge? Try <strong>${next}</strong>!`,
       demoLabel: 'Demo',
       demoWin: '✨ All multipliers found!',
     },
     tutorial: {
       title: '🎓 How to Play',
-      step1: 'Each cell = <strong>multiplier × multiplicand</strong>.<br>The secret numbers hide in the dashed top row and side column.',
-      step2: '<strong>White cells</strong> are your clues.<br><strong>Blue cells</strong> wait for your answer — think and fill!<br><br>The dashed helper fields are your scratch pad — jot down guesses for multiplier and multiplicand.',
-      step3: 'Fill a cell and press <strong>Enter</strong> — the game checks immediately.<br><br>💡 Use the <strong>Hint</strong> if stuck, and <strong>Check All</strong> to validate multiple cells at once.<br><br>🎉 Good luck!',
+      step1: 'The board shows <strong>multiplication products</strong> — those are your clues.<br><br>Your mission: discover the <strong>secret multipliers</strong> hiding in the top row and side column.<br><br>Each cell = <strong>row multiplier × column multiplier</strong>.',
+      step2: 'Analyse the clues and look for <strong>patterns</strong> among the numbers.<br><br>💡 Tip: a row whose products you know gives you its multiplier — then dividing any product in that column gives you the next.',
+      step3: 'Type a multiplier and press <strong>Enter</strong> to check immediately.<br><br>⚠️ <strong>Each number appears exactly once.</strong><br><br>💡 Use <strong>Hint</strong> if stuck, and <strong>Check All</strong> to validate multiple answers at once.<br><br>🎉 Good luck!',
       next: 'Next ›',
+      prev: '‹ Back',
       done: "Let's play! ▶",
       skip: 'Skip tutorial',
     },
     rules: {
-      intro: '<strong>Goal:</strong> Discover the <strong>secret multipliers</strong> — the numbers at the top of each column and the start of each row.<br><br><strong>How to play?</strong><br>The board shows multiplication products — those are your <strong>clues</strong>! Each cell equals <strong>the row multiplier</strong> × <strong>the column multiplier</strong>.<br>',
-      outro: 'Analyse the numbers on the board, spot the patterns, and type the multipliers into the top row and side column.<br><br>💡 Every guess is checked immediately — <strong>a wrong guess counts as a mistake</strong>. You can also use the <strong>Check All</strong> button.',
+      intro: '<strong>Discover the multipliers!</strong><br><br>The board shows multiplication products — those are your clues. Each cell = <strong>row multiplier × column multiplier</strong>. Each number appears <strong>exactly once</strong>.<br>',
+      outro: 'Spot the patterns and type the multipliers into the top row and side column.<br><br>💡 Every guess is checked immediately — <strong>a wrong guess counts as a mistake</strong>. You can also use the <strong>Check All</strong> button.<br><br>⭐ <strong>Stars:</strong> finish fast with few mistakes and hints to earn up to 3 stars.',
+      modalTitle: '🎮 How to Play',
+      closeBtn: "Got it, let's play! ▶",
     },
+    help: { ariaLabel: 'How to play?', btnLabel: '❓ How to Play' },
     svg: { multiplier: 'Mult.', notes: '?', multiplicand: 'Mcand.' },
     diff: {
       easy: 'Easy', medium: 'Medium', hard: 'Hard',
@@ -1443,13 +1935,13 @@ const STRINGS = {
     stats: {
       settingsAriaLabel: 'Game settings',
       timerAriaLabel: 'Game time',
-      mistakesAriaLabel: 'Number of mistakes — every wrong guess counts',
+      mistakesAriaLabel: 'Mistakes',
       mistakesTitle: 'Every wrong guess counts as a mistake',
-      mistakesLabel: '❌ Mistakes:',
-      hintsAriaLabel: 'Hints remaining',
+      mistakesLabel: '❌ Errors:',
+      hintsAriaLabel: 'Hints used',
       hintsLabel: '💡 Hints:',
       correctAriaLabel: 'Multipliers found',
-      correctLabel: '✓ Found:',
+      correctLabel: '🎯 Found:',
       rangeAriaLabel: 'Multiplication number range',
       rangeLabel: '🔢 Range:',
     },
@@ -1458,8 +1950,6 @@ const STRINGS = {
       caption: 'Multiplication board. The numbers are clues — discover the multipliers.',
       cornerCell: '×',
       hintBtn: '💡 Hint',
-      buyHintBtn: '🌟 10⭐ → Hint',
-      buyHintNotEnough: (n) => `Not enough stars — you have ${n} ⭐, need 10`,
       pauseBtn: '⏸ Pause',
       resumeBtn: '▶ Resume',
       pausedLabel: 'Game Paused',
@@ -1480,7 +1970,7 @@ const STRINGS = {
       noHints: 'No hints remaining',
       allFilled: 'All multipliers already found!',
       hintMsg: (r, c, val) => `💡 Hint: Row ${r+1} × Column ${c+1} = ${val}`,
-      rangeBanner: (max) => `Multiplier range: <span>1–${max}</span>`,
+      rangeBanner: (max, diff) => `${diff ? `<span>${diff}</span> · ` : ''}Range: <span>1–${max}</span>`,
       scratchpadTip: '',
     },
     modals: {
@@ -1501,6 +1991,7 @@ const STRINGS = {
     },
     win: {
       starsLabel: (n) => `${n} stars out of 3`,
+      starsEarned: (n) => `You earned ${n} of 3 stars`,
       stats: (t, m, h) => `Time: ${t} | Mistakes: ${m} | Hints used: ${h}`,
       streak: (n) => `🔥 ${n}-day streak — great job, keep it up!`,
       streakWarning: (n) => `🔥 You have a ${n}-day streak — play today to keep it!`,
@@ -1510,7 +2001,8 @@ const STRINGS = {
       badgeStreak: 'Day streak',
       badgeStars: 'Total Stars',
       badgeWins: 'Total Wins',
-      badgeLegend: '🔥 day streak · ⭐ stars · 🏆 wins',
+      badgeLegend: '',
+      comboLabel: 'Record',
       dailyLevel: '5×5 · Medium',
       dailyPersonalBest: (t) => `🏅 Personal best: ${t}`,
       dailyNewRecord: '🎉 New personal record!',
@@ -1560,18 +2052,28 @@ function setLang(lang) {
     const cc = document.getElementById('corner-cell');
     if (cc) cc.innerHTML = str.board.cornerCell;
     if (G.poolMax !== undefined)
-      document.getElementById('rangeBanner').innerHTML = str.messages.rangeBanner(G.poolMax);
-    document.getElementById('gameSettingsVal').textContent =
-      `${G.n}×${G.n} · ${str.diff[G.diff]}`;
+      document.getElementById('rangeBanner').innerHTML = str.messages.rangeBanner(G.poolMax, str.diff[G.diff]);
     // Re-render win stats in the correct language
     if (G.winStats) {
       document.getElementById('winBody').textContent =
         str.win.stats(G.winStats.t, G.winStats.m, G.winStats.h);
     }
   }
+  // Update language toggle button
+  const langBtn = document.getElementById('langToggleBtn');
+  if (langBtn) {
+    langBtn.textContent = str.langToggleLabel;
+    langBtn.setAttribute('aria-label', str.langToggleAriaLabel);
+  }
+  // Update stats button label
+  const statsBtn = document.getElementById('statsBtn');
+  if (statsBtn) statsBtn.textContent = lang === 'he' ? '📊 הסטטיסטיקות שלי' : '📊 My Statistics';
+
   renderSetupProgress();
   updateResumeBtn();
   updateDailyBtn();
+  updateStreakBadge();
+  updateStatsBtn();
   if (document.getElementById('tutorialOverlay')?.classList.contains('active')) {
     _applyTutorialI18n();
   }
@@ -1642,7 +2144,7 @@ function selectDiff(diff, size) {
       b.setAttribute('aria-pressed', parseInt(b.dataset.val) === size ? 'true' : 'false');
     });
   }
-  renderSetupProgress();
+  startGame(chosenSize, chosenDiff);
 }
 
 document.getElementById('startBtn').addEventListener('click', () => startGame(chosenSize, chosenDiff));
@@ -1667,11 +2169,13 @@ document.getElementById('showSolutionBtn').addEventListener('click', () =>
 renderSetupProgress();
 updateResumeBtn();
 updateDailyBtn();
+updateStreakBadge();
+updateStatsBtn();
 
 /* ══════════════════════════════════════════════
    Modal accessibility: focus trap + Escape
 ══════════════════════════════════════════════ */
-const MODAL_IDS = ['confirmOverlay', 'winOverlay', 'loseOverlay', 'tutorialOverlay'];
+const MODAL_IDS = ['confirmOverlay', 'winOverlay', 'loseOverlay', 'tutorialOverlay', 'rulesOverlay', 'sharePreviewOverlay', 'statsOverlay'];
 
 // Escape closes the topmost open modal
 document.addEventListener('keydown', e => {
@@ -1680,9 +2184,14 @@ document.addEventListener('keydown', e => {
   for (let i = MODAL_IDS.length - 1; i >= 0; i--) {
     const ov = document.getElementById(MODAL_IDS[i]);
     if (ov && ov.classList.contains('active')) {
-      // Only close dismissible modals (not win/lose — user must make a choice)
-      if (MODAL_IDS[i] === 'confirmOverlay') {
-        ov.classList.remove('active');
+      // Close dismissible modals (not win/lose — user must make a choice)
+      const dismissible = ['confirmOverlay', 'tutorialOverlay', 'rulesOverlay', 'sharePreviewOverlay', 'statsOverlay'];
+      if (dismissible.includes(MODAL_IDS[i])) {
+        if (MODAL_IDS[i] === 'rulesOverlay') closeRules();
+        else if (MODAL_IDS[i] === 'tutorialOverlay') closeTutorial();
+        else if (MODAL_IDS[i] === 'sharePreviewOverlay') closeSharePreview();
+        else if (MODAL_IDS[i] === 'statsOverlay') closeStats();
+        else ov.classList.remove('active');
       }
       break;
     }
@@ -1765,16 +2274,9 @@ function updateDailyBtn() {
   const str = STRINGS[currentLang];
   if (result) {
     const stars = '⭐'.repeat(result.stars) + '☆'.repeat(3 - result.stars);
-    let bestStr = '';
-    try {
-      const best = JSON.parse(localStorage.getItem('dedu-daily-best') || 'null');
-      if (best) bestStr = ` | ${str.win.dailyPersonalBest(best.t)}`;
-    } catch {}
-    btn.innerHTML = `📅 ${str.setup.dailyBtn.replace('📅 ', '')} — ${stars} ⏱ ${result.t}${bestStr}`;
-    btn.style.background = 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)';
-    btn.style.borderColor = '#34d399';
-    btn.style.color = '#065f46';
+    btn.style.display = 'none';
   } else {
+    btn.style.display = '';
     btn.innerHTML = `${str.setup.dailyBtn}<br><small style="font-size:.78em;opacity:.75;">${str.win.dailyLevel}</small>`;
     btn.style.background = '';
     btn.style.borderColor = '';
@@ -1815,9 +2317,7 @@ function startGame(n, diff, randFn = Math.random) {
 
   document.getElementById('rangeVal').textContent = `1–${poolMax}`;
   document.getElementById('rangeBanner').innerHTML =
-    STRINGS[currentLang].messages.rangeBanner(poolMax);
-  document.getElementById('gameSettingsVal').textContent =
-    `${n}×${n} · ${STRINGS[currentLang].diff[diff]}`;
+    STRINGS[currentLang].messages.rangeBanner(poolMax, STRINGS[currentLang].diff[diff]);
 
   G = {
     n, diff, cfg,
@@ -1832,20 +2332,37 @@ function startGame(n, diff, randFn = Math.random) {
     over:      false,
     paused:    false,
     isDaily:   false,
+    undoUsed:  false,
   };
+  // Hide undo button on new game
+  const undoBtnEl = document.getElementById('undoBtn');
+  if (undoBtnEl) undoBtnEl.style.display = 'none';
   // Reset pause state and action buttons
   document.getElementById('pauseOverlayBoard').classList.remove('active');
   document.getElementById('pauseBtn').textContent = STRINGS[currentLang].board.pauseBtn;
   document.getElementById('checkBtn').disabled = false;
+
+  // Save last used settings for quick-start
+  try { localStorage.setItem('dedu-last-settings', JSON.stringify({ n, diff })); } catch {}
 
   renderBoard();
   updateStats();
 
   // Show game screen
   document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('setupSecondary').style.display = 'none';
   const gs = document.getElementById('gameScreen');
   gs.style.display = 'flex';
   gs.classList.add('active');
+
+  // D4 — board entrance animation
+  const bw = document.querySelector('.board-wrap');
+  if (bw) {
+    bw.classList.remove('board-entering');
+    void bw.offsetWidth;
+    bw.classList.add('board-entering');
+    setTimeout(() => bw.classList.remove('board-entering'), 350);
+  }
 
   // Focus first unfilled header input
   const first = document.querySelector('.hdr-input:not([readonly])');
@@ -2003,7 +2520,35 @@ function makeHdrInput(type, idx) {
   );
   inp.addEventListener('blur',    () => validateHeader(isRow, idx, inp));
   inp.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); validateHeader(isRow, idx, inp); }
+    if (e.key === 'Enter') { e.preventDefault(); validateHeader(isRow, idx, inp); return; }
+
+    // Arrow key navigation between header inputs
+    const n = G.n;
+    let target = null;
+    const isRTL = document.documentElement.dir === 'rtl';
+    // In RTL: → moves to lower index (visually right), ← moves to higher index
+    // In LTR: → moves to higher index (visually right), ← moves to lower index
+    const colDir = isRTL
+      ? (e.key === 'ArrowRight' ? -1 : 1)
+      : (e.key === 'ArrowRight' ? 1  : -1);
+
+    if (!isRow) {
+      // Column headers: ←/→ navigate columns, ↓ jumps to row headers
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        target = document.getElementById(`hdr-col-${((idx + colDir) + n) % n}`);
+      } else if (e.key === 'ArrowDown') {
+        target = document.getElementById(`hdr-row-0`);
+      }
+    } else {
+      // Row headers: ↑/↓ navigate rows, edges jump to col headers
+      if (e.key === 'ArrowDown') {
+        target = document.getElementById(idx < n - 1 ? `hdr-row-${idx + 1}` : `hdr-col-0`);
+      } else if (e.key === 'ArrowUp') {
+        target = document.getElementById(idx > 0 ? `hdr-row-${idx - 1}` : `hdr-col-0`);
+      }
+    }
+
+    if (target) { e.preventDefault(); target.focus(); }
   });
   return inp;
 }
@@ -2031,6 +2576,7 @@ function validateHeader(isRow, idx, inp) {
     inp.classList.add('correct');
     inp.readOnly = true;
     G.filledHeaders++;
+    flashRowOrCol(isRow, idx);
     playSound('correct');
     showMsg(STRINGS[currentLang].messages.correct, 'success');
     updateStats();
@@ -2044,10 +2590,35 @@ function validateHeader(isRow, idx, inp) {
     playSound('wrong');
     showMsg(STRINGS[currentLang].messages.incorrect, 'error');
     setTimeout(() => inp.classList.remove('wrong'), 450);
+    // Show undo button (once per game, only if there's a mistake limit)
+    if (!G.undoUsed && G.cfg.maxMistakes !== Infinity) {
+      const undoBtnEl = document.getElementById('undoBtn');
+      if (undoBtnEl) {
+        undoBtnEl.style.display = '';
+        undoBtnEl.textContent = currentLang === 'he' ? '↩ בטל טעות' : '↩ Undo';
+      }
+    }
     if (G.cfg.maxMistakes !== Infinity && G.mistakes >= G.cfg.maxMistakes) {
       gameLose();
     }
   }
+}
+
+/* ══════════════════════════════════════════════
+   Row / column flash on correct header answer
+══════════════════════════════════════════════ */
+function flashRowOrCol(isRow, idx) {
+  const ids = isRow
+    ? Array.from({ length: G.n }, (_, c) => `pc-${idx}-${c}`)
+    : Array.from({ length: G.n }, (_, r) => `pc-${r}-${idx}`);
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('row-col-flash');
+    void el.offsetWidth;
+    el.classList.add('row-col-flash');
+    setTimeout(() => el.classList.remove('row-col-flash'), 700);
+  });
 }
 
 /* ══════════════════════════════════════════════
@@ -2070,6 +2641,7 @@ function checkAll() {
         inp.classList.add('correct');
         inp.readOnly = true;
         G.filledHeaders++;
+        flashRowOrCol(type === 'row', i);
       } else {
         wrongs++;
         G.mistakes++;
@@ -2134,10 +2706,11 @@ function giveHint() {
   G.revealed[pick.r][pick.c] = true;
   const cell = document.getElementById(`pc-${pick.r}-${pick.c}`);
   if (cell) {
-    cell.className = 'cell-product shown';
+    cell.className = 'cell-product shown hint-revealed';
     cell.textContent = G.board[pick.r][pick.c];
     cell.setAttribute('aria-label',
       STRINGS[currentLang].board.cellShownAriaLabel(pick.r, pick.c, G.board[pick.r][pick.c]));
+    setTimeout(() => cell.classList.remove('hint-revealed'), 1700);
   }
   G.hintsLeft--;
 
@@ -2148,18 +2721,37 @@ function giveHint() {
 }
 
 /* ══════════════════════════════════════════════
-   Buy hint with stars (#2)
+   Buy hint with stars
 ══════════════════════════════════════════════ */
+const HINT_COST = 5;
+
 function buyHint() {
   if (G.over) return;
   const s = loadStats();
-  const str = STRINGS[currentLang];
-  if (s.totalStars < 10) {
-    showMsg(str.board.buyHintNotEnough(s.totalStars), 'warn');
+  if (s.totalCoins < HINT_COST) {
+    const coinRowEl = document.getElementById('coinRow');
+    if (coinRowEl) {
+      coinRowEl.classList.remove('coin-shake');
+      void coinRowEl.offsetWidth; // force reflow
+      coinRowEl.classList.add('coin-shake');
+      setTimeout(() => coinRowEl.classList.remove('coin-shake'), 500);
+    }
+    showMsg(
+      currentLang === 'he'
+        ? `אין מספיק מטבעות — שחקי עוד כדי לצבור!`
+        : `Not enough coins — play more to earn some!`,
+      'warn'
+    );
     return;
   }
-  s.totalStars -= 10;
+  s.totalCoins -= HINT_COST;
   saveStats(s);
+  showMsg(
+    currentLang === 'he'
+      ? `תשלום עבור רמז: ${HINT_COST} מטבעות`
+      : `Hint purchased: ${HINT_COST} coins`,
+    'info'
+  );
   G.hintsLeft++;
   updateStats();
   giveHint();
@@ -2169,6 +2761,23 @@ function buyHint() {
    Tutorial
 ══════════════════════════════════════════════ */
 let _tutorialStep = 0;
+
+function showRules() {
+  document.getElementById('rulesOverlay').classList.add('active');
+  const closeBtn = document.querySelector('#rulesOverlay .btn-check');
+  if (closeBtn) closeBtn.focus();
+  if (typeof window._runDemoAnimation === 'function') {
+    setTimeout(window._runDemoAnimation, 450);
+  }
+}
+
+function closeRules() {
+  localStorage.setItem('dedu-rules-seen', '1');
+  document.getElementById('rulesOverlay').classList.remove('active');
+  if (typeof window._cancelDemoAnimation === 'function') {
+    window._cancelDemoAnimation();
+  }
+}
 
 function showTutorial() {
   _tutorialStep = 0;
@@ -2183,8 +2792,6 @@ function showTutorial() {
 function _applyTutorialI18n() {
   const str = STRINGS[currentLang];
   document.getElementById('tutorialTitle').textContent = str.tutorial.title;
-  document.getElementById('tutorialNextBtn').textContent =
-    _tutorialStep < 2 ? str.tutorial.next : str.tutorial.done;
   document.querySelector('[data-i18n="tutorial.skip"]').textContent = str.tutorial.skip;
   ['step1','step2','step3'].forEach((k,i) => {
     const el = document.getElementById(`tstep${i}`)?.querySelector('[data-i18n-html]');
@@ -2195,6 +2802,7 @@ function _applyTutorialI18n() {
   const svgMcand = document.querySelector('#tstep0 [data-i18n="svg.multiplicand"]');
   if (svgMult)  svgMult.textContent  = str.svg.multiplier;
   if (svgMcand) svgMcand.textContent = str.svg.multiplicand;
+  _renderTutorialStep();
 }
 
 function _renderTutorialStep() {
@@ -2205,6 +2813,8 @@ function _renderTutorialStep() {
   const str = STRINGS[currentLang];
   document.getElementById('tutorialNextBtn').textContent =
     _tutorialStep < 2 ? str.tutorial.next : str.tutorial.done;
+  const prevBtn = document.getElementById('tutorialPrevBtn');
+  if (prevBtn) prevBtn.style.display = _tutorialStep > 0 ? '' : 'none';
 }
 
 function tutorialNext() {
@@ -2213,6 +2823,13 @@ function tutorialNext() {
     _renderTutorialStep();
   } else {
     closeTutorial();
+  }
+}
+
+function tutorialPrev() {
+  if (_tutorialStep > 0) {
+    _tutorialStep--;
+    _renderTutorialStep();
   }
 }
 
@@ -2270,7 +2887,21 @@ function updateResumeBtn() {
   }
 }
 
+/* Quick-start button (P1#5) */
+/* Streak badge on setup screen (P1#6) */
+function updateStreakBadge() {
+  const el = document.getElementById('streakBadgeSetup');
+  if (!el) return;
+  const s = loadStats();
+  if (!s.currentStreak || s.currentStreak < 2) { el.innerHTML = ''; return; }
+  const label = currentLang === 'he'
+    ? `🔥 ${s.currentStreak} ימים ברצף!`
+    : `🔥 ${s.currentStreak}-day streak!`;
+  el.innerHTML = `<span class="streak-badge-setup">${label}</span>`;
+}
+
 function resumeGame(saved) {
+  try { localStorage.setItem('dedu-last-settings', JSON.stringify({ n: saved.n, diff: saved.diff })); } catch {}
   const cfg = DIFF_CFG[saved.diff];
   G = {
     n: saved.n, diff: saved.diff, cfg,
@@ -2285,9 +2916,7 @@ function resumeGame(saved) {
 
   document.getElementById('rangeVal').textContent = `1–${G.poolMax}`;
   document.getElementById('rangeBanner').innerHTML =
-    STRINGS[currentLang].messages.rangeBanner(G.poolMax);
-  document.getElementById('gameSettingsVal').textContent =
-    `${G.n}×${G.n} · ${STRINGS[currentLang].diff[G.diff]}`;
+    STRINGS[currentLang].messages.rangeBanner(G.poolMax, STRINGS[currentLang].diff[G.diff]);
 
   renderBoard();
 
@@ -2300,6 +2929,7 @@ function resumeGame(saved) {
 
   updateStats();
   document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('setupSecondary').style.display = 'none';
   const gs = document.getElementById('gameScreen');
   gs.style.display = 'flex';
   gs.classList.add('active');
@@ -2321,12 +2951,18 @@ function todayISO() { return new Date().toISOString().slice(0, 10); }
 
 function defaultStats() {
   return { version: 1, lastPlayed: null, currentStreak: 0,
-           totalWins: 0, totalGames: 0, totalStars: 0, combos: {} };
+           totalWins: 0, totalGames: 0, totalCoins: 0, combos: {} };
 }
 
 function loadStats() {
-  try { return JSON.parse(localStorage.getItem('dedu-stats')) || defaultStats(); }
-  catch { return defaultStats(); }
+  try {
+    const s = JSON.parse(localStorage.getItem('dedu-stats')) || defaultStats();
+    if (s.totalCoins === undefined) {
+      s.totalCoins = s.totalStars || 0;
+      delete s.totalStars;
+    }
+    return s;
+  } catch { return defaultStats(); }
 }
 
 function saveStats(s) {
@@ -2359,17 +2995,17 @@ function recordWin(stars) {
   else s.currentStreak = 1;
   s.lastPlayed = today;
   // totals
-  const prevStars = s.totalStars;
+  const prevCoins = s.totalCoins;
   s.totalWins++;
   s.totalGames++;
-  s.totalStars += stars;
+  s.totalCoins += stars;
   ensureCombo(s, key);
   s.combos[key].wins++;
   if (stars > s.combos[key].bestStars) s.combos[key].bestStars = stars;
   if (!s.shownMilestones) s.shownMilestones = [];
   // check for new milestone
   const newMilestone = STAR_MILESTONES.find(
-    m => prevStars < m && s.totalStars >= m && !s.shownMilestones.includes(m)
+    m => prevCoins < m && s.totalCoins >= m && !s.shownMilestones.includes(m)
   );
   if (newMilestone) s.shownMilestones.push(newMilestone);
   saveStats(s);
@@ -2381,7 +3017,7 @@ function checkMilestone(stars) {
   if (!s.shownMilestones) return null;
   // return the latest milestone that was just added
   const last = s.shownMilestones[s.shownMilestones.length - 1];
-  if (last && s.totalStars >= last) return last;
+  if (last && s.totalCoins >= last) return last;
   return null;
 }
 
@@ -2404,7 +3040,12 @@ function renderWinStars(stars) {
   const el = document.getElementById('winStars');
   if (!el) return;
   el.setAttribute('aria-label', STRINGS[currentLang].win.starsLabel(stars));
-  el.innerHTML = starHTML(stars);
+  // D5: staggered pop animation for each star
+  el.innerHTML = [0, 1, 2].map(i => {
+    const filled = i < stars;
+    const delay  = filled ? `animation: starPop .4s cubic-bezier(.34,1.56,.64,1) ${i * 0.18}s both;` : '';
+    return `<span class="star ${filled ? 'filled' : 'empty'}" aria-hidden="true" style="${delay}">★</span>`;
+  }).join('');
 }
 
 /* ── Setup progress summary ── */
@@ -2414,26 +3055,9 @@ function renderSetupProgress() {
   if (!el) return;
   const s = loadStats();
 
-  // #11 — update easy diff-hint before potential early return (first-time players need the hint)
-  const easyHintEl = document.getElementById('easyDiffHint');
-  if (easyHintEl) {
-    const str = STRINGS[currentLang];
-    easyHintEl.textContent = s.totalGames === 0 ? str.diff.easyHintNew : str.diff.easyHint;
-  }
-
   if (s.totalGames === 0) { el.innerHTML = ''; return; }
 
-  const today     = todayISO();
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-  const activeToday = s.lastPlayed === today;
-
   const W = STRINGS[currentLang].win;
-  let msg = '';
-  if (s.currentStreak >= 2) {
-    msg = activeToday ? W.streak(s.currentStreak) : W.streakWarning(s.currentStreak);
-  } else if (s.lastPlayed === yesterday && !activeToday) {
-    msg = W.streakStart;
-  }
 
   const key   = `${chosenSize}-${chosenDiff}`;
   const combo = s.combos[key];
@@ -2442,23 +3066,8 @@ function renderSetupProgress() {
     ? 'Combo = ביצועים בשילוב גודל + קושי ספציפי'
     : 'Combo = your record for this board size + difficulty';
 
-  // Tier calculation (#3)
-  let tierLine = '';
-  if (combo) {
-    const tierLabels = STRINGS[currentLang].win.tiers;
-    let curTierIdx = 0;
-    for (const t of TIERS) {
-      if (combo.wins >= t.wins) curTierIdx = t.idx;
-    }
-    const nextTier = TIERS.find(t => t.idx === curTierIdx + 1);
-    const tierStr = nextTier
-      ? STRINGS[currentLang].win.tierProgress(tierLabels[curTierIdx], tierLabels[nextTier.idx], nextTier.wins - combo.wins)
-      : STRINGS[currentLang].win.tierMax(tierLabels[curTierIdx]);
-    tierLine = `<span style="font-size:.78rem;color:var(--clr-muted);">${tierStr}</span>`;
-  }
-
   const comboLine = combo
-    ? `<abbr title="${comboTooltip}" style="text-decoration:none;cursor:help;">🎯 Combo</abbr> ${chosenSize}×${chosenSize} · ${diffLabel}: ${W.comboWins(combo.wins)}, ${W.bestStars(combo.bestStars)} ${tierLine}`
+    ? `<abbr title="${comboTooltip}" style="text-decoration:none;cursor:help;">🎯 ${W.comboLabel}</abbr> ${chosenSize}×${chosenSize} · ${diffLabel}: ${W.comboWins(combo.wins)}, ${W.bestStars(combo.bestStars)}`
     : '';
 
   // Difficulty suggestion (#12) — prominent with inline "Try now" button
@@ -2486,14 +3095,14 @@ function renderSetupProgress() {
     }
   }
 
+  if (!suggestLine) { el.innerHTML = ''; return; }
+
+  const dailyResult = loadDailyResult();
+  const showDivider = !!(dailyResult && suggestLine);
+
   el.innerHTML = `<div class="progress-summary">
-    ${s.currentStreak > 0 ? `<span class="progress-badge streak" title="${W.badgeStreak}">🔥 ${s.currentStreak}</span>` : ''}
-    <span class="progress-badge" title="${W.badgeStars}">⭐ ${s.totalStars}</span>
-    <span class="progress-badge" title="${W.badgeWins}">🏆 ${s.totalWins}</span>
-    <p class="badge-legend">${W.badgeLegend}</p>
-    ${comboLine ? `<p class="progress-combo">${comboLine}</p>` : ''}
-    ${suggestLine ? `<p class="progress-welcome suggest-pulse" style="color:#b45309;background:rgba(251,191,36,.12);border-radius:8px;padding:.35rem .6rem;">${suggestLine}</p>` : ''}
-    ${msg ? `<p class="progress-welcome">${msg}</p>` : ''}
+    ${showDivider ? `<hr class="progress-divider">` : ''}
+    <p class="progress-welcome suggest-pulse" style="color:#b45309;background:rgba(251,191,36,.12);border-radius:8px;padding:.35rem .6rem;">${suggestLine}</p>
   </div>`;
 }
 
@@ -2546,10 +3155,42 @@ function gameWin() {
   }
   renderWinStars(stars);
 
+  const starsEarnedEl = document.getElementById('winStarsEarned');
+  if (starsEarnedEl) starsEarnedEl.textContent = STRINGS[currentLang].win.starsEarned(stars);
+
+  // Criteria breakdown
+  const criteriaEl = document.getElementById('winCriteria');
+  if (criteriaEl) {
+    const key = `${G.n}-${G.diff}`;
+    const thr = STAR_THRESHOLDS[key];
+    if (thr) {
+      const chips = [];
+      const timePassed = G.seconds <= thr.time;
+      chips.push(`<span class="win-crit ${timePassed ? 'pass' : 'fail'}">⏱ ${fmtTime(G.seconds)} / ${fmtTime(thr.time)} ${timePassed ? '✓' : '✗'}</span>`);
+      const mistPassed = G.mistakes <= thr.mistakes;
+      chips.push(`<span class="win-crit ${mistPassed ? 'pass' : 'fail'}">❌ ${G.mistakes} / ${thr.mistakes} ${mistPassed ? '✓' : '✗'}</span>`);
+      if (G.cfg.maxHints > 0) {
+        const hintPassed = hdl <= thr.hintsUsed;
+        chips.push(`<span class="win-crit ${hintPassed ? 'pass' : 'fail'}">💡 ${hdl} / ${thr.hintsUsed} ${hintPassed ? '✓' : '✗'}</span>`);
+      }
+      criteriaEl.innerHTML = chips.join('');
+    } else {
+      criteriaEl.innerHTML = '';
+    }
+  }
+
   const t = fmtTime(G.seconds);
   G.winStats = { t, m: G.mistakes, h: hdl };
   document.getElementById('winBody').textContent =
     STRINGS[currentLang].win.stats(t, G.mistakes, hdl);
+
+  const sAfter = loadStats();
+  const earnedLine = document.getElementById('winStarLine');
+  if (earnedLine) {
+    earnedLine.textContent = currentLang === 'he'
+      ? `+${stars} מטבעות · יתרה: ${sAfter.totalCoins}`
+      : `+${stars} coins · balance: ${sAfter.totalCoins}`;
+  }
 
   document.getElementById('checkBtn').disabled = true;
 
@@ -2609,28 +3250,153 @@ function shareResult() {
   const text  = G.isDaily
     ? W.shareDailyText(todayISO(), stars, G.winStats.t, G.mistakes, hdl)
     : W.shareText(G.n, diff, stars, G.winStats.t, G.mistakes, hdl);
+  showSharePreview(text);
+}
 
-  const btn = document.getElementById('shareBtn');
-  const reset = () => {
-    btn.textContent = STRINGS[currentLang].win.shareBtn;
+/* ══════════════════════════════════════════════
+   Share Preview Modal
+══════════════════════════════════════════════ */
+let _pendingShareText = '';
+
+function showSharePreview(text) {
+  _pendingShareText = text;
+  document.getElementById('sharePreviewText').textContent = text;
+  const isHe = currentLang === 'he';
+  document.getElementById('sharePreviewTitle').textContent  = isHe ? '📤 שתף תוצאה'  : '📤 Share Result';
+  document.getElementById('sharePreviewCopyBtn').textContent = isHe ? '📋 העתק' : '📋 Copy';
+  const cancelBtn = document.querySelector('#sharePreviewOverlay .btn-restart');
+  if (cancelBtn) cancelBtn.textContent = isHe ? 'ביטול' : 'Cancel';
+  const ov = document.getElementById('sharePreviewOverlay');
+  ov.classList.add('active');
+  document.getElementById('sharePreviewCopyBtn').focus();
+}
+
+function doShare() {
+  const btn = document.getElementById('sharePreviewCopyBtn');
+  const isHe = currentLang === 'he';
+  const copiedLabel = isHe ? '✓ הועתק!' : '✓ Copied!';
+  const resetLabel  = isHe ? '📋 העתק'  : '📋 Copy';
+  const onCopied = () => {
+    btn.textContent = copiedLabel;
+    setTimeout(() => { closeSharePreview(); btn.textContent = resetLabel; }, 1600);
   };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(_pendingShareText).then(onCopied).catch(() => _fallbackCopy(onCopied));
+  } else {
+    _fallbackCopy(onCopied);
+  }
+}
 
-  (navigator.clipboard
-    ? navigator.clipboard.writeText(text)
-    : Promise.resolve(document.execCommand('copy', false, text) || Promise.reject())
-  ).then(() => {
-    btn.textContent = W.shareCopied;
-    setTimeout(reset, 2000);
-  }).catch(() => {
-    // fallback: select a temp textarea
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.cssText = 'position:fixed;top:-999px;left:-999px';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); btn.textContent = W.shareCopied; setTimeout(reset, 2000); } catch {}
-    ta.remove();
+function _fallbackCopy(onDone) {
+  const ta = Object.assign(document.createElement('textarea'), {
+    value: _pendingShareText,
+    style: 'position:fixed;top:-999px;left:-999px'
   });
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); onDone(); } catch {}
+  ta.remove();
+}
+
+function closeSharePreview() {
+  document.getElementById('sharePreviewOverlay').classList.remove('active');
+}
+
+/* ══════════════════════════════════════════════
+   Undo Last Mistake
+══════════════════════════════════════════════ */
+function undoLastMistake() {
+  if (G.undoUsed || G.over || G.mistakes <= 0) return;
+  G.undoUsed = true;
+  G.mistakes--;
+  document.getElementById('undoBtn').style.display = 'none';
+  updateStats();
+  showMsg(currentLang === 'he' ? '↩ שגיאה אחת בוטלה!' : '↩ Mistake undone!', 'info');
+}
+
+/* ══════════════════════════════════════════════
+   Statistics Modal
+══════════════════════════════════════════════ */
+function updateStatsBtn() {
+  const btn = document.getElementById('statsBtn');
+  if (!btn) return;
+  const s = loadStats();
+  btn.style.display = s.totalGames > 0 ? '' : 'none';
+}
+
+function showStats() {
+  const s = loadStats();
+  const isHe = currentLang === 'he';
+  const W = STRINGS[currentLang].win;
+
+  const winRate = s.totalGames > 0 ? Math.round((s.totalWins / s.totalGames) * 100) : 0;
+  const tierIdx = [...TIERS].reverse().find(t => s.totalWins >= t.wins)?.idx ?? 0;
+  const tierLabel = W.tiers[tierIdx];
+
+  // Combo rows
+  const DIFF_ORDER = ['easy', 'medium', 'hard'];
+  const comboRows = Object.entries(s.combos)
+    .sort(([a], [b]) => {
+      const [na, da] = a.split('-'); const [nb, db] = b.split('-');
+      return parseInt(na) - parseInt(nb) || DIFF_ORDER.indexOf(da) - DIFF_ORDER.indexOf(db);
+    })
+    .map(([key, combo]) => {
+      const [n, diff] = key.split('-');
+      const diffLabel = STRINGS[currentLang].diff[diff] || diff;
+      return `<tr>
+        <td><b>${n}×${n}</b> · ${diffLabel}</td>
+        <td style="text-align:center">${combo.wins}</td>
+        <td style="text-align:center"><span class="combo-stars" role="img" aria-label="${W.starsLabel(combo.bestStars)}">${[0,1,2].map(i => `<span class="cstar ${i < combo.bestStars ? 'filled' : 'empty'}" aria-hidden="true">★</span>`).join('')}</span></td>
+      </tr>`;
+    }).join('');
+
+  const streakTxt = isHe
+    ? `🔥 ${s.currentStreak} ${s.currentStreak === 1 ? 'יום' : 'ימים'} ברצף`
+    : `🔥 ${s.currentStreak}-day streak`;
+
+  document.getElementById('statsContent').innerHTML = `
+    <div style="text-align:center;margin-bottom:.5rem;">
+      <span class="stats-tier-badge">${tierLabel}</span>
+    </div>
+    <div class="stats-grid">
+      <div class="stats-card">
+        <div class="sc-val">${s.totalGames}</div>
+        <div class="sc-lbl">${isHe ? 'משחקים' : 'Games'}</div>
+      </div>
+      <div class="stats-card">
+        <div class="sc-val">${winRate}%</div>
+        <div class="sc-lbl">${isHe ? 'אחוז ניצחון' : 'Win rate'}</div>
+      </div>
+      <div class="stats-card">
+        <div class="sc-val">${s.totalWins}</div>
+        <div class="sc-lbl">${isHe ? 'ניצחונות' : 'Wins'}</div>
+      </div>
+      <div class="stats-card">
+        <div class="sc-val" style="color:var(--clr-warn);">🪙 ${s.totalCoins}</div>
+        <div class="sc-lbl">${isHe ? 'מטבעות' : 'Coins'}</div>
+      </div>
+    </div>
+    ${s.currentStreak > 0 ? `<p style="text-align:center;font-weight:700;margin-bottom:.75rem;font-size:.9rem;">${streakTxt}</p>` : ''}
+    ${comboRows ? `
+    <table class="stats-combo-table">
+      <thead><tr>
+        <th>${isHe ? 'רמה' : 'Level'}</th>
+        <th style="text-align:center">${isHe ? 'ניצחונות' : 'Wins'}</th>
+        <th style="text-align:center">${isHe ? 'שיא' : 'Best'}</th>
+      </tr></thead>
+      <tbody>${comboRows}</tbody>
+    </table>` : ''}
+  `;
+
+  document.getElementById('statsModalTitle').textContent = isHe ? '📊 הסטטיסטיקות שלי' : '📊 My Statistics';
+  document.querySelector('#statsOverlay .btn-check').textContent = isHe ? 'סגור' : 'Close';
+  const ov = document.getElementById('statsOverlay');
+  ov.classList.add('active');
+  ov.querySelector('button').focus();
+}
+
+function closeStats() {
+  document.getElementById('statsOverlay').classList.remove('active');
 }
 
 /* ══════════════════════════════════════════════
@@ -2653,10 +3419,13 @@ function _doGoSetup() {
   document.getElementById('gameScreen').style.display = 'none';
   document.getElementById('gameScreen').classList.remove('active');
   document.getElementById('setupScreen').style.display = '';
+  document.getElementById('setupSecondary').style.display = '';
   if (!G.over) clearGameState();
   renderSetupProgress();
   updateResumeBtn();
   updateDailyBtn();
+  updateStreakBadge();
+  updateStatsBtn();
   document.getElementById('startBtn').focus();
 }
 
@@ -2702,10 +3471,15 @@ function fmtTime(s) {
 function updateStats() {
   const cfg = G.cfg;
 
-  // Mistakes
-  document.getElementById('mistakesVal').textContent = G.mistakes;
-  document.getElementById('mistakesMax').textContent =
-    cfg.maxMistakes === Infinity ? '' : ` / ${cfg.maxMistakes}`;
+  // Mistakes — show used / max (or hide when no limit)
+  const mistakesRow = document.getElementById('mistakesVal').closest('.stat');
+  if (cfg.maxMistakes === Infinity) {
+    if (mistakesRow) mistakesRow.style.display = 'none';
+  } else {
+    if (mistakesRow) mistakesRow.style.display = '';
+    document.getElementById('mistakesVal').textContent = G.mistakes;
+    document.getElementById('mistakesMax').textContent = ` / ${cfg.maxMistakes}`;
+  }
 
   // Hints — hidden entirely in easy mode (maxHints === 0, no hidden cells to reveal)
   const hasHints = cfg.maxHints > 0;
@@ -2713,20 +3487,40 @@ function updateStats() {
   const hintBtn = document.getElementById('hintBtn');
   hintBtn.style.display = hasHints ? '' : 'none';
   if (hasHints) {
-    document.getElementById('hintsVal').textContent = G.hintsLeft;
+    document.getElementById('hintsVal').textContent = cfg.maxHints - G.hintsLeft;
     document.getElementById('hintsMax').textContent = ` / ${cfg.maxHints}`;
     hintBtn.disabled = G.hintsLeft <= 0;
   }
-  // Buy-hint button: show when out of hints (non-easy) and game is active
+  // Coin balance — visible whenever hints are in play
+  const coinRow = document.getElementById('coinRow');
+  if (coinRow) {
+    coinRow.style.display = hasHints ? '' : 'none';
+    if (hasHints) {
+      document.getElementById('coinVal').textContent = loadStats().totalCoins;
+    }
+  }
+
   const buyBtn = document.getElementById('buyHintBtn');
   if (buyBtn) {
     const showBuy = hasHints && !G.over && G.hintsLeft <= 0;
     buyBtn.style.display = showBuy ? '' : 'none';
+    if (showBuy) {
+      buyBtn.disabled = false;
+      buyBtn.textContent = currentLang === 'he' ? `קנה רמז (${HINT_COST} מטבעות)` : `Buy hint (${HINT_COST} coins)`;
+    }
   }
 
   // Found header multipliers
   document.getElementById('correctVal').textContent = G.filledHeaders;
   document.getElementById('correctMax').textContent = ` / ${G.totalHeaders}`;
+
+  // Progress bar
+  const pct = G.totalHeaders > 0 ? (G.filledHeaders / G.totalHeaders) * 100 : 0;
+  const pbFill = document.getElementById('progressBarFill');
+  if (pbFill) {
+    pbFill.style.width = `${pct}%`;
+    pbFill.setAttribute('aria-valuenow', Math.round(pct));
+  }
 }
 
 /* ══════════════════════════════════════════════
@@ -2842,27 +3636,30 @@ document.getElementById('muteBtn').addEventListener('click', toggleMute);
 
 // Language initialisation — detect from browser locale only
 (function initLang() {
-  currentLang = navigator.language?.startsWith('he') ? 'he' : 'en';
+  const saved = localStorage.getItem('lang');
+  currentLang = saved || (navigator.language?.startsWith('he') ? 'he' : 'en');
   setLang(currentLang);
+  // Wire up language toggle button
+  const btn = document.getElementById('langToggleBtn');
+  if (btn) btn.addEventListener('click', () => setLang(currentLang === 'he' ? 'en' : 'he'));
 })();
 
 /* ── Demo Animation ── */
 (function() {
-  // Board: ROW_M=[3,1,2], COL_M=[2,5,4]
-  //   ×  |  2  |  5  |  4
-  //   3  |  6  | 15  | 12
-  //   1  |  2  |  5  |  4   ← "row of 1": products equal column multipliers directly
-  //   2  |  4  | 10  |  8
+  // Board: ROW_M=[2,3,6], COL_M=[4,3,2]
+  //   ×  |  4  |  3  |  2
+  //   2  |  8  |  6  |  4
+  //   3  | 12  |  9  |  6   ← focus row (r=1): try candidates until one works
+  //   6  | 24  | 18  | 12
   //
-  // Deductive chain:
-  //  1. Row 1 products (2,5,4) → row multiplier must be 1
-  //  2. dp-1-0=2, row=1  → col 0 = 2
-  //  3. dp-1-1=5, row=1  → col 1 = 5
-  //  4. dp-1-2=4, row=1  → col 2 = 4
-  //  5. dp-0-0=6, col=2  → row 0 = 3
-  //  6. dp-2-0=4, col=2  → row 2 = 2
-  const ROW_M = [3, 1, 2];
-  const COL_M = [2, 5, 4];
+  // Deductive chain for row 1 (products: 12, 9, 6):
+  //   Try row=1 → cols 12, 9, 6 → 12 is out of range ✗
+  //   Try row=2 → 9÷2=4.5 — not an integer ✗
+  //   Try row=3 → 12÷3=4 ✓, 9÷3=3 ✓, 6÷3=2 ✓ — confirmed!
+  //   Then: dp-0-0=8, col=4 → row 0 = 2
+  //         dp-2-0=24, col=4 → row 2 = 6
+  const ROW_M = [2, 3, 6];
+  const COL_M = [4, 3, 2];
   const N = 3;
   let demoTimers = [];
 
@@ -2873,6 +3670,15 @@ document.getElementById('muteBtn').addEventListener('click', toggleMute);
 
   function at(t, fn) {
     demoTimers.push(setTimeout(fn, t));
+  }
+
+  function isHe() {
+    return (typeof currentLang !== 'undefined' ? currentLang : 'he') === 'he';
+  }
+
+  function setLabel(text) {
+    const lbl = document.getElementById('demoLabel');
+    if (lbl) lbl.textContent = text;
   }
 
   function buildBoard() {
@@ -2915,6 +3721,23 @@ document.getElementById('muteBtn').addEventListener('click', toggleMute);
     document.querySelectorAll('.demo-cell-hint').forEach(el => el.classList.remove('demo-cell-hint'));
   }
 
+  // Show a candidate row value: flash red (wrong) or green (ok)
+  function tryRow(val, state) {
+    const el = document.getElementById('dr-1');
+    if (!el) return;
+    el.textContent = val;
+    el.classList.remove('demo-cell-try-wrong', 'demo-cell-try-ok', 'filled');
+    el.classList.add(state === 'wrong' ? 'demo-cell-try-wrong' : 'demo-cell-try-ok');
+  }
+
+  // Reset candidate row back to "?"
+  function resetRow() {
+    const el = document.getElementById('dr-1');
+    if (!el) return;
+    el.textContent = '?';
+    el.classList.remove('demo-cell-try-wrong', 'demo-cell-try-ok', 'filled');
+  }
+
   function typeIn(id, val, onDone) {
     const el = document.getElementById(id);
     if (!el) { if (onDone) onDone(); return; }
@@ -2933,71 +3756,127 @@ document.getElementById('muteBtn').addEventListener('click', toggleMute);
     });
   }
 
-  function updateLabels() {
-    const str = (typeof STRINGS !== 'undefined' && STRINGS[currentLang || 'he'])
-      ? STRINGS[currentLang || 'he'].setup : null;
-    const lbl = document.getElementById('demoLabel');
-    const win = document.getElementById('demoWinMsg');
-    if (lbl && str) lbl.textContent = str.demoLabel || 'הדגמה';
-    if (win && str) win.dataset.winText = str.demoWin || '✨ ניחשת!';
-  }
-
   function runDemo() {
     cancelAll();
     buildBoard();
-    updateLabels();
+
     const win = document.getElementById('demoWinMsg');
     if (win) { win.textContent = ''; win.classList.remove('show'); }
 
-    const LOOK = 1350; // ms to stare at highlighted clue cells
-    const TYPE = 600;  // ms for typing animation to complete
-    const GAP  = 420;  // ms gap between steps
+    const he = isHe();
+    const WIN_TEXT = he ? '✨ ניחשת את כל המכפילים!' : '✨ All multipliers found!';
+    if (win) win.dataset.winText = WIN_TEXT;
 
-    let t = 1400; // initial pause
+    const LOOK = 1250; // ms to study highlighted cells
+    const TRY  = 980;  // ms to display a candidate (wrong or right)
+    const GAP  = 400;  // ms gap between steps
+    const TYPE = 600;  // ms for typeIn animation
+    const FAST = 700;  // ms for "already-known" derivation hints
 
-    // Step 1 — scan row 1 (2, 5, 4) → row multiplier = 1
-    t += 0;    at(t, () => hint(['dp-1-0','dp-1-1','dp-1-2']));
-    t += LOOK; at(t, () => { clearHints(); typeIn('dr-1', 1, () => markCorrect(['dp-1-0','dp-1-1','dp-1-2'])); });
+    let t = 1000;
 
-    // Step 2 — dr-1=1 + dp-1-0=2 → col 0 = 2
-    t += TYPE + GAP; at(t, () => hint(['dr-1','dp-1-0']));
-    t += LOOK;       at(t, () => { clearHints(); typeIn('dc-0', 2, () => markCorrect(['dp-0-0','dp-2-0'])); });
+    // — Initial label
+    at(t, () => setLabel(he ? 'הדגמה' : 'Demo'));
 
-    // Step 3 — dr-1=1 + dp-1-1=5 → col 1 = 5
-    t += TYPE + GAP; at(t, () => hint(['dr-1','dp-1-1']));
-    t += LOOK;       at(t, () => { clearHints(); typeIn('dc-1', 5, () => markCorrect(['dp-0-1','dp-2-1'])); });
+    // — Step 1: highlight row-1 products, show "what row divides 12, 9, 6?"
+    t += 300;
+    at(t, () => {
+      hint(['dp-1-0', 'dp-1-1', 'dp-1-2']);
+      setLabel(he ? 'שורה זו: 12, 9, 6 — מה מחלק הכל?' : 'Row: 12, 9, 6 — find the factor');
+    });
 
-    // Step 4 — dr-1=1 + dp-1-2=4 → col 2 = 4
-    t += TYPE + GAP; at(t, () => hint(['dr-1','dp-1-2']));
-    t += LOOK;       at(t, () => { clearHints(); typeIn('dc-2', 4, () => markCorrect(['dp-0-2','dp-2-2'])); });
+    // — Step 2: try row = 1 (wrong — 12÷1=12, out of range)
+    t += LOOK;
+    at(t, () => {
+      clearHints();
+      tryRow('1?', 'wrong');
+      hint(['dp-1-0', 'dp-1-1', 'dp-1-2']);
+      setLabel(he ? 'שורה=1? → 12÷1=12 גדול מדי ✗' : 'row=1? → 12÷1=12 too large ✗');
+    });
 
-    // Step 5 — dc-0=2 + dp-0-0=6 → row 0 = 6÷2 = 3
-    t += TYPE + GAP; at(t, () => hint(['dc-0','dp-0-0']));
-    t += LOOK;       at(t, () => { clearHints(); typeIn('dr-0', 3); });
+    t += TRY;
+    at(t, () => { clearHints(); resetRow(); });
 
-    // Step 6 — dc-0=2 + dp-2-0=4 → row 2 = 4÷2 = 2
-    t += TYPE + GAP; at(t, () => hint(['dc-0','dp-2-0']));
-    t += LOOK;       at(t, () => { clearHints(); typeIn('dr-2', 2); });
+    // — Step 3: try row = 2 (wrong — 9÷2=4.5, not integer)
+    t += GAP;
+    at(t, () => {
+      tryRow('2?', 'wrong');
+      hint(['dp-1-0', 'dp-1-1', 'dp-1-2']);
+      setLabel(he ? 'שורה=2? → 9÷2=4.5 לא שלם ✗' : 'row=2? → 9÷2=4.5 not whole ✗');
+    });
 
-    // Win
+    t += TRY;
+    at(t, () => { clearHints(); resetRow(); });
+
+    // — Step 4: try row = 3 (correct — all divide evenly!)
+    t += GAP;
+    at(t, () => {
+      tryRow('3✓', 'ok');
+      hint(['dp-1-0', 'dp-1-1', 'dp-1-2']);
+      setLabel(he ? 'שורה=3! → 4✓ 3✓ 2✓' : 'row=3! → 4✓ 3✓ 2✓');
+    });
+
+    t += TRY;
+    at(t, () => {
+      clearHints();
+      // Confirm: replace trial style with permanent "filled"
+      const drEl = document.getElementById('dr-1');
+      if (drEl) {
+        drEl.textContent = '3';
+        drEl.classList.remove('demo-cell-try-ok');
+        drEl.classList.add('filled');
+      }
+      markCorrect(['dp-1-0', 'dp-1-1', 'dp-1-2']);
+    });
+
+    // — Step 5: derive all three columns from confirmed row=3
+    // col 0: dr-1=3, dp-1-0=12 → dc-0=4
+    t += TYPE + GAP;
+    at(t, () => hint(['dr-1', 'dp-1-0']));
+    t += FAST;
+    at(t, () => { clearHints(); typeIn('dc-0', 4, () => markCorrect(['dp-0-0', 'dp-2-0'])); });
+
+    // col 1: dr-1=3, dp-1-1=9 → dc-1=3
+    t += TYPE + GAP;
+    at(t, () => hint(['dr-1', 'dp-1-1']));
+    t += FAST;
+    at(t, () => { clearHints(); typeIn('dc-1', 3, () => markCorrect(['dp-0-1', 'dp-2-1'])); });
+
+    // col 2: dr-1=3, dp-1-2=6 → dc-2=2
+    t += TYPE + GAP;
+    at(t, () => hint(['dr-1', 'dp-1-2']));
+    t += FAST;
+    at(t, () => { clearHints(); typeIn('dc-2', 2, () => markCorrect(['dp-0-2', 'dp-2-2'])); });
+
+    // — Step 6: derive remaining row headers from confirmed col=4 (dc-0)
+    // dc-0=4, dp-0-0=8 → dr-0=2
+    t += TYPE + GAP;
+    at(t, () => hint(['dc-0', 'dp-0-0']));
+    t += FAST;
+    at(t, () => { clearHints(); typeIn('dr-0', 2); });
+
+    // dc-0=4, dp-2-0=24 → dr-2=6
+    t += TYPE + GAP;
+    at(t, () => hint(['dc-0', 'dp-2-0']));
+    t += FAST;
+    at(t, () => { clearHints(); typeIn('dr-2', 6); });
+
+    // — Win!
     t += TYPE + 500;
-    at(t, () => { if (win) { win.textContent = win.dataset.winText || '✨'; win.classList.add('show'); } });
+    at(t, () => {
+      if (win) { win.textContent = win.dataset.winText || '✨'; win.classList.add('show'); }
+      setLabel(he ? 'הדגמה' : 'Demo');
+    });
 
-    // Restart
+    // — Restart after a pause
     t += 4200;
     at(t, runDemo);
   }
 
+  // Expose to global scope so showRules() / closeRules() can start/stop the animation
   document.addEventListener('DOMContentLoaded', () => {
-    const section = document.querySelector('.demo-section');
-    if (!section) return;
-    const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) {
-        observer.disconnect();
-        demoTimers.push(setTimeout(runDemo, 1200));
-      }
-    }, { threshold: 0 });
-    observer.observe(section);
+    window._runDemoAnimation    = runDemo;
+    window._cancelDemoAnimation = cancelAll;
   });
 })();
 </script>
