@@ -1461,7 +1461,7 @@
     .combo-stars { display: inline-flex; gap: .1rem; line-height: 1; }
     .combo-stars .cstar { font-size: 1rem; }
     .combo-stars .cstar.filled { color: #f59e0b; filter: drop-shadow(0 0 3px rgba(245,158,11,.35)); }
-    .combo-stars .cstar.empty  { color: #d1d5db; opacity: .4; }
+    .combo-stars .cstar.empty  { color: #e0a93a; opacity: .85; }
     .stats-tier-badge {
       display: inline-flex;
       align-items: center;
@@ -3346,7 +3346,7 @@ function showStats() {
       return `<tr>
         <td><b>${n}×${n}</b> · ${diffLabel}</td>
         <td style="text-align:center">${combo.wins}</td>
-        <td style="text-align:center"><span class="combo-stars" role="img" aria-label="${W.starsLabel(combo.bestStars)}">${[0,1,2].map(i => `<span class="cstar ${i < combo.bestStars ? 'filled' : 'empty'}" aria-hidden="true">★</span>`).join('')}</span></td>
+        <td style="text-align:center"><span class="combo-stars" role="img" aria-label="${W.starsLabel(combo.bestStars)}">${[0,1,2].map(i => { const on = i < combo.bestStars; return `<span class="cstar ${on ? 'filled' : 'empty'}" aria-hidden="true">${on ? '★' : '☆'}</span>`; }).join('')}</span></td>
       </tr>`;
     }).join('');
 
