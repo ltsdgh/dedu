@@ -1635,6 +1635,7 @@
     <h2 id="winTitle" data-i18n="modals.winTitle">🎉 כל הכבוד!</h2>
     <div id="winStars" role="img" aria-label="דירוג כוכבים" data-i18n-aria="modals.winStarsAriaLabel"></div>
     <p id="winStarsEarned" style="font-size:1rem;font-weight:700;margin:-.2rem 0 .7rem;color:var(--clr-text);"></p>
+    <p id="winTimeRecord" style="font-size:.95rem;font-weight:700;margin:-.4rem 0 .7rem;color:var(--clr-primary);"></p>
     <div id="winCriteria" class="win-criteria"></div>
     <p id="winBody" data-i18n="modals.winBody">פתרת את הלוח בהצלחה!</p>
     <p id="winStarLine" style="font-size:.85rem;font-weight:600;margin:-.8rem 0 .8rem;color:var(--clr-muted);"></p>
@@ -1861,6 +1862,7 @@ const STRINGS = {
     win: {
       starsLabel: (n) => `${n} כוכבים מתוך 3`,
       starsEarned: (n) => `השגת ${n} מתוך 3 כוכבים`,
+      newTimeRecord: '🏅 שיא זמן חדש!',
       stats: (t, m, h) => `זמן: ${t} | טעויות: ${m} | רמזים שנוצלו: ${h}`,
       streak: (n) => `🔥 סטריק ${n} ימים — כל הכבוד, המשך כך!`,
       streakWarning: (n) => `🔥 יש לך סטריק של ${n} ימים — שחק היום כדי לשמור עליו!`,
@@ -1992,6 +1994,7 @@ const STRINGS = {
     win: {
       starsLabel: (n) => `${n} stars out of 3`,
       starsEarned: (n) => `You earned ${n} of 3 stars`,
+      newTimeRecord: '🏅 New time record!',
       stats: (t, m, h) => `Time: ${t} | Mistakes: ${m} | Hints used: ${h}`,
       streak: (n) => `🔥 ${n}-day streak — great job, keep it up!`,
       streakWarning: (n) => `🔥 You have a ${n}-day streak — play today to keep it!`,
@@ -2097,15 +2100,15 @@ const TIERS = [
 ];
 
 const STAR_THRESHOLDS = {
-  '5-easy':   { time: 120, mistakes: 0, hintsUsed: 0 },
-  '5-medium': { time: 180, mistakes: 1, hintsUsed: 1 },
-  '5-hard':   { time: 240, mistakes: 2, hintsUsed: 1 },
-  '7-easy':   { time: 210, mistakes: 0, hintsUsed: 0 },
-  '7-medium': { time: 330, mistakes: 1, hintsUsed: 1 },
-  '7-hard':   { time: 420, mistakes: 2, hintsUsed: 1 },
-  '9-easy':   { time: 300, mistakes: 0, hintsUsed: 0 },
-  '9-medium': { time: 480, mistakes: 2, hintsUsed: 2 },
-  '9-hard':   { time: 600, mistakes: 3, hintsUsed: 2 },
+  '5-easy':   { time: 100, mistakes: 0, hintsUsed: 0 },
+  '5-medium': { time: 150, mistakes: 1, hintsUsed: 0 },
+  '5-hard':   { time: 200, mistakes: 1, hintsUsed: 1 },
+  '7-easy':   { time: 175, mistakes: 0, hintsUsed: 0 },
+  '7-medium': { time: 270, mistakes: 1, hintsUsed: 0 },
+  '7-hard':   { time: 350, mistakes: 1, hintsUsed: 1 },
+  '9-easy':   { time: 250, mistakes: 0, hintsUsed: 0 },
+  '9-medium': { time: 400, mistakes: 1, hintsUsed: 1 },
+  '9-hard':   { time: 500, mistakes: 2, hintsUsed: 1 },
 };
 
 /* ══════════════════════════════════════════════
@@ -2970,7 +2973,7 @@ function saveStats(s) {
 }
 
 function ensureCombo(s, key) {
-  if (!s.combos[key]) s.combos[key] = { wins: 0, bestStars: 0 };
+  if (!s.combos[key]) s.combos[key] = { wins: 0, bestStars: 0, bestTime: null };
 }
 
 function calcStars(n, diff, elapsed, mistakes, hintsUsed) {
@@ -3002,6 +3005,10 @@ function recordWin(stars) {
   ensureCombo(s, key);
   s.combos[key].wins++;
   if (stars > s.combos[key].bestStars) s.combos[key].bestStars = stars;
+  // personal best time for this level (continuous goal)
+  const prevTime = s.combos[key].bestTime ?? null;
+  const isTimeRecord = prevTime != null && G.seconds < prevTime;
+  if (prevTime == null || G.seconds < prevTime) s.combos[key].bestTime = G.seconds;
   if (!s.shownMilestones) s.shownMilestones = [];
   // check for new milestone
   const newMilestone = STAR_MILESTONES.find(
@@ -3009,7 +3016,7 @@ function recordWin(stars) {
   );
   if (newMilestone) s.shownMilestones.push(newMilestone);
   saveStats(s);
-  return newMilestone || null;
+  return { milestone: newMilestone || null, timeRecord: isTimeRecord };
 }
 
 function checkMilestone(stars) {
@@ -3143,7 +3150,7 @@ function gameWin() {
 
   const hdl   = G.cfg.maxHints - G.hintsLeft;
   const stars = calcStars(G.n, G.diff, G.seconds, G.mistakes, hdl);
-  const milestone = recordWin(stars);
+  const { milestone, timeRecord } = recordWin(stars);
   if (G.isDaily) saveDailyResult(stars, fmtTime(G.seconds), G.mistakes, hdl, G.seconds);
   if (milestone) {
     const banner = document.createElement('div');
@@ -3157,6 +3164,9 @@ function gameWin() {
 
   const starsEarnedEl = document.getElementById('winStarsEarned');
   if (starsEarnedEl) starsEarnedEl.textContent = STRINGS[currentLang].win.starsEarned(stars);
+
+  const timeRecordEl = document.getElementById('winTimeRecord');
+  if (timeRecordEl) timeRecordEl.textContent = timeRecord ? STRINGS[currentLang].win.newTimeRecord : '';
 
   // Criteria breakdown
   const criteriaEl = document.getElementById('winCriteria');
@@ -3347,6 +3357,7 @@ function showStats() {
         <td><b>${n}×${n}</b> · ${diffLabel}</td>
         <td style="text-align:center">${combo.wins}</td>
         <td style="text-align:center"><span class="combo-stars" role="img" aria-label="${W.starsLabel(combo.bestStars)}">${[0,1,2].map(i => { const on = i < combo.bestStars; return `<span class="cstar ${on ? 'filled' : 'empty'}" aria-hidden="true">${on ? '★' : '☆'}</span>`; }).join('')}</span></td>
+        <td style="text-align:center">${combo.bestTime != null ? fmtTime(combo.bestTime) : '—'}</td>
       </tr>`;
     }).join('');
 
@@ -3383,6 +3394,7 @@ function showStats() {
         <th>${isHe ? 'רמה' : 'Level'}</th>
         <th style="text-align:center">${isHe ? 'ניצחונות' : 'Wins'}</th>
         <th style="text-align:center">${isHe ? 'שיא' : 'Best'}</th>
+        <th style="text-align:center">${isHe ? '⏱ שיא זמן' : '⏱ Best time'}</th>
       </tr></thead>
       <tbody>${comboRows}</tbody>
     </table>` : ''}
