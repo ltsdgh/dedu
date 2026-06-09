@@ -2330,6 +2330,7 @@ function startGame(n, diff, randFn = Math.random) {
     totalHeaders:  n * 2,
     mistakes:  0,
     hintsLeft: cfg.maxHints,
+    hintsBought: 0,
     seconds:   0,
     timerID:   null,
     over:      false,
@@ -2674,11 +2675,18 @@ function checkAll() {
 /* ══════════════════════════════════════════════
    Hint — reveals a hidden board product as an extra clue
 ══════════════════════════════════════════════ */
+// Total hints actually consumed this game = free hints used + bought hints.
+// (maxHints - hintsLeft) stays equal to free hints used, since buyHint does
+// hintsLeft++ then giveHint does hintsLeft-- (net zero).
+function hintsUsedTotal() {
+  return (G.cfg.maxHints - G.hintsLeft) + (G.hintsBought || 0);
+}
+
 function giveHint() {
-  if (G.over) return;
+  if (G.over) return false;
   if (G.hintsLeft <= 0) {
     showMsg(STRINGS[currentLang].messages.noHints, 'warn');
-    return;
+    return false;
   }
 
   // Collect hidden board cells
@@ -2689,7 +2697,7 @@ function giveHint() {
 
   if (candidates.length === 0) {
     showMsg(STRINGS[currentLang].messages.allFilled, 'info');
-    return;
+    return false;
   }
 
   // Pick the hidden cell in the row/column with the fewest visible clues
@@ -2721,6 +2729,7 @@ function giveHint() {
   saveGameState();
   playSound('hint');
   showMsg(STRINGS[currentLang].messages.hintMsg(pick.r, pick.c, G.board[pick.r][pick.c]), 'info');
+  return true;
 }
 
 /* ══════════════════════════════════════════════
@@ -2747,17 +2756,24 @@ function buyHint() {
     );
     return;
   }
+  // Reveal first; only charge if a hint was actually given (board may be fully revealed)
+  G.hintsLeft++;
+  if (!giveHint()) {
+    G.hintsLeft--;          // revert the banked hint; giveHint already explained why
+    updateStats();
+    return;                 // no charge
+  }
   s.totalCoins -= HINT_COST;
   saveStats(s);
+  G.hintsBought = (G.hintsBought || 0) + 1;   // count toward hints used
+  updateStats();
+  saveGameState();
   showMsg(
     currentLang === 'he'
       ? `תשלום עבור רמז: ${HINT_COST} מטבעות`
       : `Hint purchased: ${HINT_COST} coins`,
     'info'
   );
-  G.hintsLeft++;
-  updateStats();
-  giveHint();
 }
 
 /* ══════════════════════════════════════════════
@@ -2862,7 +2878,7 @@ function saveGameState() {
     board: G.board, revealed: G.revealed,
     poolMax: G.poolMax,
     filledHeaders: G.filledHeaders, totalHeaders: G.totalHeaders,
-    mistakes: G.mistakes, hintsLeft: G.hintsLeft, seconds: G.seconds,
+    mistakes: G.mistakes, hintsLeft: G.hintsLeft, hintsBought: G.hintsBought, seconds: G.seconds,
     headerValues,
   };
   try { localStorage.setItem('dedu-active-game', JSON.stringify(snapshot)); } catch {}
@@ -2913,7 +2929,7 @@ function resumeGame(saved) {
     poolMax: saved.poolMax,
     filledHeaders: saved.filledHeaders || 0,
     totalHeaders:  saved.totalHeaders  || saved.n * 2,
-    mistakes: saved.mistakes, hintsLeft: saved.hintsLeft, seconds: saved.seconds,
+    mistakes: saved.mistakes, hintsLeft: saved.hintsLeft, hintsBought: saved.hintsBought || 0, seconds: saved.seconds,
     timerID: null, over: false, paused: false,
   };
 
@@ -3148,7 +3164,7 @@ function gameWin() {
   playSound('win');
   launchConfetti();
 
-  const hdl   = G.cfg.maxHints - G.hintsLeft;
+  const hdl   = hintsUsedTotal();
   const stars = calcStars(G.n, G.diff, G.seconds, G.mistakes, hdl);
   const { milestone, timeRecord } = recordWin(stars);
   if (G.isDaily) saveDailyResult(stars, fmtTime(G.seconds), G.mistakes, hdl, G.seconds);
@@ -3255,7 +3271,7 @@ function gameLose() {
 function shareResult() {
   const W    = STRINGS[currentLang].win;
   const diff = STRINGS[currentLang].diff[G.diff];
-  const hdl  = G.cfg.maxHints - G.hintsLeft;
+  const hdl  = hintsUsedTotal();
   const stars = calcStars(G.n, G.diff, G.seconds, G.mistakes, hdl);
   const text  = G.isDaily
     ? W.shareDailyText(todayISO(), stars, G.winStats.t, G.mistakes, hdl)
@@ -3499,7 +3515,7 @@ function updateStats() {
   const hintBtn = document.getElementById('hintBtn');
   hintBtn.style.display = hasHints ? '' : 'none';
   if (hasHints) {
-    document.getElementById('hintsVal').textContent = cfg.maxHints - G.hintsLeft;
+    document.getElementById('hintsVal').textContent = hintsUsedTotal();
     document.getElementById('hintsMax').textContent = ` / ${cfg.maxHints}`;
     hintBtn.disabled = G.hintsLeft <= 0;
   }
