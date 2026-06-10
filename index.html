@@ -1888,7 +1888,7 @@ const STRINGS = {
       dailyLevel: '5×5 · בינוני',
       dailyPersonalBest: (t) => `🏅 שיא אישי: ${t}`,
       dailyNewRecord: '🎉 שיא אישי חדש!',
-      tiers: ['🥉 מתחיל', '🥈 מתקדם', '🥇 מומחה', '👑 אלוף'],
+      tiers: ['🌱 מתחיל', '🥉 לומד', '🥈 מתקדם', '🥇 מיומן', '🏆 מומחה', '👑 אלוף'],
       tierProgress: (cur, next, rem) => `${cur} → ${next} עוד ${rem} ${rem !== 1 ? 'ניצחונות' : 'ניצחון'}`,
       tierMax: (cur) => `${cur} — רמת שיא!`,
       suggestNow: 'נסה עכשיו ←',
@@ -2020,7 +2020,7 @@ const STRINGS = {
       dailyLevel: '5×5 · Medium',
       dailyPersonalBest: (t) => `🏅 Personal best: ${t}`,
       dailyNewRecord: '🎉 New personal record!',
-      tiers: ['🥉 Beginner', '🥈 Learner', '🥇 Expert', '👑 Champion'],
+      tiers: ['🌱 Beginner', '🥉 Learner', '🥈 Intermediate', '🥇 Skilled', '🏆 Expert', '👑 Champion'],
       tierProgress: (cur, next, rem) => `${cur} → ${next} (${rem} win${rem !== 1 ? 's' : ''} to go)`,
       tierMax: (cur) => `${cur} — top rank!`,
       suggestNow: '→ Try now',
@@ -2104,10 +2104,12 @@ const DIFF_CFG = {
 };
 
 const TIERS = [
-  { wins: 0,  idx: 0 },
-  { wins: 3,  idx: 1 },
-  { wins: 10, idx: 2 },
-  { wins: 25, idx: 3 },
+  { wins: 0,   idx: 0 },
+  { wins: 5,   idx: 1 },
+  { wins: 15,  idx: 2 },
+  { wins: 35,  idx: 3 },
+  { wins: 65,  idx: 4 },
+  { wins: 110, idx: 5 },
 ];
 
 const STAR_THRESHOLDS = {
