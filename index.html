@@ -1462,20 +1462,31 @@
     .combo-stars .cstar { font-size: 1rem; }
     .combo-stars .cstar.filled { color: #f59e0b; filter: drop-shadow(0 0 3px rgba(245,158,11,.35)); }
     .combo-stars .cstar.empty  { color: #e0a93a; opacity: .85; }
-    .stats-tier-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: .4rem;
-      background: var(--clr-primary-lt);
-      color: var(--clr-primary-dk);
-      border: 1.5px solid var(--clr-primary);
-      border-radius: var(--radius-pill);
-      padding: .35rem 1rem;
-      font-size: .9rem;
-      font-weight: 700;
-      margin-bottom: .5rem;
+    .tier-track {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: .3rem; margin-bottom: .35rem;
     }
-    .theme-dark .stats-tier-badge { color: var(--clr-primary); }
+    .tier-step {
+      font-size: .8rem; font-weight: 700;
+      padding: .25rem .6rem;
+      border-radius: var(--radius-pill);
+      border: 1.5px solid transparent;
+      color: var(--clr-muted); opacity: .4;
+      transition: all .2s;
+    }
+    .tier-step.done { opacity: .7; }
+    .tier-step.current {
+      opacity: 1;
+      color: var(--clr-primary-dk);
+      background: var(--clr-primary-lt);
+      border-color: var(--clr-primary);
+      box-shadow: 0 0 0 3px var(--clr-primary-glow);
+    }
+    .theme-dark .tier-step.current { color: var(--clr-primary); }
+    .tier-progress {
+      font-size: .78rem; font-weight: 600;
+      color: var(--clr-muted); margin-bottom: .5rem;
+    }
   </style>
 </head>
 <body>
@@ -3357,7 +3368,16 @@ function showStats() {
 
   const winRate = s.totalGames > 0 ? Math.round((s.totalWins / s.totalGames) * 100) : 0;
   const tierIdx = [...TIERS].reverse().find(t => s.totalWins >= t.wins)?.idx ?? 0;
-  const tierLabel = W.tiers[tierIdx];
+  // Full tier track: all ranks shown, current one highlighted, rest dimmed
+  const tierTrack = W.tiers.map((label, i) => {
+    const state = i === tierIdx ? 'current' : (i < tierIdx ? 'done' : 'future');
+    return `<span class="tier-step ${state}"${i === tierIdx ? ' aria-current="true"' : ''}>${label}</span>`;
+  }).join('');
+  // Progress toward the next rank (or "top rank" message at the max)
+  const nextTier = TIERS.find(t => t.idx === tierIdx + 1);
+  const tierProgressTxt = nextTier
+    ? W.tierProgress(W.tiers[tierIdx], W.tiers[tierIdx + 1], nextTier.wins - s.totalWins)
+    : W.tierMax(W.tiers[tierIdx]);
 
   // Combo rows
   const DIFF_ORDER = ['easy', 'medium', 'hard'];
@@ -3382,8 +3402,9 @@ function showStats() {
     : `🔥 ${s.currentStreak}-day streak`;
 
   document.getElementById('statsContent').innerHTML = `
-    <div style="text-align:center;margin-bottom:.5rem;">
-      <span class="stats-tier-badge">${tierLabel}</span>
+    <div style="text-align:center;">
+      <div class="tier-track">${tierTrack}</div>
+      <div class="tier-progress">${tierProgressTxt}</div>
     </div>
     <div class="stats-grid">
       <div class="stats-card">
