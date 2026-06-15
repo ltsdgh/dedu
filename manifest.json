@@ -16,6 +16,6 @@
   ],
   "categories": ["games", "education"],
   "screenshots": [
-    { "src": "width_550.png", "sizes": "412x914", "type": "image/png", "form_factor": "narrow" }
+    { "src": "screenshot-home.png", "sizes": "412x914", "type": "image/png", "form_factor": "narrow", "label": "מסך פתיחה — בחירת גודל לוח ורמת קושי" }
   ]
 }
