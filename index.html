@@ -398,13 +398,13 @@
 
     /* Range banner above board */
     .range-banner {
-      font-size: .88rem;
-      font-weight: 700;
-      color: var(--clr-text);
-      background: var(--clr-primary-lt);
-      border: 1px solid var(--clr-primary);
-      border-radius: var(--radius-pill);
-      padding: .4rem 1.2rem;
+      font-size: .82rem;
+      font-weight: 500;
+      color: var(--clr-muted);
+      background: none;
+      border: none;
+      border-radius: 0;
+      padding: 0;
       margin-bottom: .75rem;
       text-align: center;
       letter-spacing: .01em;
@@ -442,8 +442,9 @@
       width: 40px;
       height: 40px;
       background: transparent;
-      font-size: .65rem;
-      color: var(--clr-muted);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--clr-primary);
       text-align: center;
       vertical-align: middle;
       line-height: 1.3;
@@ -536,9 +537,7 @@
       font-weight: 700;
     }
     .cell-product.hidden-clue::after {
-      content: '?';
-      font-size: 1.1em;
-      opacity: .85;
+      content: '';
     }
     .theme-dark .cell-product.hidden-clue {
       background-color: #1E1A3A;
@@ -691,6 +690,10 @@
       box-shadow: 0 2px 0 rgba(4,120,87,.2);
     }
     .btn-success:hover:not(:disabled) { filter: brightness(.95); }
+    .theme-dark .btn-success {
+      color: #34d399;
+      border-color: rgba(52,211,153,.5);
+    }
 
     .btn-pause {
       background: var(--clr-primary-lt);
@@ -935,8 +938,8 @@
       width: 100%;
       padding: .6rem .75rem;
       background: transparent;
-      color: #b45309;
-      border: 2px solid #d97706;
+      color: var(--clr-text);
+      border: 2px solid var(--clr-border-bright);
       border-radius: 14px;
       font-family: var(--font-ui);
       font-size: .88rem;
@@ -969,8 +972,8 @@
     /* dark mode: flip to light-on-dark */
     .theme-dark .btn-daily {
       background: transparent;
-      color: #fcd34d;
-      border-color: #d97706;
+      color: var(--clr-text);
+      border-color: var(--clr-border-bright);
       box-shadow: none;
     }
     .theme-dark .btn-daily:hover { background: rgba(245,158,11,.15); border-color: #fcd34d; color: #fef3c7; }
@@ -1226,7 +1229,7 @@
       background-color: #C6C3EC !important;
       background-image: radial-gradient(circle, rgba(59,49,212,.25) 1.5px, transparent 1.5px) !important;
     }
-    .cell-product.hidden-clue::after { font-size: 1.25em; }
+    .cell-product.hidden-clue::after { content: ''; }
     .theme-dark .cell-product.hidden-clue {
       background-color: #171430 !important;
       background-image: radial-gradient(circle, rgba(123,114,255,.3) 1.5px, transparent 1.5px) !important;
@@ -1245,11 +1248,7 @@
     }
 
     /* V4 – Range banner: gradient + shadow */
-    .range-banner {
-      background: linear-gradient(135deg, rgba(80,70,229,.11) 0%, rgba(109,40,217,.05) 100%);
-      box-shadow: 0 2px 8px rgba(80,70,229,.07);
-    }
-    .range-banner > span { font-weight: 900; color: var(--clr-primary); }
+    .range-banner > span { font-weight: 600; color: var(--clr-muted); }
 
     /* ═══════════════════════════════════════════
        UPGRADE P1 — Quick UX Wins
@@ -1309,10 +1308,10 @@
     /* Streak badge on setup screen */
     .streak-badge-setup {
       display: inline-flex; align-items: center; gap: .3rem;
-      color: #b45309;
+      color: var(--clr-text);
       font-size: .85rem; font-weight: 600; font-family: var(--font-ui);
     }
-    .theme-dark .streak-badge-setup { color: #fcd34d; }
+    .theme-dark .streak-badge-setup { color: var(--clr-text); }
 
     /* ═══════════════════════════════════════════
        UPGRADE P2 — Advanced Visual Design
@@ -1495,8 +1494,7 @@
   <button class="btn-help-corner" id="helpBtn"
           aria-label="איך משחקים?"
           data-i18n-aria="help.ariaLabel"
-          onclick="showRules()">?</button>
-  <button class="btn-lang-toggle" id="langToggleBtn" aria-label="Switch to English">🌐 EN</button>
+          onclick="showRules()">ℹ️</button>
   <button class="theme-toggle" id="themeToggleBtn" aria-label="החלף ערכת צבעים">🌙 Dark</button>
 </div>
 
@@ -1543,7 +1541,7 @@
 
     <div style="display:flex;gap:.6rem;align-items:stretch;">
       <button class="btn-start" id="startBtn" style="flex:1;margin-bottom:0;" data-i18n="setup.startBtn">התחל משחק ▶</button>
-      <button class="btn-how-to-play btn-how-to-play--inline" onclick="showRules()" aria-label="איך משחקים?" title="איך משחקים?">❓ <span class="how-to-play-label">איך משחקים?</span></button>
+      <button class="btn-how-to-play btn-how-to-play--inline" onclick="showRules()" data-i18n-aria="help.ariaLabel" data-i18n-title="help.ariaLabel" aria-label="איך משחקים?" title="איך משחקים?">ℹ️ <span class="how-to-play-label" data-i18n="help.ariaLabel">איך משחקים?</span></button>
     </div>
   </section>
 
@@ -1851,7 +1849,7 @@ const STRINGS = {
       noHints: 'אין יותר רמזים זמינים',
       allFilled: 'כל המכפילים כבר נמצאו!',
       hintMsg: (r, c, val) => `💡 רמז: שורה ${r+1} × עמודה ${c+1} = ${val}`,
-      rangeBanner: (max, diff) => `${diff ? `<span>${diff}</span> · ` : ''}טווח מכפילים: <span>1–${max}</span>`,
+      rangeBanner: (max, diff) => `${diff ? `<strong>רמה:</strong> <span>${diff}</span> · ` : ''}<strong>טווח מכפילים:</strong> <span>1–${max}</span>`,
       scratchpadTip: '',
     },
     modals: {
@@ -1983,7 +1981,7 @@ const STRINGS = {
       noHints: 'No hints remaining',
       allFilled: 'All multipliers already found!',
       hintMsg: (r, c, val) => `💡 Hint: Row ${r+1} × Column ${c+1} = ${val}`,
-      rangeBanner: (max, diff) => `${diff ? `<span>${diff}</span> · ` : ''}Range: <span>1–${max}</span>`,
+      rangeBanner: (max, diff) => `${diff ? `<strong>Level:</strong> <span>${diff}</span> · ` : ''}<strong>Range:</strong> <span>1–${max}</span>`,
       scratchpadTip: '',
     },
     modals: {
@@ -3138,7 +3136,7 @@ function renderSetupProgress() {
 
   el.innerHTML = `<div class="progress-summary">
     ${showDivider ? `<hr class="progress-divider">` : ''}
-    <p class="progress-welcome suggest-pulse" style="color:#b45309;background:rgba(251,191,36,.12);border-radius:8px;padding:.35rem .6rem;">${suggestLine}</p>
+    <p class="progress-welcome suggest-pulse" style="color:var(--clr-text);background:var(--clr-primary-lt);border-radius:8px;padding:.35rem .6rem;">${suggestLine}</p>
   </div>`;
 }
 
@@ -3228,7 +3226,7 @@ function gameWin() {
   if (earnedLine) {
     earnedLine.textContent = currentLang === 'he'
       ? `+${stars} מטבעות · יתרה: ${sAfter.totalCoins}`
-      : `+${stars} coins · balance: ${sAfter.totalCoins}`;
+      : `+${stars} coins · total: ${sAfter.totalCoins}`;
   }
 
   document.getElementById('checkBtn').disabled = true;
