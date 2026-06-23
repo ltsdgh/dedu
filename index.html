@@ -146,12 +146,12 @@
 
     /* ── Help Corner Button ── */
     .btn-help-corner {
-      width: 32px; height: 32px;
+      width: 40px; height: 40px;
       background: var(--clr-surface);
       border: 1.5px solid var(--clr-border);
       border-radius: 50%;
       font-family: var(--font-ui);
-      font-size: 14px; font-weight: 700;
+      font-size: 16px; font-weight: 700;
       color: var(--clr-muted);
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
@@ -168,6 +168,7 @@
       border: 1.5px solid var(--clr-border);
       border-radius: var(--radius-pill);
       padding: 5px 14px;
+      min-height: 40px;
       font-family: var(--font-ui);
       font-size: 12px;
       font-weight: 700;
@@ -491,6 +492,19 @@
       border-color: var(--clr-error);
       color: var(--clr-error);
       animation: shake .35s;
+    }
+    /* Multipliers revealed when the player runs out of attempts (lose screen) */
+    .hdr-input.revealed-lose {
+      background: #ede9fe;
+      border-color: #7c3aed;
+      border-style: solid;
+      color: #1e1b4b;
+      font-weight: 900;
+    }
+    .theme-dark .hdr-input.revealed-lose {
+      background: rgba(123,114,255,.22);
+      border-color: var(--clr-primary);
+      color: #ede9fe;
     }
 
     @keyframes shake {
@@ -951,6 +965,14 @@
     }
     .btn-daily:hover { background: #fef3c7; border-color: #b45309; color: #92400e; }
     .btn-daily:focus { outline: 3px solid #f59e0b; outline-offset: 2px; }
+    /* Daily challenge already completed today — shown as a result, not clickable */
+    .btn-daily.daily-done,
+    .btn-daily.daily-done:hover {
+      background: var(--clr-success-bg);
+      border-color: var(--clr-success-border);
+      color: var(--clr-success);
+      cursor: default;
+    }
 
     /* ── How to play inline button ── */
     .btn-how-to-play--inline {
@@ -1486,6 +1508,18 @@
       font-size: .78rem; font-weight: 600;
       color: var(--clr-muted); margin-bottom: .5rem;
     }
+
+    /* ── Accessibility: honour reduced-motion preference ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+      .confetti-piece { display: none !important; }
+      .suggest-pulse { animation: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -1527,14 +1561,17 @@
         <button class="option-btn diff-card" data-type="diff" data-val="easy" aria-pressed="true">
           <span class="diff-icon">🟢</span>
           <span class="diff-name" data-i18n="diff.easy">קל</span>
+          <span class="diff-hint"></span>
         </button>
         <button class="option-btn diff-card" data-type="diff" data-val="medium" aria-pressed="false">
           <span class="diff-icon">🟡</span>
           <span class="diff-name" data-i18n="diff.medium">בינוני</span>
+          <span class="diff-hint"></span>
         </button>
         <button class="option-btn diff-card" data-type="diff" data-val="hard" aria-pressed="false">
           <span class="diff-icon">🔴</span>
           <span class="diff-name" data-i18n="diff.hard">קשה</span>
+          <span class="diff-hint"></span>
         </button>
       </div>
     </fieldset>
@@ -2092,6 +2129,7 @@ function setLang(lang) {
     document.body.classList.contains('theme-dark') ? str.themeLightLabel : str.themeDarkLabel;
 
   renderSetupProgress();
+  renderDiffHints();
   updateResumeBtn();
   updateDailyBtn();
   updateStreakBadge();
@@ -2143,6 +2181,24 @@ let G = {};   // game state
 let chosenSize = 5;
 let chosenDiff = 'easy';
 
+// Difficulty cards show a live summary (reveal %, number range, mistakes) that
+// reflects the currently-selected board size — the range grows with size.
+function renderDiffHints() {
+  const isHe = currentLang === 'he';
+  ['easy', 'medium', 'hard'].forEach(diff => {
+    const el = document.querySelector(`.diff-card[data-val="${diff}"] .diff-hint`);
+    if (!el) return;
+    const cfg = DIFF_CFG[diff];
+    const poolMax = chosenSize === 9 ? cfg.poolMax9 : chosenSize === 7 ? cfg.poolMax7 : cfg.poolMax5;
+    const pct = Math.round(cfg.revealPct * 100);
+    const revealTxt = isHe ? `${pct}% גלוי` : `${pct}% shown`;
+    const lastTxt = cfg.maxMistakes === Infinity
+      ? (isHe ? 'למתחילים' : 'for beginners')
+      : (isHe ? `עד ${cfg.maxMistakes} טעויות` : `up to ${cfg.maxMistakes} mistakes`);
+    el.textContent = `${revealTxt} · 1–${poolMax} · ${lastTxt}`;
+  });
+}
+
 document.querySelectorAll('.option-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const type = btn.dataset.type;
@@ -2153,6 +2209,7 @@ document.querySelectorAll('.option-btn').forEach(btn => {
     if (type === 'size') chosenSize = parseInt(btn.dataset.val, 10);
     else                  chosenDiff = btn.dataset.val;
     renderSetupProgress();
+    renderDiffHints();
   });
   // Keyboard: Space/Enter already handled by button default
 });
@@ -2191,6 +2248,7 @@ document.getElementById('showSolutionBtn').addEventListener('click', () =>
 
 // Initial progress display on page load
 renderSetupProgress();
+renderDiffHints();
 updateResumeBtn();
 updateDailyBtn();
 updateStreakBadge();
@@ -2297,10 +2355,22 @@ function updateDailyBtn() {
   const result = loadDailyResult();
   const str = STRINGS[currentLang];
   if (result) {
-    const stars = '⭐'.repeat(result.stars) + '☆'.repeat(3 - result.stars);
-    btn.style.display = 'none';
+    // Already played today — show the result instead of hiding the button.
+    const sc = result.stars || 0;
+    const stars = '⭐'.repeat(sc) + '☆'.repeat(3 - sc);
+    const doneLabel = currentLang === 'he' ? 'הושלם היום' : 'Done today';
+    btn.style.display = '';
+    btn.disabled = true;
+    btn.classList.add('daily-done');
+    btn.style.background = '';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+    btn.innerHTML = `${str.setup.dailyBtn} · ✓ ${doneLabel}` +
+      `<br><small style="font-size:.82em;opacity:.9;">${stars}${result.t ? ' · ' + result.t : ''}</small>`;
   } else {
     btn.style.display = '';
+    btn.disabled = false;
+    btn.classList.remove('daily-done');
     btn.innerHTML = `${str.setup.dailyBtn}<br><small style="font-size:.78em;opacity:.75;">${str.win.dailyLevel}</small>`;
     btn.style.background = '';
     btn.style.borderColor = '';
@@ -2312,9 +2382,11 @@ function startDailyChallenge() {
   const rand = seededRand(getDailySeed());
   startGame(5, 'medium', rand);
   G.isDaily = true;
-  const settingsEl = document.getElementById('gameSettingsVal');
+  // Flag the active game as the daily challenge in the (visible) range banner.
+  // (Previously targeted a non-existent #gameSettingsVal element, which threw.)
   const badge = STRINGS[currentLang].setup.dailyBadge;
-  settingsEl.innerHTML = `<span class="daily-badge">${badge}</span> 5×5 · ${STRINGS[currentLang].diff.medium}`;
+  const banner = document.getElementById('rangeBanner');
+  if (banner) banner.innerHTML = `<span class="daily-badge">${badge}</span> ` + banner.innerHTML;
 }
 
 function range(n) { return Array.from({ length: n }, (_, i) => i + 1); }
@@ -2329,15 +2401,24 @@ function startGame(n, diff, randFn = Math.random) {
   // For 5×5: pick n numbers from 1..poolMax5 based on difficulty
   // For 9×9: always 1..9
   const poolMax = n === 9 ? cfg.poolMax9 : n === 7 ? cfg.poolMax7 : cfg.poolMax5;
-  const pool    = shuffle(range(poolMax), randFn).slice(0, n);
-  const rowNums = shuffle([...pool], randFn);
-  const colNums = shuffle([...pool], randFn);
 
-  // Build product board
-  const board = rowNums.map(r => colNums.map(c => r * c));
-
-  // Decide which cells to reveal
-  const revealed = pickRevealedCells(board, n, pool, cfg.revealPct);
+  // Generate a board whose revealed clues admit exactly ONE logical solution,
+  // so a correctly-reasoned answer can never be marked "wrong" (see countSolutions).
+  // Re-using the (stateful) randFn across attempts keeps the daily challenge
+  // deterministic AND solvable. Easy mode reveals everything → always unique.
+  let pool, rowNums, colNums, board, revealed;
+  const MAX_ATTEMPTS = 12;
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    pool     = shuffle(range(poolMax), randFn).slice(0, n);
+    rowNums  = shuffle([...pool], randFn);
+    colNums  = shuffle([...pool], randFn);
+    board    = rowNums.map(r => colNums.map(c => r * c));
+    revealed = pickRevealedCells(board, n, pool, cfg.revealPct, randFn);
+    if (cfg.revealPct >= 1 || countSolutions(n, poolMax, board, revealed) === 1) break;
+  }
+  // Guarantee a single solution even if no attempt produced one, by revealing a
+  // few extra clues. No-op when the board is already unique (or fully revealed).
+  if (cfg.revealPct < 1) ensureUnique(n, poolMax, board, revealed, randFn);
 
   document.getElementById('rangeVal').textContent = `1–${poolMax}`;
   document.getElementById('rangeBanner').innerHTML =
@@ -2408,7 +2489,7 @@ function startGame(n, diff, randFn = Math.random) {
 /* ══════════════════════════════════════════════
    Cell reveal strategy
 ══════════════════════════════════════════════ */
-function pickRevealedCells(board, n, pool, pct) {
+function pickRevealedCells(board, n, pool, pct, randFn = Math.random) {
   const total   = n * n;
   const target  = Math.round(total * pct);
   const revealed = Array.from({ length: n }, () => new Array(n).fill(false));
@@ -2438,7 +2519,7 @@ function pickRevealedCells(board, n, pool, pct) {
   const scores = Object.keys(groups).map(Number).sort((a, b) =>
     pct >= 0.5 ? a - b : b - a   // easy: unique first; hard: common first
   );
-  scores.forEach(s => sorted.push(...shuffle(groups[s])));
+  scores.forEach(s => sorted.push(...shuffle(groups[s], randFn)));
 
   // Always guarantee at least one clue per row and column for solvability
   const rowCovered = new Array(n).fill(false);
@@ -2466,6 +2547,89 @@ function pickRevealedCells(board, n, pool, pct) {
   }
 
   return revealed;
+}
+
+/* ══════════════════════════════════════════════
+   Solvability — count distinct solutions (capped)
+   A "solution" = an assignment of row headers R[] and column headers C[],
+   each an integer in 1..poolMax, distinct within its axis, such that every
+   REVEALED cell satisfies R[r]*C[c] = product. We only need to know whether
+   exactly one exists, so we stop counting at `limit`. Used at generation time
+   to reject ambiguous boards (where a logically-valid answer ≠ the secret).
+══════════════════════════════════════════════ */
+function countSolutions(n, poolMax, board, revealed, limit = 2) {
+  // Revealed clues grouped per row: [{ c, p }]
+  const rowCells = Array.from({ length: n }, () => []);
+  for (let r = 0; r < n; r++)
+    for (let c = 0; c < n; c++)
+      if (revealed[r][c]) rowCells[r].push({ c, p: board[r][c] });
+
+  // Assign the most-constrained rows first (more clues → more pruning).
+  const rowOrder = [...Array(n).keys()].sort((a, b) => rowCells[b].length - rowCells[a].length);
+
+  const C = new Array(n).fill(0);   // 0 = unassigned
+  const usedR = new Set();
+  const usedC = new Set();
+  let count = 0;
+  let guard = 0;                    // safety cap against pathological search
+
+  function dfs(idx) {
+    if (count >= limit) return;
+    if (++guard > 300000) { count = 1; return; }  // give up → accept board
+    if (idx === n) { count++; return; }
+
+    const r = rowOrder[idx];
+    for (let v = 1; v <= poolMax && count < limit; v++) {
+      if (usedR.has(v)) continue;
+      let ok = true;
+      const setCols = [];           // columns this assignment forced (to undo)
+      for (const { c, p } of rowCells[r]) {
+        if (p % v !== 0) { ok = false; break; }
+        const q = p / v;
+        if (q < 1 || q > poolMax) { ok = false; break; }
+        if (C[c] !== 0) {
+          if (C[c] !== q) { ok = false; break; }
+        } else if (usedC.has(q)) {
+          ok = false; break;        // two columns can't share a value
+        } else {
+          C[c] = q; usedC.add(q); setCols.push(c);
+        }
+      }
+      if (ok) {
+        usedR.add(v);
+        dfs(idx + 1);
+        usedR.delete(v);
+      }
+      for (const c of setCols) { usedC.delete(C[c]); C[c] = 0; }
+    }
+  }
+
+  dfs(0);
+  return count;
+}
+
+// Reveal additional hidden cells until the puzzle has exactly one solution.
+// Mutates `revealed` in place. Prefers cells with a unique factorisation so the
+// fewest extra clues are needed; deterministic when given a seeded randFn.
+function ensureUnique(n, poolMax, board, revealed, randFn = Math.random) {
+  // Pre-rank hidden cells: unique-factorisation products first (most informative).
+  const factorPairs = {};
+  for (let r = 0; r < n; r++)
+    for (let c = 0; c < n; c++) {
+      const p = board[r][c];
+      factorPairs[p] = (factorPairs[p] || 0) + 1;
+    }
+  let safety = n * n;
+  while (safety-- > 0 && countSolutions(n, poolMax, board, revealed) !== 1) {
+    const hidden = [];
+    for (let r = 0; r < n; r++)
+      for (let c = 0; c < n; c++)
+        if (!revealed[r][c]) hidden.push({ r, c, score: factorPairs[board[r][c]] || 1 });
+    if (!hidden.length) break;
+    const best = Math.min(...hidden.map(h => h.score));
+    const pool = shuffle(hidden.filter(h => h.score === best), randFn);
+    revealed[pool[0].r][pool[0].c] = true;
+  }
 }
 
 /* ══════════════════════════════════════════════
@@ -3154,6 +3318,7 @@ function renderSetupProgress() {
    Confetti
 ══════════════════════════════════════════════ */
 function launchConfetti() {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const colors = ['#6366f1', '#f59e0b', '#16a34a', '#ef4444', '#8b5cf6', '#06b6d4'];
   const container = document.createDocumentFragment();
   for (let i = 0; i < 65; i++) {
@@ -3259,10 +3424,7 @@ function gameLose() {
       if (!inp || inp.readOnly) return;
       inp.value = type === 'row' ? G.rowNums[i] : G.colNums[i];
       inp.readOnly = true;
-      inp.style.borderColor  = '#7c3aed';
-      inp.style.color        = '#1e1b4b';
-      inp.style.fontWeight   = '900';
-      inp.style.background   = '#ede9fe';
+      inp.classList.add('revealed-lose');
     });
   }
 
@@ -3824,6 +3986,16 @@ document.getElementById('muteBtn').addEventListener('click', toggleMute);
     const he = isHe();
     const WIN_TEXT = he ? '✨ ניחשת את כל המכפילים!' : '✨ All multipliers found!';
     if (win) win.dataset.winText = WIN_TEXT;
+
+    // Reduced motion: show the finished board statically, with no animated loop.
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      for (let c = 0; c < N; c++) { const el = document.getElementById(`dc-${c}`); if (el) { el.textContent = COL_M[c]; el.classList.add('filled'); } }
+      for (let r = 0; r < N; r++) { const el = document.getElementById(`dr-${r}`); if (el) { el.textContent = ROW_M[r]; el.classList.add('filled'); } }
+      for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) { const el = document.getElementById(`dp-${r}-${c}`); if (el) el.classList.add('correct'); }
+      setLabel(he ? 'הדגמה' : 'Demo');
+      if (win) { win.textContent = WIN_TEXT; win.classList.add('show'); }
+      return;
+    }
 
     const LOOK = 1250; // ms to study highlighted cells
     const TRY  = 980;  // ms to display a candidate (wrong or right)
