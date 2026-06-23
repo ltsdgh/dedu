@@ -15,6 +15,7 @@
   <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#6366f1" />
+  <meta name="color-scheme" content="light dark" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -580,60 +581,6 @@
       color: #C4B5FD;
     }
 
-    /* Board input cells — hidden cells become editable */
-    .cell-input {
-      display: block;
-      width: 62px;
-      height: 62px;
-      text-align: center;
-      font-size: 1.15rem;
-      font-weight: 700;
-      border: 1.5px solid var(--clr-border-bright);
-      border-radius: var(--radius-cell);
-      background: var(--clr-cell-hidden);
-      color: var(--clr-primary);
-      padding: 0;
-      transition: background .15s, box-shadow .15s, transform .1s;
-      -moz-appearance: textfield;
-      cursor: text;
-      font-family: var(--font-num);
-      box-shadow: 0 1px 4px rgba(80,70,229,.12);
-    }
-    .theme-dark .cell-input {
-      border-color: rgba(123,114,255,.5);
-      color: #DDD9FF;
-      box-shadow: 0 1px 6px rgba(0,0,0,.3);
-    }
-    .cell-input::-webkit-inner-spin-button,
-    .cell-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-    .cell-input:focus {
-      outline: none;
-      border-color: var(--clr-primary);
-      background: var(--clr-primary-lt);
-      color: var(--clr-primary);
-      box-shadow: 0 0 0 3px var(--clr-primary-glow);
-      transform: translateY(-1px);
-    }
-    .cell-input::placeholder {
-      color: var(--clr-primary);
-      font-size: 1.2rem;
-      font-weight: 900;
-      opacity: .4;
-    }
-    .cell-input.correct {
-      background: var(--clr-success-bg);
-      border: 1.5px solid var(--clr-success);
-      color: var(--clr-text);
-      box-shadow: 0 1px 6px rgba(4,120,87,.15);
-      animation: correctPop .25s ease;
-    }
-    .cell-input.wrong {
-      background: var(--clr-error-bg);
-      border: 1.5px solid var(--clr-error);
-      color: var(--clr-error);
-      animation: shake .35s;
-      box-shadow: 0 1px 6px rgba(190,18,60,.12);
-    }
 
     /* Action buttons */
     .action-bar {
@@ -844,21 +791,20 @@
 
     /* ── Responsive ── */
     @media (max-width: 480px) {
-      .hdr-input, .cell-product, .cell-input { width: 48px; height: 48px; font-size: .9rem; border-radius: .9rem; }
+      .hdr-input, .cell-product { width: 48px; height: 48px; font-size: .9rem; border-radius: .9rem; }
       .board { border-spacing: 5px; }
       .card { padding: 1.25rem 1.1rem; }
       .board-wrap { padding: .85rem; border-radius: 1.5rem; }
     }
     @media (max-width: 400px) {
-      .hdr-input, .cell-product, .cell-input { width: 42px; height: 42px; font-size: .82rem; border-radius: .8rem; }
+      .hdr-input, .cell-product { width: 42px; height: 42px; font-size: .82rem; border-radius: .8rem; }
       .board { border-spacing: 4px; }
       .board-wrap { padding: .7rem; }
     }
     /* 7×7 on small screens */
     @media (max-width: 560px) {
       .board-7 .hdr-input,
-      .board-7 .cell-product,
-      .board-7 .cell-input {
+      .board-7 .cell-product {
         width: 42px;
         height: 42px;
         font-size: .82rem;
@@ -868,8 +814,7 @@
     }
     @media (max-width: 400px) {
       .board-7 .hdr-input,
-      .board-7 .cell-product,
-      .board-7 .cell-input {
+      .board-7 .cell-product {
         width: 34px;
         height: 34px;
         font-size: .72rem;
@@ -880,8 +825,7 @@
     /* 9×9 on small screens — shrink cells further */
     @media (max-width: 560px) {
       .board-9 .hdr-input,
-      .board-9 .cell-product,
-      .board-9 .cell-input {
+      .board-9 .cell-product {
         width: 34px;
         height: 34px;
         font-size: .72rem;
@@ -891,8 +835,7 @@
     }
     @media (max-width: 380px) {
       .board-9 .hdr-input,
-      .board-9 .cell-product,
-      .board-9 .cell-input {
+      .board-9 .cell-product {
         width: 28px;
         height: 28px;
         font-size: .62rem;
@@ -1827,14 +1770,14 @@ const STRINGS = {
       title: '🎓 איך משחקים?',
       step1: 'הלוח מציג <strong>תוצאות כפל</strong> — אלה הרמזים שלך.<br><br>המשימה: לגלות את <strong>המכפילים הסודיים</strong> המסתתרים בשורה העליונה ובטור הצד.<br><br>כל תא בלוח = <strong>מכפיל השורה × מכפיל העמודה</strong>.',
       step2: 'נתח את הרמזים וחפש <strong>דפוסים</strong> בין המספרים.<br><br>💡 טיפ: שורה שכל תאיה ידועים תיתן לך את המכפיל שלה — ומשם כל שאר המכפילים הם חילוק פשוט.',
-      step3: 'הקלד מכפיל ולחץ <strong>Enter</strong> לבדיקה מיידית.<br><br>⚠️ <strong>כל מספר מופיע פעם אחת בלבד.</strong><br><br>💡 השתמש ב<strong>רמז</strong> אם נתקעת, וב<strong>בדוק הכל</strong> לאמת כמה בבת אחת.<br><br>🎉 בהצלחה!',
+      step3: 'הקלד מכפיל ולחץ <strong>Enter</strong> לבדיקה מיידית.<br><br>⚠️ <strong>כל מספר מופיע פעם אחת בשורות ופעם אחת בעמודות.</strong><br><br>💡 השתמש ב<strong>רמז</strong> אם נתקעת, וב<strong>בדוק הכל</strong> לאמת כמה בבת אחת.<br><br>🎉 בהצלחה!',
       next: 'הבא ›',
       prev: '‹ הקודם',
       done: 'בוא נשחק! ▶',
       skip: 'דלג על ההדרכה',
     },
     rules: {
-      intro: '<strong>גלו את המכפילים</strong><br><br>הלוח מציג תוצאות כפל — אלה הרמזים שלך. כל תא = <strong>מכפיל השורה × מכפיל העמודה</strong>. כל מספר מופיע <strong>פעם אחת בלבד</strong>.<br>',
+      intro: '<strong>גלו את המכפילים</strong><br><br>הלוח מציג תוצאות כפל — אלה הרמזים שלך. כל תא = <strong>מכפיל השורה × מכפיל העמודה</strong>. כל מספר מופיע <strong>פעם אחת בשורות ופעם אחת בעמודות</strong>.<br>',
       outro: 'נתח את הדפוסים והקלד את המכפילים בשורה העליונה ובטור הצדדי.<br><br>💡 כל ניחוש נבדק מיד — <strong>ניחוש שגוי נספר כטעות</strong>. ניתן גם להשתמש בכפתור <strong>בדוק הכל</strong>.<br><br>⭐ <strong>כוכבים:</strong> סיימו מהר, עם מעט טעויות ורמזים — וקבלו עד 3 כוכבים.',
       modalTitle: '🎮 איך משחקים?',
       closeBtn: 'הבנתי, בוא נשחק! ▶',
@@ -1843,10 +1786,6 @@ const STRINGS = {
     svg: { multiplier: 'כופל', notes: '?', multiplicand: 'נכפל' },
     diff: {
       easy: 'קל', medium: 'בינוני', hard: 'קשה',
-      easyHint: '100% גלוי · מספרים 1-5',
-      easyHintNew: '100% גלוי · מספרים 1-5 · מומלץ למתחילים ⭐',
-      mediumHint: '55% גלוי · מספרים 1-7 · 5 טעויות',
-      hardHint: '25% גלוי · מספרים 1-9 · 3 טעויות',
     },
     stats: {
       settingsAriaLabel: 'הגדרות משחק',
@@ -1887,7 +1826,6 @@ const STRINGS = {
       allFilled: 'כל המכפילים כבר נמצאו!',
       hintMsg: (r, c, val) => `💡 רמז: שורה ${r+1} × עמודה ${c+1} = ${val}`,
       rangeBanner: (max, diff) => `${diff ? `<strong>רמה:</strong> <span>${diff}</span> · ` : ''}<strong>טווח מכפילים:</strong> <span>1–${max}</span>`,
-      scratchpadTip: '',
     },
     modals: {
       confirmTitle: '⚠️ יציאה מהמשחק',
@@ -1961,14 +1899,14 @@ const STRINGS = {
       title: '🎓 How to Play',
       step1: 'The board shows <strong>multiplication products</strong> — those are your clues.<br><br>Your mission: discover the <strong>secret multipliers</strong> hiding in the top row and side column.<br><br>Each cell = <strong>row multiplier × column multiplier</strong>.',
       step2: 'Analyse the clues and look for <strong>patterns</strong> among the numbers.<br><br>💡 Tip: a row whose products you know gives you its multiplier — then dividing any product in that column gives you the next.',
-      step3: 'Type a multiplier and press <strong>Enter</strong> to check immediately.<br><br>⚠️ <strong>Each number appears exactly once.</strong><br><br>💡 Use <strong>Hint</strong> if stuck, and <strong>Check All</strong> to validate multiple answers at once.<br><br>🎉 Good luck!',
+      step3: 'Type a multiplier and press <strong>Enter</strong> to check immediately.<br><br>⚠️ <strong>Each number appears once across the rows and once across the columns.</strong><br><br>💡 Use <strong>Hint</strong> if stuck, and <strong>Check All</strong> to validate multiple answers at once.<br><br>🎉 Good luck!',
       next: 'Next ›',
       prev: '‹ Back',
       done: "Let's play! ▶",
       skip: 'Skip tutorial',
     },
     rules: {
-      intro: '<strong>Discover the Multipliers</strong><br><br>The board shows multiplication products — those are your clues. Each cell = <strong>row multiplier × column multiplier</strong>. Each number appears <strong>exactly once</strong>.<br>',
+      intro: '<strong>Discover the Multipliers</strong><br><br>The board shows multiplication products — those are your clues. Each cell = <strong>row multiplier × column multiplier</strong>. Each number appears <strong>once among the row headers and once among the column headers</strong>.<br>',
       outro: 'Spot the patterns and type the multipliers into the top row and side column.<br><br>💡 Every guess is checked immediately — <strong>a wrong guess counts as a mistake</strong>. You can also use the <strong>Check All</strong> button.<br><br>⭐ <strong>Stars:</strong> finish fast with few mistakes and hints to earn up to 3 stars.',
       modalTitle: '🎮 How to Play',
       closeBtn: "Got it, let's play! ▶",
@@ -1977,10 +1915,6 @@ const STRINGS = {
     svg: { multiplier: 'Mult.', notes: '?', multiplicand: 'Mcand.' },
     diff: {
       easy: 'Easy', medium: 'Medium', hard: 'Hard',
-      easyHint: '100% revealed · numbers 1-5',
-      easyHintNew: '100% revealed · numbers 1-5 · Recommended for beginners ⭐',
-      mediumHint: '55% revealed · numbers 1-7 · 5 mistakes',
-      hardHint: '25% revealed · numbers 1-9 · 3 mistakes',
     },
     stats: {
       settingsAriaLabel: 'Game settings',
@@ -2021,7 +1955,6 @@ const STRINGS = {
       allFilled: 'All multipliers already found!',
       hintMsg: (r, c, val) => `💡 Hint: Row ${r+1} × Column ${c+1} = ${val}`,
       rangeBanner: (max, diff) => `${diff ? `<strong>Level:</strong> <span>${diff}</span> · ` : ''}<strong>Range:</strong> <span>1–${max}</span>`,
-      scratchpadTip: '',
     },
     modals: {
       confirmTitle: '⚠️ Exit Game',
@@ -3230,10 +3163,12 @@ function checkMilestone(stars) {
 }
 
 function recordLoss() {
-  const s    = loadStats();
-  const today = todayISO();
+  // A loss only counts as a game played — it must NOT claim the day or zero the
+  // streak. The streak is "consecutive days with a win"; it breaks naturally in
+  // recordWin when a winning day is skipped. (Previously, losing before winning
+  // on the same day wrongly wiped the streak.)
+  const s = loadStats();
   s.totalGames++;
-  if (s.lastPlayed !== today) { s.currentStreak = 0; s.lastPlayed = today; }
   saveStats(s);
 }
 
@@ -3840,17 +3775,28 @@ function toggleMute() {
 document.getElementById('muteBtn').addEventListener('click', toggleMute);
 
 // Theme toggle
+// Keep the browser UI (status bar / address bar) in sync with the active theme.
+function updateThemeColor(dark) {
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.content = dark ? '#0B0B18' : '#6366f1';
+}
+
 (function initTheme() {
+  const saved = localStorage.getItem('dedu-theme');
+  // First-time visitors follow their OS dark-mode preference; afterwards the
+  // saved choice wins.
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const dark = saved ? saved === 'dark' : prefersDark;
+  if (dark) document.body.classList.add('theme-dark');
+  updateThemeColor(dark);
+
   const btn = document.getElementById('themeToggleBtn');
   if (!btn) return;
-  const saved = localStorage.getItem('dedu-theme');
-  if (saved === 'dark') {
-    document.body.classList.add('theme-dark');
-  }
   btn.addEventListener('click', () => {
     const isDark = document.body.classList.toggle('theme-dark');
     btn.textContent = isDark ? STRINGS[currentLang].themeLightLabel : STRINGS[currentLang].themeDarkLabel;
     localStorage.setItem('dedu-theme', isDark ? 'dark' : 'light');
+    updateThemeColor(isDark);
   });
 })();
 
