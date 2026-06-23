@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-  <title>de-du | דדו — גלה את המכפילים</title>
+  <title>de-du | דדו — גלו את המכפילים</title>
 
   <!-- Favicon -->
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
@@ -22,7 +22,7 @@
   <link rel="apple-touch-icon" href="icon192.png" />
 
   <!-- SEO -->
-  <meta name="description" content="גלו את הכופל והנכפל וחשפו את המספרים בלוח!" />
+  <meta name="description" content="גלו את המכפילים" />
   <style>
     /* ── Design Tokens — Bold Light Theme (default) ── */
     :root {
@@ -1502,7 +1502,7 @@
 
 <header class="site-header" role="banner">
   <h1 class="logo-wordmark">de<span>-</span>du</h1>
-  <p data-i18n="headerSubtitle">גלו את הכופל והנכפל וחשפו את המספרים בלוח!</p>
+  <p data-i18n="headerSubtitle">גלו את המכפילים</p>
 
 </header>
 
@@ -1767,9 +1767,9 @@
 ══════════════════════════════════════════════ */
 const STRINGS = {
   he: {
-    pageTitle: 'de-du | דדו — גלה את המכפילים',
+    pageTitle: 'de-du | דדו — גלו את המכפילים',
     skipLink: 'דלג לתוכן הראשי',
-    headerSubtitle: 'גלו את המכפילים!',
+    headerSubtitle: 'גלו את המכפילים',
     setup: {
       heading: 'הגדרות משחק',
       boardSizeLegend: 'גודל הלוח',
@@ -1797,7 +1797,7 @@ const STRINGS = {
       skip: 'דלג על ההדרכה',
     },
     rules: {
-      intro: '<strong>גלו את המכפילים!</strong><br><br>הלוח מציג תוצאות כפל — אלה הרמזים שלך. כל תא = <strong>מכפיל השורה × מכפיל העמודה</strong>. כל מספר מופיע <strong>פעם אחת בלבד</strong>.<br>',
+      intro: '<strong>גלו את המכפילים</strong><br><br>הלוח מציג תוצאות כפל — אלה הרמזים שלך. כל תא = <strong>מכפיל השורה × מכפיל העמודה</strong>. כל מספר מופיע <strong>פעם אחת בלבד</strong>.<br>',
       outro: 'נתח את הדפוסים והקלד את המכפילים בשורה העליונה ובטור הצדדי.<br><br>💡 כל ניחוש נבדק מיד — <strong>ניחוש שגוי נספר כטעות</strong>. ניתן גם להשתמש בכפתור <strong>בדוק הכל</strong>.<br><br>⭐ <strong>כוכבים:</strong> סיימו מהר, עם מעט טעויות ורמזים — וקבלו עד 3 כוכבים.',
       modalTitle: '🎮 איך משחקים?',
       closeBtn: 'הבנתי, בוא נשחק! ▶',
@@ -1901,7 +1901,7 @@ const STRINGS = {
   en: {
     pageTitle: 'de-du | Discover the Multipliers',
     skipLink: 'Skip to main content',
-    headerSubtitle: 'Discover the multipliers!',
+    headerSubtitle: 'Discover the Multipliers',
     setup: {
       heading: 'Game Settings',
       boardSizeLegend: 'Board Size',
@@ -1929,7 +1929,7 @@ const STRINGS = {
       skip: 'Skip tutorial',
     },
     rules: {
-      intro: '<strong>Discover the multipliers!</strong><br><br>The board shows multiplication products — those are your clues. Each cell = <strong>row multiplier × column multiplier</strong>. Each number appears <strong>exactly once</strong>.<br>',
+      intro: '<strong>Discover the Multipliers</strong><br><br>The board shows multiplication products — those are your clues. Each cell = <strong>row multiplier × column multiplier</strong>. Each number appears <strong>exactly once</strong>.<br>',
       outro: 'Spot the patterns and type the multipliers into the top row and side column.<br><br>💡 Every guess is checked immediately — <strong>a wrong guess counts as a mistake</strong>. You can also use the <strong>Check All</strong> button.<br><br>⭐ <strong>Stars:</strong> finish fast with few mistakes and hints to earn up to 3 stars.',
       modalTitle: '🎮 How to Play',
       closeBtn: "Got it, let's play! ▶",
@@ -2041,6 +2041,8 @@ function setLang(lang) {
   document.documentElement.lang = lang;
   document.documentElement.dir  = lang === 'he' ? 'rtl' : 'ltr';
   document.title = str.pageTitle;
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) metaDesc.content = str.headerSubtitle;
 
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const val = el.dataset.i18n.split('.').reduce((o, k) => o?.[k], str);
