@@ -1495,7 +1495,7 @@
           aria-label="איך משחקים?"
           data-i18n-aria="help.ariaLabel"
           onclick="showRules()">ℹ️</button>
-  <button class="theme-toggle" id="themeToggleBtn" aria-label="החלף ערכת צבעים">🌙 Dark</button>
+  <button class="theme-toggle" id="themeToggleBtn" aria-label="החלף ערכת צבעים">🌙 מצב כהה</button>
 </div>
 
 <a href="#main-content" class="skip-link" data-i18n="skipLink">דלג לתוכן הראשי</a>
@@ -1897,6 +1897,8 @@ const STRINGS = {
     },
     langToggleLabel: '🌐 EN',
     langToggleAriaLabel: 'Switch to English',
+    themeDarkLabel: '🌙 מצב כהה',
+    themeLightLabel: '☀️ מצב בהיר',
   },
   en: {
     pageTitle: 'de-du | Discover the Multipliers',
@@ -2029,6 +2031,8 @@ const STRINGS = {
     },
     langToggleLabel: '🌐 עב',
     langToggleAriaLabel: 'Switch to Hebrew',
+    themeDarkLabel: '🌙 Dark mode',
+    themeLightLabel: '☀️ Light mode',
   },
 };
 
@@ -2082,6 +2086,10 @@ function setLang(lang) {
   // Update stats button label
   const statsBtn = document.getElementById('statsBtn');
   if (statsBtn) statsBtn.textContent = lang === 'he' ? '📊 הסטטיסטיקות שלי' : '📊 My Statistics';
+  // Update theme toggle label
+  const themeBtn = document.getElementById('themeToggleBtn');
+  if (themeBtn) themeBtn.textContent =
+    document.body.classList.contains('theme-dark') ? str.themeLightLabel : str.themeDarkLabel;
 
   renderSetupProgress();
   updateResumeBtn();
@@ -3676,11 +3684,10 @@ document.getElementById('muteBtn').addEventListener('click', toggleMute);
   const saved = localStorage.getItem('dedu-theme');
   if (saved === 'dark') {
     document.body.classList.add('theme-dark');
-    btn.textContent = '☀️ Light';
   }
   btn.addEventListener('click', () => {
     const isDark = document.body.classList.toggle('theme-dark');
-    btn.textContent = isDark ? '☀️ Light' : '🌙 Dark';
+    btn.textContent = isDark ? STRINGS[currentLang].themeLightLabel : STRINGS[currentLang].themeDarkLabel;
     localStorage.setItem('dedu-theme', isDark ? 'dark' : 'light');
   });
 })();
