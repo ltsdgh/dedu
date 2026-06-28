@@ -801,6 +801,27 @@
       .board { border-spacing: 4px; }
       .board-wrap { padding: .7rem; }
     }
+    /* 6×6 on small screens — milder than 7×7 (only one column more than 5×5) */
+    @media (max-width: 480px) {
+      .board-6 .hdr-input,
+      .board-6 .cell-product {
+        width: 44px;
+        height: 44px;
+        font-size: .85rem;
+        border-radius: .85rem;
+      }
+      .board-6 { border-spacing: 4px; }
+    }
+    @media (max-width: 400px) {
+      .board-6 .hdr-input,
+      .board-6 .cell-product {
+        width: 38px;
+        height: 38px;
+        font-size: .78rem;
+        border-radius: .7rem;
+      }
+      .board-6 { border-spacing: 3px; }
+    }
     /* 7×7 on small screens */
     @media (max-width: 560px) {
       .board-7 .hdr-input,
@@ -1493,8 +1514,8 @@
       <legend data-i18n="setup.boardSizeLegend">גודל הלוח</legend>
       <div class="option-group" role="group" aria-label="בחר גודל לוח" data-i18n-aria="setup.boardSizeAriaLabel">
         <button class="option-btn" data-type="size" data-val="5" aria-pressed="true">5 × 5</button>
+        <button class="option-btn" data-type="size" data-val="6" aria-pressed="false">6 × 6</button>
         <button class="option-btn" data-type="size" data-val="7" aria-pressed="false">7 × 7</button>
-        <button class="option-btn" data-type="size" data-val="9" aria-pressed="false">9 × 9</button>
       </div>
     </fieldset>
 
@@ -2077,9 +2098,9 @@ function setLang(lang) {
 ══════════════════════════════════════════════ */
 const DIFF_CFG = {
   //                                                   5×5 pool   9×9 pool
-  easy:   { revealPct: 1.00, maxMistakes: Infinity, maxHints: 0, poolMax5: 5, poolMax7: 7,  poolMax9: 9  },
-  medium: { revealPct: 0.55, maxMistakes: 5,        maxHints: 3, poolMax5: 7, poolMax7: 9,  poolMax9: 12 },
-  hard:   { revealPct: 0.25, maxMistakes: 3,        maxHints: 1, poolMax5: 9, poolMax7: 12, poolMax9: 15 },
+  easy:   { revealPct: 1.00, maxMistakes: Infinity, maxHints: 0, poolMax5: 5, poolMax6: 6,  poolMax7: 7,  poolMax9: 9  },
+  medium: { revealPct: 0.55, maxMistakes: 5,        maxHints: 3, poolMax5: 7, poolMax6: 8,  poolMax7: 9,  poolMax9: 12 },
+  hard:   { revealPct: 0.25, maxMistakes: 3,        maxHints: 1, poolMax5: 9, poolMax6: 10, poolMax7: 12, poolMax9: 15 },
 };
 
 const TIERS = [
@@ -2095,6 +2116,9 @@ const STAR_THRESHOLDS = {
   '5-easy':   { time: 100, mistakes: 0, hintsUsed: 0 },
   '5-medium': { time: 150, mistakes: 1, hintsUsed: 0 },
   '5-hard':   { time: 200, mistakes: 1, hintsUsed: 1 },
+  '6-easy':   { time: 135, mistakes: 0, hintsUsed: 0 },
+  '6-medium': { time: 210, mistakes: 1, hintsUsed: 0 },
+  '6-hard':   { time: 275, mistakes: 1, hintsUsed: 1 },
   '7-easy':   { time: 175, mistakes: 0, hintsUsed: 0 },
   '7-medium': { time: 270, mistakes: 1, hintsUsed: 0 },
   '7-hard':   { time: 350, mistakes: 1, hintsUsed: 1 },
@@ -2122,7 +2146,7 @@ function renderDiffHints() {
     const el = document.querySelector(`.diff-card[data-val="${diff}"] .diff-hint`);
     if (!el) return;
     const cfg = DIFF_CFG[diff];
-    const poolMax = chosenSize === 9 ? cfg.poolMax9 : chosenSize === 7 ? cfg.poolMax7 : cfg.poolMax5;
+    const poolMax = cfg['poolMax' + chosenSize];
     const pct = Math.round(cfg.revealPct * 100);
     const revealTxt = isHe ? `${pct}% גלוי` : `${pct}% shown`;
     const lastTxt = cfg.maxMistakes === Infinity
@@ -2331,9 +2355,8 @@ function startGame(n, diff, randFn = Math.random) {
   const cfg = DIFF_CFG[diff];
 
   // Generate secret permutations
-  // For 5×5: pick n numbers from 1..poolMax5 based on difficulty
-  // For 9×9: always 1..9
-  const poolMax = n === 9 ? cfg.poolMax9 : n === 7 ? cfg.poolMax7 : cfg.poolMax5;
+  // Pick n numbers from 1..poolMax, where poolMax grows with board size and difficulty.
+  const poolMax = cfg['poolMax' + n];
 
   // Generate a board whose revealed clues admit exactly ONE logical solution,
   // so a correctly-reasoned answer can never be marked "wrong" (see countSolutions).
@@ -2572,7 +2595,7 @@ function renderBoard() {
   const { n, board, revealed } = G;
   const tbl = document.getElementById('boardTable');
   tbl.innerHTML = '';
-  tbl.className = n === 9 ? 'board board-9' : n === 7 ? 'board board-7' : 'board';
+  tbl.className = n === 9 ? 'board board-9' : n === 7 ? 'board board-7' : n === 6 ? 'board board-6' : 'board';
 
   // ── Top header row (column values) ──
   const headTR = document.createElement('tr');
@@ -3215,7 +3238,7 @@ function renderSetupProgress() {
 
   // Difficulty suggestion (#12) — prominent with inline "Try now" button
   const NEXT_DIFF = { easy: 'medium', medium: 'hard', hard: null };
-  const NEXT_SIZE = { 5: 7, 7: 9, 9: null };
+  const NEXT_SIZE = { 5: 6, 6: 7, 7: null, 9: null };
   let suggestLine = '';
   if (combo && combo.wins >= 3 && combo.bestStars >= 2) {
     const nextDiff = NEXT_DIFF[chosenDiff];
