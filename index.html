@@ -2908,6 +2908,9 @@ function showRules() {
   overlay.scrollTop = 0;
   const topClose = overlay.querySelector('button[aria-label="סגור"]');
   if (topClose) topClose.focus({ preventScroll: true });
+  // Show a clean starting frame immediately; the animation begins after the
+  // modal has settled, so the previous run's solved state never flashes.
+  if (typeof window._resetDemo === 'function') window._resetDemo();
   if (typeof window._runDemoAnimation === 'function') {
     setTimeout(window._runDemoAnimation, 450);
   }
@@ -4049,10 +4052,21 @@ function updateThemeColor(dark) {
     at(t, runDemo);
   }
 
+  // Reset the demo to its initial frame (empty board, no win message) so the
+  // previous cycle's solved state never lingers when the modal reopens.
+  function resetDemo() {
+    cancelAll();
+    buildBoard();
+    const win = document.getElementById('demoWinMsg');
+    if (win) { win.textContent = ''; win.classList.remove('show'); }
+    setLabel(isHe() ? 'הדגמה' : 'Demo');
+  }
+
   // Expose to global scope so showRules() / closeRules() can start/stop the animation
   document.addEventListener('DOMContentLoaded', () => {
     window._runDemoAnimation    = runDemo;
     window._cancelDemoAnimation = cancelAll;
+    window._resetDemo           = resetDemo;
   });
 })();
 </script>
