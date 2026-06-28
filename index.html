@@ -3936,16 +3936,6 @@ function updateThemeColor(dark) {
       || (he ? '✨ ניחשת את כל המכפילים!' : '✨ All multipliers found!');
     if (win) win.dataset.winText = WIN_TEXT;
 
-    // Reduced motion: show the finished board statically, with no animated loop.
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      for (let c = 0; c < N; c++) { const el = document.getElementById(`dc-${c}`); if (el) { el.textContent = COL_M[c]; el.classList.add('filled'); } }
-      for (let r = 0; r < N; r++) { const el = document.getElementById(`dr-${r}`); if (el) { el.textContent = ROW_M[r]; el.classList.add('filled'); } }
-      for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) { const el = document.getElementById(`dp-${r}-${c}`); if (el) el.classList.add('correct'); }
-      setLabel(he ? 'הדגמה' : 'Demo');
-      if (win) { win.textContent = WIN_TEXT; win.classList.add('show'); }
-      return;
-    }
-
     const LOOK = 1250; // ms to study highlighted cells
     const TRY  = 980;  // ms to display a candidate (wrong or right)
     const GAP  = 400;  // ms gap between steps
