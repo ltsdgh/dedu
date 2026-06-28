@@ -1378,22 +1378,6 @@
     .btn-lang-toggle:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
     .btn-lang-toggle:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
 
-    /* ── Undo button ── */
-    .btn-undo {
-      background: var(--clr-warn-bg);
-      color: var(--clr-warn);
-      border-color: rgba(146,64,14,.25);
-    }
-    .btn-undo:hover:not(:disabled) { filter: brightness(.95); }
-    .theme-dark .btn-undo {
-      background: rgba(245,158,11,.12);
-      color: #fbbf24;
-      border-color: rgba(245,158,11,.3);
-    }
-    @media (max-width: 480px) {
-      #undoBtn { flex: 1 1 40%; order: 1; }
-    }
-
     /* ── Statistics modal ── */
     .stats-grid {
       display: grid;
@@ -1615,7 +1599,6 @@
     <div class="action-bar">
       <button class="btn btn-hint"    id="hintBtn"    data-i18n="board.hintBtn">💡 רמז</button>
       <button class="btn btn-buy-hint" id="buyHintBtn" style="display:none;" onclick="buyHint()">קנה רמז (5 מטבעות)</button>
-      <button class="btn btn-undo"    id="undoBtn"    style="display:none;" onclick="undoLastMistake()">↩ בטל טעות</button>
       <button class="btn btn-check"   id="checkBtn"   data-i18n="board.checkAllBtn">✓ בדוק הכל</button>
       <button class="btn btn-pause"   id="pauseBtn"   data-i18n="board.pauseBtn">⏸ הפסקה</button>
       <button class="btn btn-mute"    id="muteBtn"    aria-label="השתק צלילים" title="השתק / הפעל צלילים">🔊</button>
@@ -2394,11 +2377,7 @@ function startGame(n, diff, randFn = Math.random) {
     over:      false,
     paused:    false,
     isDaily:   false,
-    undoUsed:  false,
   };
-  // Hide undo button on new game
-  const undoBtnEl = document.getElementById('undoBtn');
-  if (undoBtnEl) undoBtnEl.style.display = 'none';
   // Reset pause state and action buttons
   document.getElementById('pauseOverlayBoard').classList.remove('active');
   document.getElementById('pauseBtn').textContent = STRINGS[currentLang].board.pauseBtn;
@@ -2735,14 +2714,6 @@ function validateHeader(isRow, idx, inp) {
     playSound('wrong');
     showMsg(STRINGS[currentLang].messages.incorrect, 'error');
     setTimeout(() => inp.classList.remove('wrong'), 450);
-    // Show undo button (once per game, only if there's a mistake limit)
-    if (!G.undoUsed && G.cfg.maxMistakes !== Infinity) {
-      const undoBtnEl = document.getElementById('undoBtn');
-      if (undoBtnEl) {
-        undoBtnEl.style.display = '';
-        undoBtnEl.textContent = currentLang === 'he' ? '↩ בטל טעות' : '↩ Undo';
-      }
-    }
     if (G.cfg.maxMistakes !== Infinity && G.mistakes >= G.cfg.maxMistakes) {
       gameLose();
     }
@@ -3472,15 +3443,6 @@ function closeSharePreview() {
 /* ══════════════════════════════════════════════
    Undo Last Mistake
 ══════════════════════════════════════════════ */
-function undoLastMistake() {
-  if (G.undoUsed || G.over || G.mistakes <= 0) return;
-  G.undoUsed = true;
-  G.mistakes--;
-  document.getElementById('undoBtn').style.display = 'none';
-  updateStats();
-  showMsg(currentLang === 'he' ? '↩ שגיאה אחת בוטלה!' : '↩ Mistake undone!', 'info');
-}
-
 /* ══════════════════════════════════════════════
    Statistics Modal
 ══════════════════════════════════════════════ */
