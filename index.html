@@ -2039,6 +2039,14 @@ function setLang(lang) {
     if (typeof val === 'string') el.setAttribute('title', val);
   });
 
+  // Re-localize the demo win message — it's set imperatively (no data-i18n),
+  // so a language switch while it's showing would otherwise leave it stale.
+  const demoWin = document.getElementById('demoWinMsg');
+  if (demoWin) {
+    demoWin.dataset.winText = str.setup.demoWin;
+    if (demoWin.textContent) demoWin.textContent = str.setup.demoWin;
+  }
+
   // Update active game elements
   if (G && G.n) {
     const cc = document.getElementById('corner-cell');
@@ -2911,6 +2919,9 @@ function closeRules() {
   if (typeof window._cancelDemoAnimation === 'function') {
     window._cancelDemoAnimation();
   }
+  // Clear the demo win message so a stale frame can't flash on reopen.
+  const demoWin = document.getElementById('demoWinMsg');
+  if (demoWin) { demoWin.textContent = ''; demoWin.classList.remove('show'); }
 }
 
 function showTutorial() {
@@ -3918,7 +3929,8 @@ function updateThemeColor(dark) {
     if (win) { win.textContent = ''; win.classList.remove('show'); }
 
     const he = isHe();
-    const WIN_TEXT = he ? '✨ ניחשת את כל המכפילים!' : '✨ All multipliers found!';
+    const WIN_TEXT = (typeof STRINGS !== 'undefined' && STRINGS[currentLang]?.setup?.demoWin)
+      || (he ? '✨ ניחשת את כל המכפילים!' : '✨ All multipliers found!');
     if (win) win.dataset.winText = WIN_TEXT;
 
     // Reduced motion: show the finished board statically, with no animated loop.
