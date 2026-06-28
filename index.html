@@ -2894,9 +2894,12 @@ function buyHint() {
 let _tutorialStep = 0;
 
 function showRules() {
-  document.getElementById('rulesOverlay').classList.add('active');
-  const closeBtn = document.querySelector('#rulesOverlay .btn-check');
-  if (closeBtn) closeBtn.focus();
+  const overlay = document.getElementById('rulesOverlay');
+  overlay.classList.add('active');
+  // Start at the top (on the demo), not scrolled down to the bottom CTA.
+  overlay.scrollTop = 0;
+  const topClose = overlay.querySelector('button[aria-label="סגור"]');
+  if (topClose) topClose.focus({ preventScroll: true });
   if (typeof window._runDemoAnimation === 'function') {
     setTimeout(window._runDemoAnimation, 450);
   }
