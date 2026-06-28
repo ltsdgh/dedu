@@ -3418,7 +3418,7 @@ function showSharePreview(text) {
   document.getElementById('sharePreviewText').textContent = text;
   const isHe = currentLang === 'he';
   document.getElementById('sharePreviewTitle').textContent  = isHe ? '📤 שתף תוצאה'  : '📤 Share Result';
-  document.getElementById('sharePreviewCopyBtn').textContent = isHe ? '📋 העתק' : '📋 Copy';
+  document.getElementById('sharePreviewCopyBtn').textContent = shareBtnLabel();
   const cancelBtn = document.querySelector('#sharePreviewOverlay .btn-restart');
   if (cancelBtn) cancelBtn.textContent = isHe ? 'ביטול' : 'Cancel';
   const ov = document.getElementById('sharePreviewOverlay');
@@ -3426,14 +3426,35 @@ function showSharePreview(text) {
   document.getElementById('sharePreviewCopyBtn').focus();
 }
 
-function doShare() {
+function canNativeShare() {
+  return typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+}
+
+function shareBtnLabel() {
+  const isHe = currentLang === 'he';
+  if (canNativeShare()) return isHe ? '📤 שתף' : '📤 Share';
+  return isHe ? '📋 העתק' : '📋 Copy';
+}
+
+async function doShare() {
   const btn = document.getElementById('sharePreviewCopyBtn');
   const isHe = currentLang === 'he';
+  // Native share sheet (mobile): opens WhatsApp, Messages, etc.
+  if (canNativeShare()) {
+    try {
+      await navigator.share({ text: _pendingShareText });
+      closeSharePreview();
+      return;
+    } catch (e) {
+      // User dismissed the share sheet — leave the modal open, do nothing.
+      if (e && e.name === 'AbortError') return;
+      // Any other failure: fall through to clipboard copy below.
+    }
+  }
   const copiedLabel = isHe ? '✓ הועתק!' : '✓ Copied!';
-  const resetLabel  = isHe ? '📋 העתק'  : '📋 Copy';
   const onCopied = () => {
     btn.textContent = copiedLabel;
-    setTimeout(() => { closeSharePreview(); btn.textContent = resetLabel; }, 1600);
+    setTimeout(() => { closeSharePreview(); btn.textContent = shareBtnLabel(); }, 1600);
   };
   if (navigator.clipboard) {
     navigator.clipboard.writeText(_pendingShareText).then(onCopied).catch(() => _fallbackCopy(onCopied));
