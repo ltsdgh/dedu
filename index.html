@@ -1234,6 +1234,31 @@
       box-shadow: 0 2px 12px rgba(52,211,153,.22) !important;
     }
 
+    /* Floating "✓ Check" button — appears just above the on-screen keyboard
+       while a header input is focused, so the active guess can be checked. */
+    .float-check {
+      position: fixed;
+      left: 50%;
+      bottom: calc(12px + env(safe-area-inset-bottom, 0px)); /* fallback when visualViewport unavailable */
+      top: auto;
+      transform: translateX(-50%);
+      z-index: 1500;
+      min-height: 48px;
+      padding: .7rem 2.2rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #fff;
+      background: var(--clr-success);
+      border: none;
+      border-radius: 999px;
+      box-shadow: 0 6px 20px rgba(4,120,87,.35), 0 2px 6px rgba(0,0,0,.18);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .float-check[hidden] { display: none; }
+    .float-check:active { filter: brightness(.94); }
+
     /* V4 – Range banner: gradient + shadow */
     .range-banner > span { font-weight: 600; color: var(--clr-muted); }
 
@@ -1609,6 +1634,9 @@
     <!-- Live message -->
     <div class="msg" id="msgBox" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
+    <!-- Floating check button (shown above keyboard while a header cell is focused) -->
+    <button class="float-check" id="floatCheckBtn" type="button" data-i18n="board.checkBtn" hidden>✓ בדוק</button>
+
   </section>
 
 </main>
@@ -1814,6 +1842,7 @@ const STRINGS = {
       resumeBtn: '▶ המשך',
       pausedLabel: 'המשחק מושהה',
       checkAllBtn: '✓ בדוק הכל',
+      checkBtn: '✓ בדוק',
       newGameBtn: '↺ משחק חדש',
       cellShownAriaLabel: (r, c, val) => `שורה ${r+1} עמודה ${c+1}: ${val}`,
       cellHiddenAriaLabel: (r, c) => `שורה ${r+1} עמודה ${c+1}: נסתר`,
@@ -1943,6 +1972,7 @@ const STRINGS = {
       resumeBtn: '▶ Resume',
       pausedLabel: 'Game Paused',
       checkAllBtn: '✓ Check All',
+      checkBtn: '✓ Check',
       newGameBtn: '↺ New Game',
       cellShownAriaLabel: (r, c, val) => `Row ${r+1} Column ${c+1}: ${val}`,
       cellHiddenAriaLabel: (r, c) => `Row ${r+1} Column ${c+1}: hidden`,
@@ -2186,6 +2216,18 @@ document.getElementById('dailyBtn').addEventListener('click', startDailyChalleng
 document.getElementById('hintBtn').addEventListener('click',  giveHint);
 document.getElementById('pauseBtn').addEventListener('click',  togglePause);
 document.getElementById('checkBtn').addEventListener('click', checkAll);
+// Floating per-cell check button: prevent the input from blurring (keep keyboard open),
+// then validate the active cell.
+(() => {
+  const fb = document.getElementById('floatCheckBtn');
+  if (!fb) return;
+  fb.addEventListener('pointerdown', e => e.preventDefault());
+  fb.addEventListener('click', e => { e.preventDefault(); checkActiveHeader(); });
+})();
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', positionFloatCheck);
+  window.visualViewport.addEventListener('scroll', positionFloatCheck);
+}
 document.getElementById('restartBtn').addEventListener('click', goSetup);
 document.getElementById('confirmYes').addEventListener('click', _doGoSetup);
 document.getElementById('confirmNo').addEventListener('click', () =>
@@ -2651,7 +2693,19 @@ function makeHdrInput(type, idx) {
       ? STRINGS[currentLang].board.rowHelperAriaLabel(idx)
       : STRINGS[currentLang].board.colHelperAriaLabel(idx)
   );
-  inp.addEventListener('blur',    () => validateHeader(isRow, idx, inp));
+  inp.addEventListener('focus', () => {
+    if (inp.readOnly || G.over || G.paused) return;
+    activeHdrInput = { isRow, idx, el: inp };
+    showFloatCheck();
+  });
+  inp.addEventListener('blur', () => {
+    validateHeader(isRow, idx, inp);
+    // Delay so a tap on the float button still resolves to a click first.
+    setTimeout(() => {
+      const a = document.activeElement;
+      if (!a || !a.classList || !a.classList.contains('hdr-input')) hideFloatCheck();
+    }, 120);
+  });
   inp.addEventListener('keydown', e => {
     if (e.key === 'Enter') { e.preventDefault(); validateHeader(isRow, idx, inp); return; }
 
@@ -2684,6 +2738,61 @@ function makeHdrInput(type, idx) {
     if (target) { e.preventDefault(); target.focus(); }
   });
   return inp;
+}
+
+/* ══════════════════════════════════════════════
+   Floating "✓ Check" button (above the keyboard)
+══════════════════════════════════════════════ */
+let activeHdrInput = null;               // { isRow, idx, el } currently focused
+const isTouchDevice = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+
+function showFloatCheck() {
+  if (!isTouchDevice) return;            // desktop has Enter; keep it uncluttered
+  const btn = document.getElementById('floatCheckBtn');
+  if (!btn) return;
+  btn.hidden = false;
+  positionFloatCheck();
+}
+
+function hideFloatCheck() {
+  const btn = document.getElementById('floatCheckBtn');
+  if (btn) btn.hidden = true;
+  activeHdrInput = null;
+}
+
+function positionFloatCheck() {
+  const btn = document.getElementById('floatCheckBtn');
+  if (!btn || btn.hidden) return;
+  const vv = window.visualViewport;
+  if (vv) {
+    // Sit just above the on-screen keyboard.
+    const gap = 10;
+    const top = vv.offsetTop + vv.height - btn.offsetHeight - gap;
+    btn.style.top = `${Math.max(0, top)}px`;
+    btn.style.bottom = 'auto';
+  } else {
+    // Fallback handled by the CSS `bottom` rule.
+    btn.style.top = 'auto';
+    btn.style.bottom = '';
+  }
+}
+
+function checkActiveHeader() {
+  if (!activeHdrInput) return;
+  const { isRow, idx, el } = activeHdrInput;
+  validateHeader(isRow, idx, el);
+  if (el.readOnly) {
+    // Correct answer locked the cell — advance to the next empty header input.
+    const next = nextEmptyHeader();
+    if (next) { next.focus(); } else { hideFloatCheck(); }
+  } else {
+    el.focus();                          // wrong/empty — stay for a retry
+  }
+}
+
+function nextEmptyHeader() {
+  const inputs = Array.from(document.querySelectorAll('.hdr-input'));
+  return inputs.find(i => !i.readOnly && !i.value.trim()) || null;
 }
 
 /* ══════════════════════════════════════════════
@@ -3292,6 +3401,7 @@ function checkWin() {
 
 function gameWin() {
   G.over = true;
+  hideFloatCheck();
   clearInterval(G.timerID);
   clearGameState();
   playSound('win');
@@ -3360,6 +3470,7 @@ function gameWin() {
 
 function gameLose() {
   G.over = true;
+  hideFloatCheck();
   clearInterval(G.timerID);
   clearGameState();
   recordLoss();
@@ -3637,6 +3748,7 @@ function togglePause() {
     btn.textContent = str.pauseBtn;
   } else {
     G.paused = true;
+    hideFloatCheck();
     clearInterval(G.timerID);
     overlay.classList.add('active');
     btn.textContent = str.resumeBtn;

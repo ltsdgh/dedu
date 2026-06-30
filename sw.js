@@ -1,5 +1,5 @@
 /* de-du Service Worker — cache-first, offline support */
-const CACHE = 'dedu-v26';
+const CACHE = 'dedu-v27';
 const ASSETS = [
   './index.html',
   './manifest.json',
