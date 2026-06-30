@@ -241,7 +241,8 @@
       color: var(--clr-muted);
       margin-bottom: .7rem;
     }
-    .option-group { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .option-group { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; }
+    .option-group:not(.diff-option-group) .option-btn { min-width: 0; white-space: nowrap; padding-inline: .5rem; }
 
     /* Board size buttons */
     .option-btn {
