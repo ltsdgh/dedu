@@ -210,16 +210,13 @@
     .game-corner-btn:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
     .game-corner-btn:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
 
-    /* Prominent variant — the "new game" action stands out from the icon buttons */
+    /* "New game" — same size & light background as the other corner buttons,
+       but a darker, bolder symbol so it reads clearly. */
     .game-corner-btn--primary {
-      width: 46px; height: 46px;
-      font-size: 24px; font-weight: 900;
-      color: #fff;
-      background: var(--clr-primary);
-      border: none;
-      box-shadow: 0 3px 12px rgba(80,70,229,.4);
+      color: var(--clr-primary-dk);
+      font-weight: 900;
+      font-size: 20px;
     }
-    .game-corner-btn--primary:hover { color: #fff; background: var(--clr-primary-dk); }
 
     /* ── Header ── */
     .site-header {
