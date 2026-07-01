@@ -2840,6 +2840,10 @@ function showKbdBar() {
   const bar = document.getElementById('kbdBar');
   if (!bar) return;
   bar.hidden = false;
+  // While typing, show only the toolbar — hide the bottom action bar so its
+  // Hint / Check-all don't appear twice. It returns when the keyboard closes.
+  const ab = document.querySelector('.action-bar');
+  if (ab) ab.style.display = 'none';
   positionKbdBar();
   // Nudge the focused cell into view so the bar never hides it.
   setTimeout(() => {
@@ -2851,6 +2855,8 @@ function showKbdBar() {
 function hideKbdBar() {
   const bar = document.getElementById('kbdBar');
   if (bar) bar.hidden = true;
+  const ab = document.querySelector('.action-bar');
+  if (ab) ab.style.display = '';         // restore the bottom row when not typing
   activeHdrInput = null;
 }
 
