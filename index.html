@@ -210,6 +210,17 @@
     .game-corner-btn:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
     .game-corner-btn:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
 
+    /* Prominent variant — the "new game" action stands out from the icon buttons */
+    .game-corner-btn--primary {
+      width: 46px; height: 46px;
+      font-size: 24px; font-weight: 900;
+      color: #fff;
+      background: var(--clr-primary);
+      border: none;
+      box-shadow: 0 3px 12px rgba(80,70,229,.4);
+    }
+    .game-corner-btn--primary:hover { color: #fff; background: var(--clr-primary-dk); }
+
     /* ── Header ── */
     .site-header {
       text-align: center;
@@ -1344,15 +1355,6 @@
     }
     .row-col-flash { animation: rowColFlash .65s ease-out !important; }
 
-    /* Mobile action bar: primary row + secondary row */
-    @media (max-width: 480px) {
-      #hintBtn, #checkBtn  { flex: 1 1 40%; order: 1; }
-      #buyHintBtn          { flex: 1 1 100%; order: 0; }
-      #pauseBtn, #muteBtn, #restartBtn {
-        flex: 1 1 26%; font-size: .78rem; padding: .5rem .4rem; order: 2;
-      }
-    }
-
     /* Share preview modal text */
     .share-preview-text {
       background: var(--clr-bg);
@@ -1624,7 +1626,7 @@
     <div class="game-corner">
       <button class="game-corner-btn" id="pauseBtn"   aria-label="הפסקה"      data-i18n-aria="board.pauseAria"   title="הפסקה">⏸</button>
       <button class="game-corner-btn" id="muteBtn"    aria-label="השתק צלילים" data-i18n-aria="board.muteAria"    title="השתק / הפעל צלילים">🔊</button>
-      <button class="game-corner-btn" id="restartBtn" aria-label="משחק חדש"   data-i18n-aria="board.newGameAria" title="משחק חדש">↺</button>
+      <button class="game-corner-btn game-corner-btn--primary" id="restartBtn" aria-label="משחק חדש"   data-i18n-aria="board.newGameAria" title="משחק חדש">↺</button>
     </div>
 
     <!-- Stats -->
