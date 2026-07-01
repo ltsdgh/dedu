@@ -184,6 +184,32 @@
     .theme-toggle:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
     .theme-toggle:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
 
+    /* ── Game-screen corner (mute + new game), opposite the global corner ── */
+    .game-corner {
+      position: fixed;
+      top: 14px;
+      left: 16px;                 /* physical left — opposite the top-right global controls */
+      z-index: 100;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .game-corner-btn {
+      width: 40px; height: 40px;
+      background: var(--clr-surface);
+      border: 1.5px solid var(--clr-border);
+      border-radius: 50%;
+      font-family: var(--font-ui);
+      font-size: 18px; font-weight: 700;
+      color: var(--clr-muted);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .game-corner-btn:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
+    .game-corner-btn:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
+
     /* ── Header ── */
     .site-header {
       text-align: center;
@@ -1594,6 +1620,12 @@
   <section id="gameScreen" aria-labelledby="game-heading">
     <h2 id="game-heading" class="sr-only" style="position:absolute;clip:rect(0,0,0,0);white-space:nowrap;overflow:hidden;">לוח המשחק</h2>
 
+    <!-- Non-gameplay controls, tucked into the top corner during a game -->
+    <div class="game-corner">
+      <button class="game-corner-btn" id="muteBtn"    aria-label="השתק צלילים" data-i18n-aria="board.muteAria"    title="השתק / הפעל צלילים">🔊</button>
+      <button class="game-corner-btn" id="restartBtn" aria-label="משחק חדש"   data-i18n-aria="board.newGameAria" title="משחק חדש">↺</button>
+    </div>
+
     <!-- Stats -->
     <div class="stats-bar" role="status" aria-live="polite" aria-atomic="false">
       <div class="stat" aria-label="מכפילים שגילית" data-i18n-aria="stats.correctAriaLabel">
@@ -1653,8 +1685,6 @@
       <button class="btn btn-buy-hint" id="buyHintBtn" style="display:none;" onclick="buyHint()">קנה רמז (5 מטבעות)</button>
       <button class="btn btn-check"   id="checkBtn"   data-i18n="board.checkAllBtn">✓ בדוק הכל</button>
       <button class="btn btn-pause"   id="pauseBtn"   data-i18n="board.pauseBtn">⏸ הפסקה</button>
-      <button class="btn btn-mute"    id="muteBtn"    aria-label="השתק צלילים" title="השתק / הפעל צלילים">🔊</button>
-      <button class="btn btn-restart" id="restartBtn" data-i18n="board.newGameBtn">↺ משחק חדש</button>
     </div>
 
     <!-- Live message -->
@@ -1879,6 +1909,8 @@ const STRINGS = {
       hintAriaLabel: 'רמז',
       soundAriaLabel: 'הפעלה או השתקה של הצליל',
       doneAriaLabel: 'סגור מקלדת',
+      muteAria: 'השתקה או הפעלה של הצליל',
+      newGameAria: 'משחק חדש',
       newGameBtn: '↺ משחק חדש',
       cellShownAriaLabel: (r, c, val) => `שורה ${r+1} עמודה ${c+1}: ${val}`,
       cellHiddenAriaLabel: (r, c) => `שורה ${r+1} עמודה ${c+1}: נסתר`,
@@ -2013,6 +2045,8 @@ const STRINGS = {
       hintAriaLabel: 'Hint',
       soundAriaLabel: 'Toggle sound on or off',
       doneAriaLabel: 'Close keyboard',
+      muteAria: 'Toggle sound on or off',
+      newGameAria: 'New game',
       newGameBtn: '↺ New Game',
       cellShownAriaLabel: (r, c, val) => `Row ${r+1} Column ${c+1}: ${val}`,
       cellHiddenAriaLabel: (r, c) => `Row ${r+1} Column ${c+1}: hidden`,
