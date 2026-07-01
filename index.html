@@ -1620,8 +1620,9 @@
   <section id="gameScreen" aria-labelledby="game-heading">
     <h2 id="game-heading" class="sr-only" style="position:absolute;clip:rect(0,0,0,0);white-space:nowrap;overflow:hidden;">לוח המשחק</h2>
 
-    <!-- Non-gameplay controls, tucked into the top corner during a game -->
+    <!-- Persistent controls, tucked into the top corner during a game -->
     <div class="game-corner">
+      <button class="game-corner-btn" id="pauseBtn"   aria-label="הפסקה"      data-i18n-aria="board.pauseAria"   title="הפסקה">⏸</button>
       <button class="game-corner-btn" id="muteBtn"    aria-label="השתק צלילים" data-i18n-aria="board.muteAria"    title="השתק / הפעל צלילים">🔊</button>
       <button class="game-corner-btn" id="restartBtn" aria-label="משחק חדש"   data-i18n-aria="board.newGameAria" title="משחק חדש">↺</button>
     </div>
@@ -1679,14 +1680,6 @@
       </div>
     </div>
 
-    <!-- Buttons -->
-    <div class="action-bar">
-      <button class="btn btn-hint"    id="hintBtn"    data-i18n="board.hintBtn">💡 רמז</button>
-      <button class="btn btn-buy-hint" id="buyHintBtn" style="display:none;" onclick="buyHint()">קנה רמז (5 מטבעות)</button>
-      <button class="btn btn-check"   id="checkBtn"   data-i18n="board.checkAllBtn">✓ בדוק הכל</button>
-      <button class="btn btn-pause"   id="pauseBtn"   data-i18n="board.pauseBtn">⏸ הפסקה</button>
-    </div>
-
     <!-- Live message -->
     <div class="msg" id="msgBox" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
@@ -1695,7 +1688,6 @@
       <button class="kbd-btn kbd-primary" id="kbdCheckBtn"    type="button" data-i18n="board.checkBtn">✓ בדוק</button>
       <button class="kbd-btn"             id="kbdCheckAllBtn" type="button" data-i18n="board.checkAllBtn">✓ בדוק הכל</button>
       <button class="kbd-btn kbd-icon"    id="kbdHintBtn"     type="button" aria-label="רמז" data-i18n-aria="board.hintAriaLabel" title="רמז">💡</button>
-      <button class="kbd-btn kbd-icon"    id="kbdSoundBtn"    type="button" aria-label="קול" data-i18n-aria="board.soundAriaLabel" title="קול">🔊</button>
       <button class="kbd-btn kbd-icon"    id="kbdDoneBtn"     type="button" aria-label="סגור מקלדת" data-i18n-aria="board.doneAriaLabel" title="סגור מקלדת">✕</button>
     </div>
 
@@ -1911,6 +1903,8 @@ const STRINGS = {
       doneAriaLabel: 'סגור מקלדת',
       muteAria: 'השתקה או הפעלה של הצליל',
       newGameAria: 'משחק חדש',
+      pauseAria: 'הפסקה',
+      resumeAria: 'המשך משחק',
       newGameBtn: '↺ משחק חדש',
       cellShownAriaLabel: (r, c, val) => `שורה ${r+1} עמודה ${c+1}: ${val}`,
       cellHiddenAriaLabel: (r, c) => `שורה ${r+1} עמודה ${c+1}: נסתר`,
@@ -2047,6 +2041,8 @@ const STRINGS = {
       doneAriaLabel: 'Close keyboard',
       muteAria: 'Toggle sound on or off',
       newGameAria: 'New game',
+      pauseAria: 'Pause',
+      resumeAria: 'Resume game',
       newGameBtn: '↺ New Game',
       cellShownAriaLabel: (r, c, val) => `Row ${r+1} Column ${c+1}: ${val}`,
       cellHiddenAriaLabel: (r, c) => `Row ${r+1} Column ${c+1}: hidden`,
@@ -2287,9 +2283,7 @@ document.getElementById('resumeGameBtn').addEventListener('click', () => {
   if (saved) resumeGame(saved);
 });
 document.getElementById('dailyBtn').addEventListener('click', startDailyChallenge);
-document.getElementById('hintBtn').addEventListener('click',  giveHint);
 document.getElementById('pauseBtn').addEventListener('click',  togglePause);
-document.getElementById('checkBtn').addEventListener('click', checkAll);
 // Keyboard accessory toolbar wiring. Most buttons keep the keyboard open
 // (pointerdown preventDefault stops the input from blurring); Done dismisses it.
 (() => {
@@ -2300,18 +2294,12 @@ document.getElementById('checkBtn').addEventListener('click', checkAll);
     btn.addEventListener('click', e => { e.preventDefault(); fn(); });
     return btn;
   };
-  // Sync the toolbar sound icon with the mute state.
-  const syncKbdSound = () => {
-    const sb = document.getElementById('kbdSoundBtn');
-    if (sb) sb.textContent = localStorage.getItem('dedu-muted') === '1' ? '🔇' : '🔊';
-  };
   keepFocus(onTap('kbdCheckBtn',    checkActiveHeader));
   keepFocus(onTap('kbdCheckAllBtn', checkAll));
-  keepFocus(onTap('kbdHintBtn',     giveHint));
-  keepFocus(onTap('kbdSoundBtn',    () => { toggleMute(); syncKbdSound(); }));
+  // Hint: use a free hint if any remain, otherwise fall back to the coin buy-hint.
+  keepFocus(onTap('kbdHintBtn',     () => { if (G.hintsLeft > 0) giveHint(); else buyHint(); }));
   // Done: allow blur so the keyboard closes.
   onTap('kbdDoneBtn', () => { (activeHdrInput?.el || document.activeElement)?.blur(); });
-  syncKbdSound();
 })();
 if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', positionKbdBar);
@@ -2518,10 +2506,9 @@ function startGame(n, diff, randFn = Math.random) {
     paused:    false,
     isDaily:   false,
   };
-  // Reset pause state and action buttons
+  // Reset pause state
   document.getElementById('pauseOverlayBoard').classList.remove('active');
-  document.getElementById('pauseBtn').textContent = STRINGS[currentLang].board.pauseBtn;
-  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('pauseBtn').textContent = '⏸';
 
   // Save last used settings for quick-start
   try { localStorage.setItem('dedu-last-settings', JSON.stringify({ n, diff })); } catch {}
@@ -2840,10 +2827,6 @@ function showKbdBar() {
   const bar = document.getElementById('kbdBar');
   if (!bar) return;
   bar.hidden = false;
-  // While typing, show only the toolbar — hide the bottom action bar so its
-  // Hint / Check-all don't appear twice. It returns when the keyboard closes.
-  const ab = document.querySelector('.action-bar');
-  if (ab) ab.style.display = 'none';
   positionKbdBar();
   // Nudge the focused cell into view so the bar never hides it.
   setTimeout(() => {
@@ -2855,8 +2838,6 @@ function showKbdBar() {
 function hideKbdBar() {
   const bar = document.getElementById('kbdBar');
   if (bar) bar.hidden = true;
-  const ab = document.querySelector('.action-bar');
-  if (ab) ab.style.display = '';         // restore the bottom row when not typing
   activeHdrInput = null;
 }
 
@@ -3291,7 +3272,7 @@ function resumeGame(saved) {
   gs.style.display = 'flex';
   gs.classList.add('active');
   document.getElementById('pauseOverlayBoard').classList.remove('active');
-  document.getElementById('pauseBtn').textContent = STRINGS[currentLang].board.pauseBtn;
+  document.getElementById('pauseBtn').textContent = '⏸';
 
   const first = document.querySelector('.hdr-input:not([readonly])');
   if (first) first.focus();
@@ -3560,8 +3541,6 @@ function gameWin() {
       : `+${stars} coins · total: ${sAfter.totalCoins}`;
   }
 
-  document.getElementById('checkBtn').disabled = true;
-
   const ov = document.getElementById('winOverlay');
   ov.classList.add('active');
   ov.querySelector('button').focus();
@@ -3597,8 +3576,6 @@ function gameLose() {
       }
     }
   }
-
-  document.getElementById('checkBtn').disabled = true;
 
   const ov = document.getElementById('loseOverlay');
   ov.classList.add('active');
@@ -3844,13 +3821,15 @@ function togglePause() {
     G.paused = false;
     G.timerID = setInterval(tick, 1000);
     overlay.classList.remove('active');
-    btn.textContent = str.pauseBtn;
+    btn.textContent = '⏸';
+    btn.setAttribute('aria-label', str.pauseAria);
   } else {
     G.paused = true;
     hideKbdBar();
     clearInterval(G.timerID);
     overlay.classList.add('active');
-    btn.textContent = str.resumeBtn;
+    btn.textContent = '▶';
+    btn.setAttribute('aria-label', str.resumeAria);
   }
 }
 
@@ -3875,12 +3854,12 @@ function updateStats() {
   // Hints — hidden entirely in easy mode (maxHints === 0, no hidden cells to reveal)
   const hasHints = cfg.maxHints > 0;
   document.getElementById('hintRow').style.display = hasHints ? '' : 'none';
-  const hintBtn = document.getElementById('hintBtn');
-  hintBtn.style.display = hasHints ? '' : 'none';
+  // Hint lives in the keyboard toolbar; hide it entirely when hints don't apply.
+  const hintBtn = document.getElementById('kbdHintBtn');
+  if (hintBtn) hintBtn.style.display = hasHints ? '' : 'none';
   if (hasHints) {
     document.getElementById('hintsVal').textContent = hintsUsedTotal();
     document.getElementById('hintsMax').textContent = ` / ${cfg.maxHints}`;
-    hintBtn.disabled = G.hintsLeft <= 0;
   }
   // Coin balance — visible whenever hints are in play
   const coinRow = document.getElementById('coinRow');
