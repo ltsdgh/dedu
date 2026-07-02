@@ -1095,9 +1095,9 @@
       border: 1px solid var(--clr-border);
       border-radius: .5rem;
       padding: .9rem 1rem;
-      font-size: .875rem;
+      font-size: .95rem;
       color: var(--clr-text);
-      line-height: 1.65;
+      line-height: 1.7;
     }
 
     /* ── Demo Animation ── */
@@ -1811,17 +1811,17 @@
     </div>
     <h2 id="rulesModalTitle" data-i18n="rules.modalTitle">🎮 איך משחקים?</h2>
 
-    <div class="demo-section" aria-hidden="true" style="margin:.25rem 0 .75rem;">
+    <div class="rules-text" role="note" style="margin:.5rem 0 1rem;">
+      <span data-i18n-html="rules.intro"></span>
+      <span data-i18n-html="rules.outro"></span>
+    </div>
+
+    <div class="demo-section" aria-hidden="true" style="margin:0 0 1rem;">
       <p class="demo-section-label" id="demoLabel"></p>
       <div class="demo-board-wrap">
         <table class="demo-board" id="demoBoard"></table>
       </div>
       <p class="demo-win-msg" id="demoWinMsg"></p>
-    </div>
-
-    <div class="rules-text" role="note" style="margin:0 0 1rem;">
-      <span data-i18n-html="rules.intro"></span>
-      <span data-i18n-html="rules.outro"></span>
     </div>
 
     <button class="btn btn-check" style="width:100%;"
@@ -1856,8 +1856,8 @@ const STRINGS = {
     },
     tutorial: {
       title: '🎓 איך משחקים?',
-      step1: 'הלוח מציג <strong>תוצאות כפל</strong> — אלה הרמזים שלך.<br><br>המשימה: לגלות את <strong>המכפילים הסודיים</strong> המסתתרים בשורה העליונה ובטור הצד.<br><br>כל תא בלוח = <strong>מכפיל השורה × מכפיל העמודה</strong>.',
-      step2: 'נתח את הרמזים וחפש <strong>דפוסים</strong> בין המספרים.<br><br>💡 טיפ: שורה שכל תאיה ידועים תיתן לך את המכפיל שלה — ומשם כל שאר המכפילים הם חילוק פשוט.',
+      step1: 'הלוח מציג <strong>תוצאות כפל</strong> — אלה הרמזים שלך.<br><br>כל תא = <strong>מכפיל השורה × מכפיל העמודה</strong>. לדוגמה, אם התא הוא 6, המכפילים יכולים להיות 6×1, 1×6, 2×3 או 3×2.<br><br>המשימה: לגלות את <strong>המכפילים הסודיים</strong> שבשורה העליונה ובטור הצד. מעל הלוח מוצג <strong>טווח המכפילים</strong> (למשל 1–6).',
+      step2: 'כדי לגלות את המכפילים — <strong>היעזרו בשאר המספרים שבאותה שורה או עמודה</strong> וחפשו דפוסים.<br><br>💡 טיפ: שורה שכל תאיה ידועים תיתן לך את המכפיל שלה — ומשם כל שאר המכפילים הם חילוק פשוט.',
       step3: 'הקלד מכפיל ולחץ <strong>Enter</strong> לבדיקה מיידית.<br><br>⚠️ <strong>כל מספר מופיע פעם אחת בשורות ופעם אחת בעמודות.</strong><br><br>💡 השתמש ב<strong>רמז</strong> אם נתקעת, וב<strong>בדוק הכל</strong> לאמת כמה בבת אחת.<br><br>🎉 בהצלחה!',
       next: 'הבא ›',
       prev: '‹ הקודם',
@@ -1865,8 +1865,8 @@ const STRINGS = {
       skip: 'דלג על ההדרכה',
     },
     rules: {
-      intro: '<strong>גלו את המכפילים</strong><br><br>הלוח מציג תוצאות כפל — אלה הרמזים שלך. כל תא = <strong>מכפיל השורה × מכפיל העמודה</strong>. כל מספר מופיע <strong>פעם אחת בשורות ופעם אחת בעמודות</strong>.<br>',
-      outro: 'נתח את הדפוסים והקלד את המכפילים בשורה העליונה ובטור הצדדי.<br><br>💡 כל ניחוש נבדק מיד — <strong>ניחוש שגוי נספר כטעות</strong>. ניתן גם להשתמש בכפתור <strong>בדוק הכל</strong>.<br><br>⭐ <strong>כוכבים:</strong> סיימו מהר, עם מעט טעויות ורמזים — וקבלו עד 3 כוכבים.',
+      intro: '<strong>גלו את המכפילים</strong><br><br>המספרים בלוח הם <strong>תוצאות כפל</strong> — מכפלה של <strong>מכפיל השורה × מכפיל העמודה</strong>.<br><br>לדוגמה, אם המספר הוא 6, המכפילים יכולים להיות 6×1, 1×6, 2×3 או 3×2.<br><br>מעל הלוח מוצג <strong>טווח המכפילים</strong> (למשל 1–6) — כל המכפילים נמצאים בטווח הזה, וכל מספר מופיע <strong>פעם אחת בלבד</strong> בכל שורה ובכל טור.<br><br>כדי לגלות מהם המכפילים — היעזרו בשאר המספרים שבאותה שורה או עמודה.',
+      outro: '💡 כל ניחוש נבדק מיד — <strong>ניחוש שגוי נספר כטעות</strong>. ניתן גם להשתמש בכפתור <strong>בדוק הכל</strong>.<br><br>❓ אין לכם מספיק נתונים להחלטה? <strong>קחו רמז!</strong><br><br>⭐ <strong>כוכבים:</strong> סיימו מהר, עם מעט טעויות ורמזים — וקבלו עד 3 כוכבים.',
       modalTitle: '🎮 איך משחקים?',
       closeBtn: 'הבנתי, בוא נשחק! ▶',
     },
@@ -1994,8 +1994,8 @@ const STRINGS = {
     },
     tutorial: {
       title: '🎓 How to Play',
-      step1: 'The board shows <strong>multiplication products</strong> — those are your clues.<br><br>Your mission: discover the <strong>secret multipliers</strong> hiding in the top row and side column.<br><br>Each cell = <strong>row multiplier × column multiplier</strong>.',
-      step2: 'Analyse the clues and look for <strong>patterns</strong> among the numbers.<br><br>💡 Tip: a row whose products you know gives you its multiplier — then dividing any product in that column gives you the next.',
+      step1: 'The board shows <strong>multiplication products</strong> — those are your clues.<br><br>Each cell = <strong>row multiplier × column multiplier</strong>. For example, if the cell is 6, the multipliers could be 6×1, 1×6, 2×3 or 3×2.<br><br>Your mission: discover the <strong>secret multipliers</strong> in the top row and side column. The <strong>multiplier range</strong> (e.g. 1–6) is shown above the board.',
+      step2: 'To find the multipliers, <strong>use the other numbers in the same row or column</strong> and look for patterns.<br><br>💡 Tip: a row whose products you know gives you its multiplier — then dividing any product in that column gives you the next.',
       step3: 'Type a multiplier and press <strong>Enter</strong> to check immediately.<br><br>⚠️ <strong>Each number appears once across the rows and once across the columns.</strong><br><br>💡 Use <strong>Hint</strong> if stuck, and <strong>Check All</strong> to validate multiple answers at once.<br><br>🎉 Good luck!',
       next: 'Next ›',
       prev: '‹ Back',
@@ -2003,8 +2003,8 @@ const STRINGS = {
       skip: 'Skip tutorial',
     },
     rules: {
-      intro: '<strong>Discover the Multipliers</strong><br><br>The board shows multiplication products — those are your clues. Each cell = <strong>row multiplier × column multiplier</strong>. Each number appears <strong>once among the row headers and once among the column headers</strong>.<br>',
-      outro: 'Spot the patterns and type the multipliers into the top row and side column.<br><br>💡 Every guess is checked immediately — <strong>a wrong guess counts as a mistake</strong>. You can also use the <strong>Check All</strong> button.<br><br>⭐ <strong>Stars:</strong> finish fast with few mistakes and hints to earn up to 3 stars.',
+      intro: '<strong>Discover the Multipliers</strong><br><br>The numbers on the board are <strong>multiplication products</strong> — each one is <strong>row multiplier × column multiplier</strong>.<br><br>For example, if the number is 6, the multipliers could be 6×1, 1×6, 2×3 or 3×2.<br><br>The <strong>multiplier range</strong> (e.g. 1–6) is shown above the board — every multiplier is within it, and each number appears <strong>only once</strong> in each row and each column.<br><br>To find the multipliers, use the other numbers in the same row or column.',
+      outro: '💡 Every guess is checked immediately — <strong>a wrong guess counts as a mistake</strong>. You can also use the <strong>Check All</strong> button.<br><br>❓ Not enough info to decide? <strong>Take a hint!</strong><br><br>⭐ <strong>Stars:</strong> finish fast with few mistakes and hints to earn up to 3 stars.',
       modalTitle: '🎮 How to Play',
       closeBtn: "Got it, let's play! ▶",
     },
@@ -3102,9 +3102,10 @@ function showRules() {
   // Show a clean starting frame immediately; the animation begins after the
   // modal has settled, so the previous run's solved state never flashes.
   if (typeof window._resetDemo === 'function') window._resetDemo();
-  if (typeof window._runDemoAnimation === 'function') {
-    setTimeout(window._runDemoAnimation, 450);
-  }
+  // The demo now sits below the explanatory text, so start its animation only
+  // once it scrolls into view — otherwise it would play (and finish) off-screen
+  // while the reader is still on the text above.
+  if (typeof window._armDemoOnVisible === 'function') window._armDemoOnVisible();
 }
 
 function closeRules() {
@@ -4043,10 +4044,49 @@ function updateThemeColor(dark) {
   const COL_M = [4, 3, 2];
   const N = 3;
   let demoTimers = [];
+  let demoDisarm = null;
+
+  function disarmDemoTrigger() {
+    if (demoDisarm) { demoDisarm(); demoDisarm = null; }
+  }
 
   function cancelAll() {
     demoTimers.forEach(clearTimeout);
     demoTimers = [];
+    disarmDemoTrigger();
+  }
+
+  // Start the animation the first time the demo scrolls into view inside the
+  // rules modal (it now sits below the explanatory text). A geometry check on
+  // the overlay's scroll is used rather than IntersectionObserver, which fired
+  // unreliably inside the Android WebView. runDemo() loops on its own, so a
+  // single trigger is enough.
+  function armDemoOnVisible() {
+    disarmDemoTrigger();
+    const overlay = document.getElementById('rulesOverlay');
+    const section = document.querySelector('#rulesOverlay .demo-section');
+    if (!section) return;
+    const THRESH = 0.35; // fraction of the demo that must be visible
+    let started = false;
+    function visibleRatio() {
+      const r = section.getBoundingClientRect();
+      const o = overlay.getBoundingClientRect();
+      if (!r.height) return 0;
+      const vis = Math.min(r.bottom, o.bottom) - Math.max(r.top, o.top);
+      return vis / r.height;
+    }
+    function check() {
+      if (started) return;
+      if (visibleRatio() >= THRESH) {
+        started = true;
+        disarmDemoTrigger();
+        runDemo();
+      }
+    }
+    overlay.addEventListener('scroll', check, { passive: true });
+    demoDisarm = () => overlay.removeEventListener('scroll', check);
+    // Handle the case where the demo is already visible on open (tall screens).
+    requestAnimationFrame(check);
   }
 
   function at(t, fn) {
@@ -4270,6 +4310,7 @@ function updateThemeColor(dark) {
     window._runDemoAnimation    = runDemo;
     window._cancelDemoAnimation = cancelAll;
     window._resetDemo           = resetDemo;
+    window._armDemoOnVisible    = armDemoOnVisible;
   });
 })();
 </script>
