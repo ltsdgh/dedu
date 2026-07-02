@@ -1099,6 +1099,36 @@
       color: var(--clr-text);
       line-height: 1.7;
     }
+    .rules-text p { margin: 0 0 .7rem; color: var(--clr-text); line-height: 1.7; }
+    .rules-text p:last-child { margin-bottom: 0; }
+
+    /* ── Inline illustrations between rule paragraphs ── */
+    .rule-illo { display: flex; justify-content: center; margin: .5rem 0 .85rem; direction: ltr; }
+    .rule-illo svg { width: 100%; height: auto; }
+    .rule-illo.illo-product svg { max-width: 150px; }
+    .rule-illo.illo-factors svg { max-width: 232px; }
+    .rule-illo.illo-range   svg { max-width: 150px; }
+    .illo-head-rect { fill: var(--clr-primary-lt); stroke: rgba(80,70,229,.5); stroke-width: 2; stroke-dasharray: 4 3; }
+    .illo-head-txt  { fill: #3B31D4; }
+    .illo-mult-rect { fill: #2563EB; stroke: #2563EB; stroke-width: 2; }
+    .illo-mult-txt  { fill: #fff; }
+    .illo-prod-rect { fill: #fff; stroke: rgba(59,49,212,.2); stroke-width: 1.5; }
+    .illo-prod-txt  { fill: #12111E; }
+    .illo-num       { font: 700 20px var(--font-num); }
+    .illo-num-sm    { font: 700 15px var(--font-num); }
+    .illo-num-xs    { font: 700 13px var(--font-num); }
+    .illo-op        { fill: var(--clr-muted); font: 600 18px var(--font-ui); }
+    .illo-corner    { fill: var(--clr-muted); font: 600 15px var(--font-ui); }
+    .illo-chip-rect { fill: var(--clr-primary-lt); stroke: rgba(80,70,229,.28); stroke-width: 1; }
+    .illo-chip-txt  { fill: #3B31D4; font: 700 13px var(--font-num); }
+    .illo-badge-rect{ fill: var(--clr-primary); }
+    .illo-badge-txt { fill: #fff; font: 700 14px var(--font-num); letter-spacing: .04em; }
+    .theme-dark .illo-mult-rect { fill: #3B82F6; stroke: #3B82F6; }
+    .theme-dark .illo-head-txt  { fill: #C4B5FD; }
+    .theme-dark .illo-head-rect { stroke: rgba(123,114,255,.6); }
+    .theme-dark .illo-prod-rect { fill: #1E1E35; stroke: rgba(123,114,255,.28); }
+    .theme-dark .illo-prod-txt  { fill: #F3F0FF; }
+    .theme-dark .illo-chip-txt  { fill: #C4B5FD; }
 
     /* ── Demo Animation ── */
     .demo-section {
@@ -1812,8 +1842,88 @@
     <h2 id="rulesModalTitle" data-i18n="rules.modalTitle">🎮 איך משחקים?</h2>
 
     <div class="rules-text" role="note" style="margin:.5rem 0 1rem;">
-      <span data-i18n-html="rules.intro"></span>
-      <span data-i18n-html="rules.outro"></span>
+      <p data-i18n-html="rules.p1"></p>
+      <p data-i18n-html="rules.p2"></p>
+
+      <!-- Illustration: product = row multiplier × column multiplier -->
+      <div class="rule-illo illo-product" role="img" aria-hidden="true">
+        <svg viewBox="0 0 106 106" xmlns="http://www.w3.org/2000/svg">
+          <text class="illo-corner" x="28" y="28" text-anchor="middle" dominant-baseline="central">×</text>
+          <rect class="illo-head-rect" x="56" y="6"  width="44" height="44" rx="10"/>
+          <text class="illo-head-txt illo-num" x="78" y="28" text-anchor="middle" dominant-baseline="central">3</text>
+          <rect class="illo-head-rect" x="6"  y="56" width="44" height="44" rx="10"/>
+          <text class="illo-head-txt illo-num" x="28" y="78" text-anchor="middle" dominant-baseline="central">2</text>
+          <rect class="illo-prod-rect" x="56" y="56" width="44" height="44" rx="10"/>
+          <text class="illo-prod-txt illo-num" x="78" y="78" text-anchor="middle" dominant-baseline="central">6</text>
+        </svg>
+      </div>
+
+      <p data-i18n-html="rules.p3"></p>
+
+      <!-- Illustration: factor pairs of 6 -->
+      <div class="rule-illo illo-factors" role="img" aria-hidden="true">
+        <svg viewBox="0 0 212 90" xmlns="http://www.w3.org/2000/svg">
+          <rect class="illo-prod-rect" x="6" y="23" width="44" height="44" rx="10"/>
+          <text class="illo-prod-txt illo-num" x="28" y="45" text-anchor="middle" dominant-baseline="central">6</text>
+          <text class="illo-op" x="63" y="45" text-anchor="middle" dominant-baseline="central">=</text>
+          <rect class="illo-chip-rect" x="80"  y="16" width="60" height="26" rx="13"/>
+          <text class="illo-chip-txt" x="110" y="29" text-anchor="middle" dominant-baseline="central">6×1</text>
+          <rect class="illo-chip-rect" x="146" y="16" width="60" height="26" rx="13"/>
+          <text class="illo-chip-txt" x="176" y="29" text-anchor="middle" dominant-baseline="central">1×6</text>
+          <rect class="illo-chip-rect" x="80"  y="48" width="60" height="26" rx="13"/>
+          <text class="illo-chip-txt" x="110" y="61" text-anchor="middle" dominant-baseline="central">2×3</text>
+          <rect class="illo-chip-rect" x="146" y="48" width="60" height="26" rx="13"/>
+          <text class="illo-chip-txt" x="176" y="61" text-anchor="middle" dominant-baseline="central">3×2</text>
+        </svg>
+      </div>
+
+      <p data-i18n-html="rules.p4"></p>
+      <p data-i18n-html="rules.p5"></p>
+
+      <!-- Illustration: full board — blue multipliers on top & side, body filled with their products -->
+      <div class="rule-illo illo-range" role="img" aria-hidden="true">
+        <svg viewBox="0 0 128 150" xmlns="http://www.w3.org/2000/svg">
+          <rect class="illo-badge-rect" x="31" y="2" width="66" height="22" rx="11"/>
+          <text class="illo-badge-txt" x="64" y="13" text-anchor="middle" dominant-baseline="central">1 – 6</text>
+          <text class="illo-corner" x="19" y="43" text-anchor="middle" dominant-baseline="central">×</text>
+          <!-- column multipliers (blue) -->
+          <rect class="illo-mult-rect" x="36" y="30" width="26" height="26" rx="7"/>
+          <text class="illo-mult-txt illo-num-sm" x="49"  y="43" text-anchor="middle" dominant-baseline="central">2</text>
+          <rect class="illo-mult-rect" x="66" y="30" width="26" height="26" rx="7"/>
+          <text class="illo-mult-txt illo-num-sm" x="79"  y="43" text-anchor="middle" dominant-baseline="central">5</text>
+          <rect class="illo-mult-rect" x="96" y="30" width="26" height="26" rx="7"/>
+          <text class="illo-mult-txt illo-num-sm" x="109" y="43" text-anchor="middle" dominant-baseline="central">3</text>
+          <!-- row multipliers (blue); 5 also appears on top — allowed -->
+          <rect class="illo-mult-rect" x="6" y="60"  width="26" height="26" rx="7"/>
+          <text class="illo-mult-txt illo-num-sm" x="19" y="73"  text-anchor="middle" dominant-baseline="central">5</text>
+          <rect class="illo-mult-rect" x="6" y="90"  width="26" height="26" rx="7"/>
+          <text class="illo-mult-txt illo-num-sm" x="19" y="103" text-anchor="middle" dominant-baseline="central">6</text>
+          <rect class="illo-mult-rect" x="6" y="120" width="26" height="26" rx="7"/>
+          <text class="illo-mult-txt illo-num-sm" x="19" y="133" text-anchor="middle" dominant-baseline="central">1</text>
+          <!-- products: row multiplier × column multiplier -->
+          <rect class="illo-prod-rect" x="36" y="60"  width="26" height="26" rx="7"/>
+          <text class="illo-prod-txt illo-num-xs" x="49"  y="73"  text-anchor="middle" dominant-baseline="central">10</text>
+          <rect class="illo-prod-rect" x="66" y="60"  width="26" height="26" rx="7"/>
+          <text class="illo-prod-txt illo-num-xs" x="79"  y="73"  text-anchor="middle" dominant-baseline="central">25</text>
+          <rect class="illo-prod-rect" x="96" y="60"  width="26" height="26" rx="7"/>
+          <text class="illo-prod-txt illo-num-xs" x="109" y="73"  text-anchor="middle" dominant-baseline="central">15</text>
+          <rect class="illo-prod-rect" x="36" y="90"  width="26" height="26" rx="7"/>
+          <text class="illo-prod-txt illo-num-xs" x="49"  y="103" text-anchor="middle" dominant-baseline="central">12</text>
+          <rect class="illo-prod-rect" x="66" y="90"  width="26" height="26" rx="7"/>
+          <text class="illo-prod-txt illo-num-xs" x="79"  y="103" text-anchor="middle" dominant-baseline="central">30</text>
+          <rect class="illo-prod-rect" x="96" y="90"  width="26" height="26" rx="7"/>
+          <text class="illo-prod-txt illo-num-xs" x="109" y="103" text-anchor="middle" dominant-baseline="central">18</text>
+          <rect class="illo-prod-rect" x="36" y="120" width="26" height="26" rx="7"/>
+          <text class="illo-prod-txt illo-num-xs" x="49"  y="133" text-anchor="middle" dominant-baseline="central">2</text>
+          <rect class="illo-prod-rect" x="66" y="120" width="26" height="26" rx="7"/>
+          <text class="illo-prod-txt illo-num-xs" x="79"  y="133" text-anchor="middle" dominant-baseline="central">5</text>
+          <rect class="illo-prod-rect" x="96" y="120" width="26" height="26" rx="7"/>
+          <text class="illo-prod-txt illo-num-xs" x="109" y="133" text-anchor="middle" dominant-baseline="central">3</text>
+        </svg>
+      </div>
+
+      <p data-i18n-html="rules.p6"></p>
+      <p data-i18n-html="rules.p7"></p>
     </div>
 
     <div class="demo-section" aria-hidden="true" style="margin:0 0 1rem;">
@@ -1865,8 +1975,13 @@ const STRINGS = {
       skip: 'דלג על ההדרכה',
     },
     rules: {
-      intro: '<strong>גלו את המכפילים</strong><br><br>המספרים בלוח הם <strong>תוצאות כפל</strong> — מכפלה של <strong>מכפיל השורה × מכפיל העמודה</strong>.<br><br>לדוגמה, אם המספר הוא 6, המכפילים יכולים להיות 6×1, 1×6, 2×3 או 3×2.<br><br>מעל ובצד הלוח נמצאים <strong>המכפילים</strong>, שאותם יש למצוא.<br>טווח המכפילים האפשרי (למשל 1–6) מפורט בכל משחק.<br>כל מספר בטווח המכפילים יכול להופיע <strong>רק פעם אחת</strong> בכל שורה או בכל טור.<br><br>כדי לגלות מהם המכפילים — היעזרו בשאר המספרים שבאותה שורה או עמודה.',
-      outro: '💡 כל ניחוש נבדק מיד — <strong>ניחוש שגוי נספר כטעות</strong>. ניתן גם להשתמש בכפתור <strong>בדוק הכל</strong>.<br><br>❓ אין לכם מספיק נתונים להחלטה? <strong>קחו רמז!</strong><br><br>⭐ <strong>כוכבים:</strong> סיימו מהר, עם מעט טעויות ורמזים — וקבלו עד 3 כוכבים.',
+      p1: 'המספרים בלוח הם <strong>תוצאות כפל</strong>, כלומר מכפלה של <strong>מכפיל השורה × מכפיל העמודה</strong>.',
+      p2: 'עליכם לגלות מהם המכפילים הן בשורה והן בטור.',
+      p3: 'לדוגמה, אם המספר הוא 6, המכפילים יכולים להיות 6×1, 1×6, 2×3 או 3×2.',
+      p4: 'כדי לגלות מהם המכפילים — היעזרו בשאר המספרים שבאותה שורה או עמודה.<br>💡 כל ניחוש נבדק מיד — <strong>ניחוש שגוי נספר כטעות</strong>. ניתן גם להשתמש בכפתור <strong>בדוק הכל</strong>.',
+      p5: 'טווח המכפילים האפשרי (למשל 1–6) מופיע בראש כל משחק. כל מכפיל/מספר בטווח זה יכול להופיע <strong>רק פעם אחת</strong> בכל שורה ופעם אחת בכל טור.',
+      p6: '❓ אין לכם מספיק נתונים להחלטה? <strong>קחו רמז!</strong>',
+      p7: '⭐ <strong>כוכבים:</strong> סיימו מהר, עם מעט טעויות ורמזים — וקבלו עד 3 כוכבים.',
       modalTitle: '🎮 איך משחקים?',
       closeBtn: 'הבנתי, בוא נשחק! ▶',
     },
@@ -2003,8 +2118,13 @@ const STRINGS = {
       skip: 'Skip tutorial',
     },
     rules: {
-      intro: '<strong>Discover the Multipliers</strong><br><br>The numbers on the board are <strong>multiplication products</strong> — each one is <strong>row multiplier × column multiplier</strong>.<br><br>For example, if the number is 6, the multipliers could be 6×1, 1×6, 2×3 or 3×2.<br><br>The <strong>multipliers</strong> you need to find sit above and beside the board.<br>The possible multiplier range (e.g. 1–6) is listed in every game.<br>Each number in the range can appear <strong>only once</strong> in any row or column.<br><br>To find the multipliers, use the other numbers in the same row or column.',
-      outro: '💡 Every guess is checked immediately — <strong>a wrong guess counts as a mistake</strong>. You can also use the <strong>Check All</strong> button.<br><br>❓ Not enough info to decide? <strong>Take a hint!</strong><br><br>⭐ <strong>Stars:</strong> finish fast with few mistakes and hints to earn up to 3 stars.',
+      p1: 'The numbers on the board are <strong>multiplication products</strong> — that is, <strong>row multiplier × column multiplier</strong>.',
+      p2: 'You need to find the multipliers, both in the row and in the column.',
+      p3: 'For example, if the number is 6, the multipliers could be 6×1, 1×6, 2×3 or 3×2.',
+      p4: 'To find the multipliers, use the other numbers in the same row or column.<br>💡 Every guess is checked immediately — <strong>a wrong guess counts as a mistake</strong>. You can also use the <strong>Check All</strong> button.',
+      p5: 'The possible multiplier range (e.g. 1–6) appears at the top of every game. Each number in that range can appear <strong>only once</strong> in each row and once in each column.',
+      p6: '❓ Not enough information to decide? <strong>Take a hint!</strong>',
+      p7: '⭐ <strong>Stars:</strong> finish fast with few mistakes and hints to earn up to 3 stars.',
       modalTitle: '🎮 How to Play',
       closeBtn: "Got it, let's play! ▶",
     },
