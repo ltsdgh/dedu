@@ -1,0 +1,12 @@
+{
+  "appId": "com.dedugames.dedu",
+  "appName": "de-du",
+  "webDir": "www",
+  "server": {
+    "url": "https://de-du.netlify.app",
+    "cleartext": false
+  },
+  "ios": {
+    "contentInset": "automatic"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "de-du",
+  "version": "1.1.0",
+  "description": "גלו את המכפילים",
+  "homepage": "https://ltsdgh.github.io/dedu",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ltsdgh/dedu"
+  },
+  "keywords": [
+    "game",
+    "education",
+    "pwa",
+    "hebrew"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.1",
+    "@capacitor/core": "^8.5.1",
+    "@capacitor/ios": "^8.5.1",
+    "sharp": "^0.35.1"
+  }
+}
