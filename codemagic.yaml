@@ -23,6 +23,8 @@ workflows:
     scripts:
       - name: Install npm dependencies
         script: npm ci
+      - name: Sync Capacitor web assets into the iOS project
+        script: npx cap sync ios
       - name: Set up code signing settings on Xcode project
         script: xcode-project use-profiles
       - name: Increment build number
