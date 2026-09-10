@@ -7,6 +7,21 @@
       "name": "de-du | Discover the Multipliers",
       "short_name": "de-du",
       "description": "Discover the Multipliers"
+    },
+    "fr": {
+      "name": "de-du | Découvrez les multiplicateurs",
+      "short_name": "de-du",
+      "description": "Découvrez les multiplicateurs"
+    },
+    "es": {
+      "name": "de-du | Descubre los multiplicadores",
+      "short_name": "de-du",
+      "description": "Descubre los multiplicadores"
+    },
+    "ar": {
+      "name": "de-du | اكتشف المضاعِفات",
+      "short_name": "de-du",
+      "description": "اكتشف المضاعِفات"
     }
   },
   "start_url": "./index.html",

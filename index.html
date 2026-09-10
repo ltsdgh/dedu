@@ -18,7 +18,7 @@
   <meta name="color-scheme" content="light dark" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="de-du" />
   <link rel="apple-touch-icon" href="icon192.png" />
 
@@ -115,7 +115,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1.5rem 1rem 3rem;
+      padding: calc(1.5rem + env(safe-area-inset-top, 0px)) 1rem 3rem;
       transition: background 0.3s, color 0.3s;
     }
 
@@ -137,7 +137,7 @@
     /* ── Corner Controls (fixed container for top-right buttons) ── */
     .corner-controls {
       position: fixed;
-      top: 14px;
+      top: calc(14px + env(safe-area-inset-top, 0px));
       right: 16px;
       z-index: 100;
       display: flex;
@@ -183,6 +183,24 @@
     }
     .theme-toggle:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
     .theme-toggle:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
+
+    /* ── Language selector ── */
+    .lang-select {
+      background: var(--clr-surface);
+      border: 1.5px solid var(--clr-border);
+      border-radius: var(--radius-pill);
+      padding: 5px 10px;
+      min-height: 40px;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--clr-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .lang-select:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
+    .lang-select:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
 
     /* ── Game-screen corner (mute + new game), opposite the global corner ── */
     .game-corner {
@@ -413,12 +431,13 @@
       color: var(--clr-text);
       font-size: .7rem;
       font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      /* Wrap long localized labels (fr/es/ar) to a second line instead of
+         truncating them with an ellipsis. */
+      white-space: normal;
+      overflow-wrap: break-word;
       max-width: 100%;
       text-align: center;
-      line-height: 1.2;
+      line-height: 1.15;
     }
     .stat-nums {
       display: flex;
@@ -1415,7 +1434,7 @@
     /* D2 – Stats bar compact on mobile */
     @media (max-width: 480px) {
       .stat { padding: .36rem .16rem; }
-      .stat .lbl { font-size: .6rem; max-width: 50px; }
+      .stat .lbl { font-size: .58rem; }
       .stat .val { font-size: .9rem; }
     }
 
@@ -1466,26 +1485,6 @@
     .btn-check:disabled { opacity: .4 !important; box-shadow: none !important; transform: none !important; }
     .theme-dark .btn-check { box-shadow: 0 4px 18px rgba(123,114,255,.4), 0 2px 0 #3B31D4 !important; }
     .btn-hint:active:not(:disabled), .btn-check:active:not(:disabled) { transform: scale(.97) translateY(0) !important; }
-
-    /* ── Language toggle button ── */
-    .btn-lang-toggle {
-      background: var(--clr-surface);
-      border: 1.5px solid var(--clr-border);
-      border-radius: var(--radius-pill);
-      padding: 5px 12px;
-      font-family: var(--font-ui);
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--clr-muted);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      transition: all .2s;
-      box-shadow: 0 2px 8px rgba(0,0,0,.08);
-    }
-    .btn-lang-toggle:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
-    .btn-lang-toggle:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
 
     /* ── Statistics modal ── */
     .stats-grid {
@@ -1587,6 +1586,13 @@
           data-i18n-aria="help.ariaLabel"
           onclick="showRules()">ℹ️</button>
   <button class="theme-toggle" id="themeToggleBtn" aria-label="החלף ערכת צבעים">🌙 מצב כהה</button>
+  <select class="lang-select" id="langSelect" aria-label="בחר שפה">
+    <option value="he">עברית</option>
+    <option value="en">English</option>
+    <option value="fr">Français</option>
+    <option value="es">Español</option>
+    <option value="ar">العربية</option>
+  </select>
 </div>
 
 <a href="#main-content" class="skip-link" data-i18n="skipLink">דלג לתוכן הראשי</a>
@@ -1672,8 +1678,8 @@
         <span class="lbl" data-i18n="stats.hintsLabel">💡 רמזים:</span>
         <div class="stat-nums"><span class="val" id="hintsVal">0</span><span class="lbl" id="hintsMax"></span></div>
       </div>
-      <div id="coinRow" class="stat" aria-label="מטבעות" style="display:none;">
-        <span class="lbl">מטבעות:</span>
+      <div id="coinRow" class="stat" aria-label="מטבעות" data-i18n-aria="ui.statsCoins" style="display:none;">
+        <span class="lbl" data-i18n="stats.coinsLabel">🪙 מטבעות:</span>
         <span class="val" id="coinVal">0</span>
       </div>
       <div class="stat" aria-label="זמן משחק" data-i18n-aria="stats.timerAriaLabel">
@@ -1815,7 +1821,7 @@
      onclick="if(event.target===this)closeStats()" style="align-items:flex-start;overflow-y:auto;">
   <div class="modal" style="max-width:420px;margin:auto;">
     <div style="display:flex;justify-content:flex-end;margin-bottom:.25rem;">
-      <button onclick="closeStats()" aria-label="סגור" style="background:none;border:none;font-size:1.5rem;line-height:1;cursor:pointer;color:var(--clr-muted);padding:.1rem .4rem;border-radius:4px;">✕</button>
+      <button onclick="closeStats()" aria-label="סגור" data-i18n-aria="ui.close" style="background:none;border:none;font-size:1.5rem;line-height:1;cursor:pointer;color:var(--clr-muted);padding:.1rem .4rem;border-radius:4px;">✕</button>
     </div>
     <h2 id="statsModalTitle" style="margin-bottom:.25rem;">📊 הסטטיסטיקות שלי</h2>
     <div id="statsContent"></div>
@@ -1837,7 +1843,7 @@
 <div class="overlay" id="rulesOverlay" role="dialog" aria-modal="true" aria-labelledby="rulesModalTitle" onclick="if(event.target===this)closeRules()" style="align-items:flex-start;overflow-y:auto;">
   <div class="modal" style="max-width:440px;margin:auto;">
     <div style="display:flex;justify-content:flex-end;margin-bottom:.25rem;">
-      <button onclick="closeRules()" aria-label="סגור" style="background:none;border:none;font-size:1.5rem;line-height:1;cursor:pointer;color:var(--clr-muted);padding:.1rem .4rem;border-radius:4px;" title="סגור">✕</button>
+      <button id="rulesTopClose" onclick="closeRules()" aria-label="סגור" data-i18n-aria="ui.close" style="background:none;border:none;font-size:1.5rem;line-height:1;cursor:pointer;color:var(--clr-muted);padding:.1rem .4rem;border-radius:4px;" title="סגור">✕</button>
     </div>
     <h2 id="rulesModalTitle" data-i18n="rules.modalTitle">🎮 איך משחקים?</h2>
 
@@ -1964,6 +1970,7 @@ const STRINGS = {
       demoLabel: 'הדגמה',
       demoWin: '✨ ניחשת את כל המכפילים!',
     },
+    /* SYNC: mirror tutorial + rules copy across all languages when How-to-Play changes */
     tutorial: {
       title: '🎓 איך משחקים?',
       step1: 'הלוח מציג <strong>תוצאות כפל</strong> — אלה הרמזים שלך.<br><br>כל תא = <strong>מכפיל השורה × מכפיל העמודה</strong>. לדוגמה, אם התא הוא 6, המכפילים יכולים להיות 6×1, 1×6, 2×3 או 3×2.<br><br>המשימה: לגלות את <strong>המכפילים הסודיים</strong> שבשורה העליונה ובטור הצד. מעל הלוח מוצג <strong>טווח המכפילים</strong> (למשל 1–6).',
@@ -2002,6 +2009,7 @@ const STRINGS = {
       correctLabel: '🎯 גילית:',
       rangeAriaLabel: 'טווח מספרי הכפל',
       rangeLabel: '🔢 טווח:',
+      coinsLabel: '🪙 מטבעות:',
     },
     board: {
       tableAriaLabel: 'לוח הכפל — הרמזים',
@@ -2082,8 +2090,41 @@ const STRINGS = {
       shareText: (n, diff, stars, t, m, h) => `de-du ${n}×${n} · ${diff} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
       shareDailyText: (date, stars, t, m, h) => `de-du Daily ${date} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
     },
-    langToggleLabel: '🌐 EN',
-    langToggleAriaLabel: 'Switch to English',
+    ui: {
+      close: 'סגור',
+      cancel: 'ביטול',
+      shareTitle: '📤 שתף תוצאה',
+      shareAction: '📤 שתף',
+      copyAction: '📋 העתק',
+      statsGames: 'משחקים',
+      statsWinRate: 'אחוז ניצחון',
+      statsWins: 'ניצחונות',
+      statsCoins: 'מטבעות',
+      statsLevel: 'רמה',
+      statsRating: 'דירוג',
+      statsBestTime: '⏱ שיא זמן',
+      streakShort: (n) => `🔥 ${n} ${n === 1 ? 'יום' : 'ימים'} ברצף`,
+      streakBadge: (n) => `🔥 ${n} ימים ברצף!`,
+      dailyDone: 'הושלם היום',
+      notEnoughCoins: 'אין מספיק מטבעות — שחקי עוד כדי לצבור!',
+      hintPurchased: (cost) => `תשלום עבור רמז: ${cost} מטבעות`,
+      buyHint: (cost) => `קנה רמז (${cost} מטבעות)`,
+      comboTooltip: 'Combo = ביצועים בשילוב גודל + קושי ספציפי',
+      coinsEarned: (stars, total) => `+${stars} מטבעות · יתרה: ${total}`,
+      revealShown: (pct) => `${pct}% גלוי`,
+      forBeginners: 'למתחילים',
+      upToMistakes: (n) => `עד ${n} טעויות`,
+    },
+    /* SYNC: demo narration is part of How-to-Play — mirror across languages */
+    demo: {
+      rowFind: 'שורה זו: 12, 9, 6 — מה מחלק הכל?',
+      try1: 'שורה=1? → 12÷1=12 גדול מדי ✗',
+      try2: 'שורה=2? → 9÷2=4.5 לא שלם ✗',
+      solved: 'שורה=3! → 4✓ 3✓ 2✓',
+    },
+    langName: 'עברית',
+    langSelectAriaLabel: 'בחר שפה',
+    statsBtnLabel: '📊 הסטטיסטיקות שלי',
     themeDarkLabel: '🌙 מצב כהה',
     themeLightLabel: '☀️ מצב בהיר',
   },
@@ -2107,6 +2148,7 @@ const STRINGS = {
       demoLabel: 'Demo',
       demoWin: '✨ All multipliers found!',
     },
+    /* SYNC: mirror tutorial + rules copy across all languages when How-to-Play changes */
     tutorial: {
       title: '🎓 How to Play',
       step1: 'The board shows <strong>multiplication products</strong> — those are your clues.<br><br>Each cell = <strong>row multiplier × column multiplier</strong>. For example, if the cell is 6, the multipliers could be 6×1, 1×6, 2×3 or 3×2.<br><br>Your mission: discover the <strong>secret multipliers</strong> in the top row and side column. The <strong>multiplier range</strong> (e.g. 1–6) is shown above the board.',
@@ -2145,6 +2187,7 @@ const STRINGS = {
       correctLabel: '🎯 Found:',
       rangeAriaLabel: 'Multiplication number range',
       rangeLabel: '🔢 Range:',
+      coinsLabel: '🪙 Coins:',
     },
     board: {
       tableAriaLabel: 'Multiplication board — clues',
@@ -2225,10 +2268,577 @@ const STRINGS = {
       shareText: (n, diff, stars, t, m, h) => `de-du ${n}×${n} · ${diff} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
       shareDailyText: (date, stars, t, m, h) => `de-du Daily ${date} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
     },
-    langToggleLabel: '🌐 עב',
-    langToggleAriaLabel: 'Switch to Hebrew',
+    ui: {
+      close: 'Close',
+      cancel: 'Cancel',
+      shareTitle: '📤 Share Result',
+      shareAction: '📤 Share',
+      copyAction: '📋 Copy',
+      statsGames: 'Games',
+      statsWinRate: 'Win rate',
+      statsWins: 'Wins',
+      statsCoins: 'Coins',
+      statsLevel: 'Level',
+      statsRating: 'Rating',
+      statsBestTime: '⏱ Best time',
+      streakShort: (n) => `🔥 ${n}-day streak`,
+      streakBadge: (n) => `🔥 ${n}-day streak!`,
+      dailyDone: 'Done today',
+      notEnoughCoins: 'Not enough coins — play more to earn some!',
+      hintPurchased: (cost) => `Hint purchased: ${cost} coins`,
+      buyHint: (cost) => `Buy hint (${cost} coins)`,
+      comboTooltip: 'Combo = your record for this board size + difficulty',
+      coinsEarned: (stars, total) => `+${stars} coins · total: ${total}`,
+      revealShown: (pct) => `${pct}% shown`,
+      forBeginners: 'for beginners',
+      upToMistakes: (n) => `up to ${n} mistakes`,
+    },
+    /* SYNC: demo narration is part of How-to-Play — mirror across languages */
+    demo: {
+      rowFind: 'Row: 12, 9, 6 — find the factor',
+      try1: 'row=1? → 12÷1=12 too large ✗',
+      try2: 'row=2? → 9÷2=4.5 not whole ✗',
+      solved: 'row=3! → 4✓ 3✓ 2✓',
+    },
+    langName: 'English',
+    langSelectAriaLabel: 'Choose language',
+    statsBtnLabel: '📊 My Statistics',
     themeDarkLabel: '🌙 Dark mode',
     themeLightLabel: '☀️ Light mode',
+  },
+  fr: {
+    pageTitle: 'de-du | Découvrez les multiplicateurs',
+    skipLink: 'Aller au contenu principal',
+    headerSubtitle: 'Découvrez les multiplicateurs',
+    setup: {
+      heading: 'Paramètres du jeu',
+      boardSizeLegend: 'Taille de la grille',
+      boardSizeAriaLabel: 'Choisir la taille de la grille',
+      diffLegend: 'Difficulté',
+      diffAriaLabel: 'Choisir la difficulté',
+      startBtn: 'Commencer ▶',
+      resumeBtn: '▶ Reprendre la partie',
+      dailyBtn: '📅 Défi du jour',
+      howToPlay: '❓ Comment jouer ?',
+      dailyBadge: '📅 Quotidien',
+      milestone: (n) => `🏅 Réussite ! Vous avez collecté ${n} pièces — bravo !`,
+      diffSuggest: (next) => `🚀 Prêt pour le prochain défi ? Essayez <strong>${next}</strong> !`,
+      demoLabel: 'Démo',
+      demoWin: '✨ Tous les multiplicateurs trouvés !',
+    },
+    /* SYNC: mirror tutorial + rules copy across all languages when How-to-Play changes */
+    tutorial: {
+      title: '🎓 Comment jouer',
+      step1: 'La grille affiche des <strong>produits de multiplication</strong> — ce sont vos indices.<br><br>Chaque case = <strong>multiplicateur de ligne × multiplicateur de colonne</strong>. Par exemple, si la case est 6, les multiplicateurs peuvent être 6×1, 1×6, 2×3 ou 3×2.<br><br>Votre mission : découvrir les <strong>multiplicateurs secrets</strong> de la ligne du haut et de la colonne latérale. La <strong>plage des multiplicateurs</strong> (par ex. 1–6) est indiquée au-dessus de la grille.',
+      step2: 'Pour trouver les multiplicateurs, <strong>utilisez les autres nombres de la même ligne ou colonne</strong> et cherchez des schémas.<br><br>💡 Astuce : une ligne dont vous connaissez les produits vous donne son multiplicateur — ensuite, diviser n\'importe quel produit de cette colonne vous donne le suivant.',
+      step3: 'Saisissez un multiplicateur et appuyez sur <strong>Entrée</strong> pour vérifier immédiatement.<br><br>⚠️ <strong>Chaque nombre apparaît une fois dans les lignes et une fois dans les colonnes.</strong><br><br>💡 Utilisez <strong>Indice</strong> si vous êtes bloqué, et <strong>Tout vérifier</strong> pour valider plusieurs réponses à la fois.<br><br>🎉 Bonne chance !',
+      next: 'Suivant ›',
+      prev: '‹ Retour',
+      done: 'Jouons ! ▶',
+      skip: 'Passer le tutoriel',
+    },
+    rules: {
+      p1: 'Les nombres sur la grille sont des <strong>produits de multiplication</strong> — c\'est-à-dire <strong>multiplicateur de ligne × multiplicateur de colonne</strong>.',
+      p2: 'Vous devez trouver les multiplicateurs, à la fois dans la ligne et dans la colonne.',
+      p3: 'Par exemple, si le nombre est 6, les multiplicateurs peuvent être 6×1, 1×6, 2×3 ou 3×2.',
+      p4: 'Pour trouver les multiplicateurs, utilisez les autres nombres de la même ligne ou colonne.<br>💡 Chaque réponse est vérifiée immédiatement — <strong>une réponse fausse compte comme une erreur</strong>. Vous pouvez aussi utiliser le bouton <strong>Tout vérifier</strong>.',
+      p5: 'La plage de multiplicateurs possible (par ex. 1–6) apparaît en haut de chaque partie. Chaque nombre de cette plage ne peut apparaître qu\'<strong>une seule fois</strong> par ligne et une fois par colonne.',
+      p6: '❓ Pas assez d\'informations pour décider ? <strong>Prenez un indice !</strong>',
+      p7: '⭐ <strong>Étoiles :</strong> terminez vite avec peu d\'erreurs et d\'indices pour gagner jusqu\'à 3 étoiles.',
+      modalTitle: '🎮 Comment jouer',
+      closeBtn: 'Compris, jouons ! ▶',
+    },
+    help: { ariaLabel: 'Comment jouer ?', btnLabel: '❓ Comment jouer' },
+    svg: { multiplier: 'Mult.', notes: '?', multiplicand: 'Mcande.' },
+    diff: {
+      easy: 'Facile', medium: 'Moyen', hard: 'Difficile',
+    },
+    stats: {
+      settingsAriaLabel: 'Paramètres du jeu',
+      timerAriaLabel: 'Temps de jeu',
+      mistakesAriaLabel: 'Erreurs',
+      mistakesTitle: 'Chaque réponse fausse compte comme une erreur',
+      mistakesLabel: '❌ Erreurs :',
+      hintsAriaLabel: 'Indices utilisés',
+      hintsLabel: '💡 Indices :',
+      correctAriaLabel: 'Multiplicateurs trouvés',
+      correctLabel: '🎯 Trouvés :',
+      rangeAriaLabel: 'Plage des nombres de multiplication',
+      rangeLabel: '🔢 Plage :',
+      coinsLabel: '🪙 Pièces :',
+    },
+    board: {
+      tableAriaLabel: 'Grille de multiplication — indices',
+      caption: 'Grille de multiplication. Les nombres sont des indices — découvrez les multiplicateurs.',
+      cornerCell: '×',
+      hintBtn: '💡 Indice',
+      pauseBtn: '⏸ Pause',
+      resumeBtn: '▶ Reprendre',
+      pausedLabel: 'Jeu en pause',
+      checkAllBtn: '✓ Tout vérifier',
+      checkBtn: '✓ Vérifier',
+      kbdBarAriaLabel: 'Outils de saisie',
+      hintAriaLabel: 'Indice',
+      soundAriaLabel: 'Activer ou désactiver le son',
+      doneAriaLabel: 'Fermer le clavier',
+      muteAria: 'Activer ou désactiver le son',
+      newGameAria: 'Nouvelle partie',
+      pauseAria: 'Pause',
+      resumeAria: 'Reprendre la partie',
+      newGameBtn: '↺ Nouvelle partie',
+      cellShownAriaLabel: (r, c, val) => `Ligne ${r+1} Colonne ${c+1} : ${val}`,
+      cellHiddenAriaLabel: (r, c) => `Ligne ${r+1} Colonne ${c+1} : caché`,
+      colHelperAriaLabel: (i) => `Multiplicateur de la colonne ${i+1} — saisissez le nombre`,
+      rowHelperAriaLabel: (i) => `Multiplicateur de la ligne ${i+1} — saisissez le nombre`,
+    },
+    messages: {
+      enterPositive: 'Saisissez un nombre positif',
+      correct: '✓ Correct !',
+      incorrect: '✗ Incorrect – réessayez',
+      fillFirst: 'Saisissez au moins un multiplicateur avant de vérifier',
+      allCorrect: (n) => `✓ Les ${n} multiplicateurs que vous avez saisis sont corrects !`,
+      errorsFound: (w, n) => `${w} erreurs trouvées sur ${n} réponses`,
+      noHints: 'Plus d\'indices disponibles',
+      allFilled: 'Tous les multiplicateurs sont déjà trouvés !',
+      hintMsg: (r, c, val) => `💡 Indice : Ligne ${r+1} × Colonne ${c+1} = ${val}`,
+      rangeBanner: (max, diff) => `${diff ? `<strong>Niveau :</strong> <span>${diff}</span> · ` : ''}<strong>Plage :</strong> <span>1–${max}</span>`,
+    },
+    modals: {
+      confirmTitle: '⚠️ Quitter la partie',
+      confirmBody: 'La partie en cours sera perdue. Continuer ?',
+      confirmYes: 'Oui, quitter',
+      confirmNo: 'Non, revenir',
+      winTitle: '🎉 Bravo !',
+      winStarsAriaLabel: 'Notation par étoiles',
+      winBody: 'Vous avez résolu la grille avec succès !',
+      winPlayAgain: '↺ Rejouer – mêmes paramètres',
+      winNewGame: '🎮 Nouveaux paramètres',
+      loseTitle: '😕 Plus d\'essais',
+      loseBody: 'Vous avez atteint le nombre maximal d\'erreurs.',
+      loseShow: '👁️ Afficher la solution',
+      loseTryAgain: '↺ Réessayer',
+      loseNewGame: '🎮 Nouveaux paramètres',
+    },
+    win: {
+      starsLabel: (n) => `${n} étoiles sur 3`,
+      starsEarned: (n) => `Vous avez gagné ${n} étoiles sur 3`,
+      newTimeRecord: '🏅 Nouveau record de temps !',
+      stats: (t, m, h) => `Temps : ${t} | Erreurs : ${m} | Indices utilisés : ${h}`,
+      streak: (n) => `🔥 Série de ${n} jours — bravo, continuez !`,
+      streakWarning: (n) => `🔥 Vous avez une série de ${n} jours — jouez aujourd'hui pour la garder !`,
+      streakStart: '👋 Lancez votre série — jouez maintenant !',
+      comboWins: (w) => `${w} victoire${w !== 1 ? 's' : ''}`,
+      bestStars: (n) => `meilleur ${n}★`,
+      badgeStreak: 'Jours de suite',
+      badgeStars: 'Total d\'étoiles',
+      badgeWins: 'Total de victoires',
+      badgeLegend: '',
+      comboLabel: 'Record',
+      dailyLevel: '5×5 · Moyen',
+      dailyPersonalBest: (t) => `🏅 Record personnel : ${t}`,
+      dailyNewRecord: '🎉 Nouveau record personnel !',
+      tiers: ['🌱 Débutant', '🥉 Apprenti', '🥈 Intermédiaire', '🥇 Habile', '🏆 Expert', '👑 Champion'],
+      tierProgress: (cur, next, rem) => `${cur} → ${next} (${rem} victoire${rem !== 1 ? 's' : ''} restante${rem !== 1 ? 's' : ''})`,
+      tierMax: (cur) => `${cur} — rang maximal !`,
+      suggestNow: '→ Essayer',
+      shareBtn: '📤 Partager le résultat',
+      shareCopied: '✓ Copié !',
+      shareText: (n, diff, stars, t, m, h) => `de-du ${n}×${n} · ${diff} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
+      shareDailyText: (date, stars, t, m, h) => `de-du Daily ${date} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
+    },
+    ui: {
+      close: 'Fermer',
+      cancel: 'Annuler',
+      shareTitle: '📤 Partager le résultat',
+      shareAction: '📤 Partager',
+      copyAction: '📋 Copier',
+      statsGames: 'Parties',
+      statsWinRate: 'Taux de victoire',
+      statsWins: 'Victoires',
+      statsCoins: 'Pièces',
+      statsLevel: 'Niveau',
+      statsRating: 'Note',
+      statsBestTime: '⏱ Meilleur temps',
+      streakShort: (n) => `🔥 série de ${n} jours`,
+      streakBadge: (n) => `🔥 série de ${n} jours !`,
+      dailyDone: 'Fait aujourd\'hui',
+      notEnoughCoins: 'Pas assez de pièces — jouez encore pour en gagner !',
+      hintPurchased: (cost) => `Indice acheté : ${cost} pièces`,
+      buyHint: (cost) => `Acheter un indice (${cost} pièces)`,
+      comboTooltip: 'Combo = votre record pour cette taille de grille + difficulté',
+      coinsEarned: (stars, total) => `+${stars} pièces · total : ${total}`,
+      revealShown: (pct) => `${pct}% visible`,
+      forBeginners: 'pour débutants',
+      upToMistakes: (n) => `jusqu'à ${n} erreurs`,
+    },
+    /* SYNC: demo narration is part of How-to-Play — mirror across languages */
+    demo: {
+      rowFind: 'Ligne : 12, 9, 6 — quel est le facteur ?',
+      try1: 'ligne=1 ? → 12÷1=12 trop grand ✗',
+      try2: 'ligne=2 ? → 9÷2=4.5 pas entier ✗',
+      solved: 'ligne=3 ! → 4✓ 3✓ 2✓',
+    },
+    langName: 'Français',
+    langSelectAriaLabel: 'Choisir la langue',
+    statsBtnLabel: '📊 Mes statistiques',
+    themeDarkLabel: '🌙 Mode sombre',
+    themeLightLabel: '☀️ Mode clair',
+  },
+  es: {
+    pageTitle: 'de-du | Descubre los multiplicadores',
+    skipLink: 'Saltar al contenido principal',
+    headerSubtitle: 'Descubre los multiplicadores',
+    setup: {
+      heading: 'Ajustes del juego',
+      boardSizeLegend: 'Tamaño del tablero',
+      boardSizeAriaLabel: 'Elegir el tamaño del tablero',
+      diffLegend: 'Dificultad',
+      diffAriaLabel: 'Elegir la dificultad',
+      startBtn: 'Empezar ▶',
+      resumeBtn: '▶ Reanudar partida',
+      dailyBtn: '📅 Reto diario',
+      howToPlay: '❓ ¿Cómo se juega?',
+      dailyBadge: '📅 Diario',
+      milestone: (n) => `🏅 ¡Logro! Has reunido ${n} monedas — ¡bien hecho!`,
+      diffSuggest: (next) => `🚀 ¿Listo para el próximo reto? ¡Prueba <strong>${next}</strong>!`,
+      demoLabel: 'Demo',
+      demoWin: '✨ ¡Todos los multiplicadores encontrados!',
+    },
+    /* SYNC: mirror tutorial + rules copy across all languages when How-to-Play changes */
+    tutorial: {
+      title: '🎓 Cómo se juega',
+      step1: 'El tablero muestra <strong>productos de multiplicación</strong> — esas son tus pistas.<br><br>Cada casilla = <strong>multiplicador de fila × multiplicador de columna</strong>. Por ejemplo, si la casilla es 6, los multiplicadores pueden ser 6×1, 1×6, 2×3 o 3×2.<br><br>Tu misión: descubrir los <strong>multiplicadores secretos</strong> de la fila superior y la columna lateral. El <strong>rango de multiplicadores</strong> (p. ej. 1–6) se muestra encima del tablero.',
+      step2: 'Para encontrar los multiplicadores, <strong>usa los demás números de la misma fila o columna</strong> y busca patrones.<br><br>💡 Consejo: una fila cuyos productos conoces te da su multiplicador — luego, dividir cualquier producto de esa columna te da el siguiente.',
+      step3: 'Escribe un multiplicador y pulsa <strong>Enter</strong> para comprobar al instante.<br><br>⚠️ <strong>Cada número aparece una vez en las filas y una vez en las columnas.</strong><br><br>💡 Usa <strong>Pista</strong> si te atascas, y <strong>Comprobar todo</strong> para validar varias respuestas a la vez.<br><br>🎉 ¡Buena suerte!',
+      next: 'Siguiente ›',
+      prev: '‹ Atrás',
+      done: '¡A jugar! ▶',
+      skip: 'Saltar el tutorial',
+    },
+    rules: {
+      p1: 'Los números del tablero son <strong>productos de multiplicación</strong> — es decir, <strong>multiplicador de fila × multiplicador de columna</strong>.',
+      p2: 'Debes encontrar los multiplicadores, tanto en la fila como en la columna.',
+      p3: 'Por ejemplo, si el número es 6, los multiplicadores pueden ser 6×1, 1×6, 2×3 o 3×2.',
+      p4: 'Para encontrar los multiplicadores, usa los demás números de la misma fila o columna.<br>💡 Cada respuesta se comprueba al instante — <strong>una respuesta incorrecta cuenta como error</strong>. También puedes usar el botón <strong>Comprobar todo</strong>.',
+      p5: 'El rango de multiplicadores posible (p. ej. 1–6) aparece al principio de cada partida. Cada número de ese rango solo puede aparecer <strong>una vez</strong> en cada fila y una vez en cada columna.',
+      p6: '❓ ¿No tienes suficiente información para decidir? ¡<strong>Pide una pista!</strong>',
+      p7: '⭐ <strong>Estrellas:</strong> termina rápido con pocos errores y pistas para ganar hasta 3 estrellas.',
+      modalTitle: '🎮 Cómo se juega',
+      closeBtn: '¡Entendido, a jugar! ▶',
+    },
+    help: { ariaLabel: '¿Cómo se juega?', btnLabel: '❓ Cómo se juega' },
+    svg: { multiplier: 'Mult.', notes: '?', multiplicand: 'Mcando.' },
+    diff: {
+      easy: 'Fácil', medium: 'Medio', hard: 'Difícil',
+    },
+    stats: {
+      settingsAriaLabel: 'Ajustes del juego',
+      timerAriaLabel: 'Tiempo de juego',
+      mistakesAriaLabel: 'Errores',
+      mistakesTitle: 'Cada respuesta incorrecta cuenta como error',
+      mistakesLabel: '❌ Errores:',
+      hintsAriaLabel: 'Pistas usadas',
+      hintsLabel: '💡 Pistas:',
+      correctAriaLabel: 'Multiplicadores encontrados',
+      correctLabel: '🎯 Encontrados:',
+      rangeAriaLabel: 'Rango de números de multiplicación',
+      rangeLabel: '🔢 Rango:',
+      coinsLabel: '🪙 Monedas:',
+    },
+    board: {
+      tableAriaLabel: 'Tablero de multiplicación — pistas',
+      caption: 'Tablero de multiplicación. Los números son pistas — descubre los multiplicadores.',
+      cornerCell: '×',
+      hintBtn: '💡 Pista',
+      pauseBtn: '⏸ Pausa',
+      resumeBtn: '▶ Reanudar',
+      pausedLabel: 'Juego en pausa',
+      checkAllBtn: '✓ Comprobar todo',
+      checkBtn: '✓ Comprobar',
+      kbdBarAriaLabel: 'Herramientas de escritura',
+      hintAriaLabel: 'Pista',
+      soundAriaLabel: 'Activar o desactivar el sonido',
+      doneAriaLabel: 'Cerrar teclado',
+      muteAria: 'Activar o desactivar el sonido',
+      newGameAria: 'Nueva partida',
+      pauseAria: 'Pausa',
+      resumeAria: 'Reanudar partida',
+      newGameBtn: '↺ Nueva partida',
+      cellShownAriaLabel: (r, c, val) => `Fila ${r+1} Columna ${c+1}: ${val}`,
+      cellHiddenAriaLabel: (r, c) => `Fila ${r+1} Columna ${c+1}: oculto`,
+      colHelperAriaLabel: (i) => `Multiplicador de la columna ${i+1} — introduce el número`,
+      rowHelperAriaLabel: (i) => `Multiplicador de la fila ${i+1} — introduce el número`,
+    },
+    messages: {
+      enterPositive: 'Introduce un número positivo',
+      correct: '✓ ¡Correcto!',
+      incorrect: '✗ Incorrecto – inténtalo de nuevo',
+      fillFirst: 'Introduce al menos un multiplicador antes de comprobar',
+      allCorrect: (n) => `✓ ¡Los ${n} multiplicadores que has introducido son correctos!`,
+      errorsFound: (w, n) => `Se encontraron ${w} errores de ${n} respuestas`,
+      noHints: 'No quedan pistas',
+      allFilled: '¡Todos los multiplicadores ya están encontrados!',
+      hintMsg: (r, c, val) => `💡 Pista: Fila ${r+1} × Columna ${c+1} = ${val}`,
+      rangeBanner: (max, diff) => `${diff ? `<strong>Nivel:</strong> <span>${diff}</span> · ` : ''}<strong>Rango:</strong> <span>1–${max}</span>`,
+    },
+    modals: {
+      confirmTitle: '⚠️ Salir del juego',
+      confirmBody: 'Se perderá la partida actual. ¿Continuar?',
+      confirmYes: 'Sí, salir',
+      confirmNo: 'No, volver',
+      winTitle: '🎉 ¡Bien hecho!',
+      winStarsAriaLabel: 'Valoración por estrellas',
+      winBody: '¡Has resuelto el tablero con éxito!',
+      winPlayAgain: '↺ Jugar de nuevo – mismos ajustes',
+      winNewGame: '🎮 Nuevos ajustes',
+      loseTitle: '😕 Sin intentos',
+      loseBody: 'Has alcanzado el número máximo de errores.',
+      loseShow: '👁️ Mostrar solución en el tablero',
+      loseTryAgain: '↺ Intentar de nuevo',
+      loseNewGame: '🎮 Nuevos ajustes',
+    },
+    win: {
+      starsLabel: (n) => `${n} estrellas de 3`,
+      starsEarned: (n) => `Has ganado ${n} de 3 estrellas`,
+      newTimeRecord: '🏅 ¡Nuevo récord de tiempo!',
+      stats: (t, m, h) => `Tiempo: ${t} | Errores: ${m} | Pistas usadas: ${h}`,
+      streak: (n) => `🔥 Racha de ${n} días — ¡buen trabajo, sigue así!`,
+      streakWarning: (n) => `🔥 Tienes una racha de ${n} días — ¡juega hoy para mantenerla!`,
+      streakStart: '👋 Empieza tu racha — ¡juega ahora!',
+      comboWins: (w) => `${w} victoria${w !== 1 ? 's' : ''}`,
+      bestStars: (n) => `mejor ${n}★`,
+      badgeStreak: 'Días seguidos',
+      badgeStars: 'Estrellas totales',
+      badgeWins: 'Victorias totales',
+      badgeLegend: '',
+      comboLabel: 'Récord',
+      dailyLevel: '5×5 · Medio',
+      dailyPersonalBest: (t) => `🏅 Récord personal: ${t}`,
+      dailyNewRecord: '🎉 ¡Nuevo récord personal!',
+      tiers: ['🌱 Principiante', '🥉 Aprendiz', '🥈 Intermedio', '🥇 Hábil', '🏆 Experto', '👑 Campeón'],
+      tierProgress: (cur, next, rem) => `${cur} → ${next} (${rem} victoria${rem !== 1 ? 's' : ''} para avanzar)`,
+      tierMax: (cur) => `${cur} — ¡rango máximo!`,
+      suggestNow: '→ Probar ahora',
+      shareBtn: '📤 Compartir resultado',
+      shareCopied: '✓ ¡Copiado!',
+      shareText: (n, diff, stars, t, m, h) => `de-du ${n}×${n} · ${diff} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
+      shareDailyText: (date, stars, t, m, h) => `de-du Daily ${date} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
+    },
+    ui: {
+      close: 'Cerrar',
+      cancel: 'Cancelar',
+      shareTitle: '📤 Compartir resultado',
+      shareAction: '📤 Compartir',
+      copyAction: '📋 Copiar',
+      statsGames: 'Partidas',
+      statsWinRate: 'Tasa de victorias',
+      statsWins: 'Victorias',
+      statsCoins: 'Monedas',
+      statsLevel: 'Nivel',
+      statsRating: 'Valoración',
+      statsBestTime: '⏱ Mejor tiempo',
+      streakShort: (n) => `🔥 racha de ${n} días`,
+      streakBadge: (n) => `🔥 ¡racha de ${n} días!`,
+      dailyDone: 'Hecho hoy',
+      notEnoughCoins: 'No tienes suficientes monedas — ¡juega más para ganar!',
+      hintPurchased: (cost) => `Pista comprada: ${cost} monedas`,
+      buyHint: (cost) => `Comprar pista (${cost} monedas)`,
+      comboTooltip: 'Combo = tu récord para este tamaño de tablero + dificultad',
+      coinsEarned: (stars, total) => `+${stars} monedas · total: ${total}`,
+      revealShown: (pct) => `${pct}% visible`,
+      forBeginners: 'para principiantes',
+      upToMistakes: (n) => `hasta ${n} errores`,
+    },
+    /* SYNC: demo narration is part of How-to-Play — mirror across languages */
+    demo: {
+      rowFind: 'Fila: 12, 9, 6 — ¿cuál es el factor?',
+      try1: 'fila=1? → 12÷1=12 demasiado grande ✗',
+      try2: 'fila=2? → 9÷2=4.5 no entero ✗',
+      solved: '¡fila=3! → 4✓ 3✓ 2✓',
+    },
+    langName: 'Español',
+    langSelectAriaLabel: 'Elegir idioma',
+    statsBtnLabel: '📊 Mis estadísticas',
+    themeDarkLabel: '🌙 Modo oscuro',
+    themeLightLabel: '☀️ Modo claro',
+  },
+  ar: {
+    pageTitle: 'de-du | اكتشف المضاعِفات',
+    skipLink: 'تخطَّ إلى المحتوى الرئيسي',
+    headerSubtitle: 'اكتشف المضاعِفات',
+    setup: {
+      heading: 'إعدادات اللعبة',
+      boardSizeLegend: 'حجم اللوح',
+      boardSizeAriaLabel: 'اختر حجم اللوح',
+      diffLegend: 'مستوى الصعوبة',
+      diffAriaLabel: 'اختر مستوى الصعوبة',
+      startBtn: 'ابدأ اللعبة ▶',
+      resumeBtn: '▶ متابعة اللعبة السابقة',
+      dailyBtn: '📅 تحدي اليوم',
+      howToPlay: '❓ كيف نلعب؟',
+      dailyBadge: '📅 يومي',
+      milestone: (n) => `🏅 إنجاز! جمعت ${n} قطعة نقدية — أحسنت!`,
+      diffSuggest: (next) => `🚀 جاهز للتحدي التالي؟ جرّب <strong>${next}</strong>!`,
+      demoLabel: 'عرض توضيحي',
+      demoWin: '✨ عثرت على كل المضاعِفات!',
+    },
+    /* SYNC: mirror tutorial + rules copy across all languages when How-to-Play changes */
+    tutorial: {
+      title: '🎓 كيف نلعب',
+      step1: 'يعرض اللوح <strong>حواصل الضرب</strong> — وهي أدلّتك.<br><br>كل خانة = <strong>عامل الصف × عامل العمود</strong>. مثلاً، إذا كانت الخانة 6، فقد تكون العوامل 6×1 أو 1×6 أو 2×3 أو 3×2.<br><br>مهمتك: اكتشاف <strong>العوامل السرّية</strong> في الصف العلوي والعمود الجانبي. يظهر <strong>نطاق العوامل</strong> (مثلاً 1–6) فوق اللوح.',
+      step2: 'لإيجاد العوامل، <strong>استعن بالأرقام الأخرى في الصف أو العمود نفسه</strong> وابحث عن الأنماط.<br><br>💡 نصيحة: صفٌّ تعرف حواصله يمنحك عامله — ثم قسمة أي حاصل في ذلك العمود تمنحك العامل التالي.',
+      step3: 'اكتب عاملاً واضغط <strong>Enter</strong> للتحقق فوراً.<br><br>⚠️ <strong>كل رقم يظهر مرة واحدة في الصفوف ومرة واحدة في الأعمدة.</strong><br><br>💡 استخدم <strong>تلميح</strong> إذا تعثّرت، و<strong>تحقّق من الكل</strong> للتأكد من عدة إجابات دفعة واحدة.<br><br>🎉 حظاً موفقاً!',
+      next: 'التالي ›',
+      prev: '‹ رجوع',
+      done: 'هيا نلعب! ▶',
+      skip: 'تخطّي الشرح',
+    },
+    rules: {
+      p1: 'الأرقام على اللوح هي <strong>حواصل ضرب</strong> — أي <strong>عامل الصف × عامل العمود</strong>.',
+      p2: 'عليك إيجاد العوامل في الصف والعمود معاً.',
+      p3: 'مثلاً، إذا كان الرقم 6، فقد تكون العوامل 6×1 أو 1×6 أو 2×3 أو 3×2.',
+      p4: 'لإيجاد العوامل، استعن بالأرقام الأخرى في الصف أو العمود نفسه.<br>💡 يُتحقَّق من كل إجابة فوراً — <strong>الإجابة الخاطئة تُحتسب خطأً</strong>. يمكنك أيضاً استخدام زر <strong>تحقّق من الكل</strong>.',
+      p5: 'يظهر نطاق العوامل الممكن (مثلاً 1–6) في أعلى كل لعبة. كل رقم في هذا النطاق يمكن أن يظهر <strong>مرة واحدة فقط</strong> في كل صف ومرة واحدة في كل عمود.',
+      p6: '❓ لا تملك معلومات كافية للقرار؟ <strong>خذ تلميحاً!</strong>',
+      p7: '⭐ <strong>النجوم:</strong> أنهِ بسرعة وبأقل الأخطاء والتلميحات لتكسب حتى 3 نجوم.',
+      modalTitle: '🎮 كيف نلعب',
+      closeBtn: 'فهمت، هيا نلعب! ▶',
+    },
+    help: { ariaLabel: 'كيف نلعب؟', btnLabel: '❓ كيف نلعب' },
+    svg: { multiplier: 'عامل', notes: '؟', multiplicand: 'مضروب' },
+    diff: {
+      easy: 'سهل', medium: 'متوسط', hard: 'صعب',
+    },
+    stats: {
+      settingsAriaLabel: 'إعدادات اللعبة',
+      timerAriaLabel: 'وقت اللعبة',
+      mistakesAriaLabel: 'الأخطاء',
+      mistakesTitle: 'كل إجابة خاطئة تُحتسب خطأً',
+      mistakesLabel: '❌ الأخطاء:',
+      hintsAriaLabel: 'التلميحات المستخدمة',
+      hintsLabel: '💡 التلميحات:',
+      correctAriaLabel: 'العوامل المكتشَفة',
+      correctLabel: '🎯 اكتشفت:',
+      rangeAriaLabel: 'نطاق أرقام الضرب',
+      rangeLabel: '🔢 النطاق:',
+      coinsLabel: '🪙 العملات:',
+    },
+    board: {
+      tableAriaLabel: 'لوح الضرب — الأدلّة',
+      caption: 'لوح الضرب. الأرقام هي الأدلّة — اكتشف العوامل.',
+      cornerCell: '×',
+      hintBtn: '💡 تلميح',
+      pauseBtn: '⏸ إيقاف مؤقت',
+      resumeBtn: '▶ متابعة',
+      pausedLabel: 'اللعبة متوقفة مؤقتاً',
+      checkAllBtn: '✓ تحقّق من الكل',
+      checkBtn: '✓ تحقّق',
+      kbdBarAriaLabel: 'أدوات الكتابة',
+      hintAriaLabel: 'تلميح',
+      soundAriaLabel: 'تشغيل الصوت أو كتمه',
+      doneAriaLabel: 'إغلاق لوحة المفاتيح',
+      muteAria: 'كتم الصوت أو تشغيله',
+      newGameAria: 'لعبة جديدة',
+      pauseAria: 'إيقاف مؤقت',
+      resumeAria: 'متابعة اللعبة',
+      newGameBtn: '↺ لعبة جديدة',
+      cellShownAriaLabel: (r, c, val) => `الصف ${r+1} العمود ${c+1}: ${val}`,
+      cellHiddenAriaLabel: (r, c) => `الصف ${r+1} العمود ${c+1}: مخفي`,
+      colHelperAriaLabel: (i) => `عامل العمود ${i+1} — أدخل الرقم`,
+      rowHelperAriaLabel: (i) => `عامل الصف ${i+1} — أدخل الرقم`,
+    },
+    messages: {
+      enterPositive: 'أدخل رقماً موجباً',
+      correct: '✓ صحيح!',
+      incorrect: '✗ غير صحيح – حاول مجدداً',
+      fillFirst: 'أدخل عاملاً واحداً على الأقل قبل التحقق',
+      allCorrect: (n) => `✓ كل العوامل الـ${n} التي أدخلتها صحيحة!`,
+      errorsFound: (w, n) => `عُثر على ${w} أخطاء من ${n} إجابة`,
+      noHints: 'لا مزيد من التلميحات المتاحة',
+      allFilled: 'تم إيجاد كل العوامل بالفعل!',
+      hintMsg: (r, c, val) => `💡 تلميح: الصف ${r+1} × العمود ${c+1} = ${val}`,
+      rangeBanner: (max, diff) => `${diff ? `<strong>المستوى:</strong> <span>${diff}</span> · ` : ''}<strong>نطاق العوامل:</strong> <span>1–${max}</span>`,
+    },
+    modals: {
+      confirmTitle: '⚠️ الخروج من اللعبة',
+      confirmBody: 'ستُفقد اللعبة الحالية. هل تريد المتابعة؟',
+      confirmYes: 'نعم، اخرج',
+      confirmNo: 'لا، ارجع',
+      winTitle: '🎉 أحسنت!',
+      winStarsAriaLabel: 'تقييم النجوم',
+      winBody: 'لقد حللت اللوح بنجاح!',
+      winPlayAgain: '↺ العب مجدداً – الإعدادات نفسها',
+      winNewGame: '🎮 إعدادات جديدة',
+      loseTitle: '😕 نفدت المحاولات',
+      loseBody: 'وصلت إلى الحد الأقصى من الأخطاء.',
+      loseShow: '👁️ أظهر الحل على اللوح',
+      loseTryAgain: '↺ حاول مجدداً',
+      loseNewGame: '🎮 إعدادات جديدة',
+    },
+    win: {
+      starsLabel: (n) => `${n} نجوم من 3`,
+      starsEarned: (n) => `حصلت على ${n} من 3 نجوم`,
+      newTimeRecord: '🏅 رقم قياسي جديد للوقت!',
+      stats: (t, m, h) => `الوقت: ${t} | الأخطاء: ${m} | التلميحات المستخدمة: ${h}`,
+      streak: (n) => `🔥 سلسلة ${n} أيام — عمل رائع، واصل!`,
+      streakWarning: (n) => `🔥 لديك سلسلة ${n} أيام — العب اليوم للحفاظ عليها!`,
+      streakStart: '👋 حافظ على سلسلتك — العب الآن!',
+      comboWins: (w) => `${w} ${w !== 1 ? 'انتصارات' : 'انتصار'}`,
+      bestStars: (n) => `أفضل ${n}★`,
+      badgeStreak: 'أيام متتالية',
+      badgeStars: 'مجموع النجوم',
+      badgeWins: 'مجموع الانتصارات',
+      badgeLegend: '',
+      comboLabel: 'الرقم القياسي',
+      dailyLevel: '5×5 · متوسط',
+      dailyPersonalBest: (t) => `🏅 أفضل رقم شخصي: ${t}`,
+      dailyNewRecord: '🎉 رقم شخصي جديد!',
+      tiers: ['🌱 مبتدئ', '🥉 متعلّم', '🥈 متوسط', '🥇 ماهر', '🏆 خبير', '👑 بطل'],
+      tierProgress: (cur, next, rem) => `${cur} → ${next} (${rem} ${rem !== 1 ? 'انتصارات' : 'انتصار'} للتقدم)`,
+      tierMax: (cur) => `${cur} — أعلى رتبة!`,
+      suggestNow: '→ جرّب الآن',
+      shareBtn: '📤 شارك النتيجة',
+      shareCopied: '✓ تم النسخ!',
+      shareText: (n, diff, stars, t, m, h) => `de-du ${n}×${n} · ${diff} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
+      shareDailyText: (date, stars, t, m, h) => `de-du Daily ${date} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
+    },
+    ui: {
+      close: 'إغلاق',
+      cancel: 'إلغاء',
+      shareTitle: '📤 شارك النتيجة',
+      shareAction: '📤 شارك',
+      copyAction: '📋 نسخ',
+      statsGames: 'الألعاب',
+      statsWinRate: 'نسبة الفوز',
+      statsWins: 'الانتصارات',
+      statsCoins: 'العملات',
+      statsLevel: 'المستوى',
+      statsRating: 'التقييم',
+      statsBestTime: '⏱ أفضل وقت',
+      streakShort: (n) => `🔥 سلسلة ${n} ${n === 1 ? 'يوم' : 'أيام'}`,
+      streakBadge: (n) => `🔥 سلسلة ${n} أيام!`,
+      dailyDone: 'أُنجز اليوم',
+      notEnoughCoins: 'لا توجد عملات كافية — العب أكثر لتجمع!',
+      hintPurchased: (cost) => `تم شراء تلميح: ${cost} عملات`,
+      buyHint: (cost) => `اشترِ تلميحاً (${cost} عملات)`,
+      comboTooltip: 'كومبو = رقمك القياسي لهذا الحجم + الصعوبة',
+      coinsEarned: (stars, total) => `+${stars} عملات · الرصيد: ${total}`,
+      revealShown: (pct) => `${pct}% ظاهر`,
+      forBeginners: 'للمبتدئين',
+      upToMistakes: (n) => `حتى ${n} أخطاء`,
+    },
+    /* SYNC: demo narration is part of How-to-Play — mirror across languages */
+    demo: {
+      rowFind: 'الصف: 12، 9، 6 — ما العامل المشترك؟',
+      try1: 'الصف=1؟ → 12÷1=12 كبير جداً ✗',
+      try2: 'الصف=2؟ → 9÷2=4.5 غير صحيح ✗',
+      solved: 'الصف=3! → 4✓ 3✓ 2✓',
+    },
+    langName: 'العربية',
+    langSelectAriaLabel: 'اختر اللغة',
+    statsBtnLabel: '📊 إحصاءاتي',
+    themeDarkLabel: '🌙 الوضع الداكن',
+    themeLightLabel: '☀️ الوضع الفاتح',
   },
 };
 
@@ -2239,7 +2849,7 @@ function setLang(lang) {
   localStorage.setItem('lang', lang);
   const str = STRINGS[lang];
   document.documentElement.lang = lang;
-  document.documentElement.dir  = lang === 'he' ? 'rtl' : 'ltr';
+  document.documentElement.dir  = (lang === 'he' || lang === 'ar') ? 'rtl' : 'ltr';
   document.title = str.pageTitle;
   const metaDesc = document.querySelector('meta[name="description"]');
   if (metaDesc) metaDesc.content = str.headerSubtitle;
@@ -2281,19 +2891,22 @@ function setLang(lang) {
         str.win.stats(G.winStats.t, G.winStats.m, G.winStats.h);
     }
   }
-  // Update language toggle button
-  const langBtn = document.getElementById('langToggleBtn');
-  if (langBtn) {
-    langBtn.textContent = str.langToggleLabel;
-    langBtn.setAttribute('aria-label', str.langToggleAriaLabel);
+  // Update language selector
+  const langSel = document.getElementById('langSelect');
+  if (langSel) {
+    langSel.value = lang;
+    langSel.setAttribute('aria-label', str.langSelectAriaLabel);
   }
   // Update stats button label
   const statsBtn = document.getElementById('statsBtn');
-  if (statsBtn) statsBtn.textContent = lang === 'he' ? '📊 הסטטיסטיקות שלי' : '📊 My Statistics';
+  if (statsBtn) statsBtn.textContent = str.statsBtnLabel;
   // Update theme toggle label
   const themeBtn = document.getElementById('themeToggleBtn');
-  if (themeBtn) themeBtn.textContent =
-    document.body.classList.contains('theme-dark') ? str.themeLightLabel : str.themeDarkLabel;
+  if (themeBtn) {
+    themeBtn.textContent =
+      document.body.classList.contains('theme-dark') ? str.themeLightLabel : str.themeDarkLabel;
+    themeBtn.setAttribute('aria-label', themeBtn.textContent);
+  }
 
   renderSetupProgress();
   renderDiffHints();
@@ -2354,17 +2967,17 @@ let chosenDiff = 'easy';
 // Difficulty cards show a live summary (reveal %, number range, mistakes) that
 // reflects the currently-selected board size — the range grows with size.
 function renderDiffHints() {
-  const isHe = currentLang === 'he';
+  const ui = STRINGS[currentLang].ui;
   ['easy', 'medium', 'hard'].forEach(diff => {
     const el = document.querySelector(`.diff-card[data-val="${diff}"] .diff-hint`);
     if (!el) return;
     const cfg = DIFF_CFG[diff];
     const poolMax = cfg['poolMax' + chosenSize];
     const pct = Math.round(cfg.revealPct * 100);
-    const revealTxt = isHe ? `${pct}% גלוי` : `${pct}% shown`;
+    const revealTxt = ui.revealShown(pct);
     const lastTxt = cfg.maxMistakes === Infinity
-      ? (isHe ? 'למתחילים' : 'for beginners')
-      : (isHe ? `עד ${cfg.maxMistakes} טעויות` : `up to ${cfg.maxMistakes} mistakes`);
+      ? ui.forBeginners
+      : ui.upToMistakes(cfg.maxMistakes);
     el.textContent = `${revealTxt} · 1–${poolMax} · ${lastTxt}`;
   });
 }
@@ -2547,7 +3160,7 @@ function updateDailyBtn() {
     // Already played today — show the result instead of hiding the button.
     const sc = result.stars || 0;
     const stars = '⭐'.repeat(sc) + '☆'.repeat(3 - sc);
-    const doneLabel = currentLang === 'he' ? 'הושלם היום' : 'Done today';
+    const doneLabel = str.ui.dailyDone;
     btn.style.display = '';
     btn.disabled = true;
     btn.classList.add('daily-done');
@@ -3179,12 +3792,7 @@ function buyHint() {
       coinRowEl.classList.add('coin-shake');
       setTimeout(() => coinRowEl.classList.remove('coin-shake'), 500);
     }
-    showMsg(
-      currentLang === 'he'
-        ? `אין מספיק מטבעות — שחקי עוד כדי לצבור!`
-        : `Not enough coins — play more to earn some!`,
-      'warn'
-    );
+    showMsg(STRINGS[currentLang].ui.notEnoughCoins, 'warn');
     return;
   }
   // Reveal first; only charge if a hint was actually given (board may be fully revealed)
@@ -3199,12 +3807,7 @@ function buyHint() {
   G.hintsBought = (G.hintsBought || 0) + 1;   // count toward hints used
   updateStats();
   saveGameState();
-  showMsg(
-    currentLang === 'he'
-      ? `תשלום עבור רמז: ${HINT_COST} מטבעות`
-      : `Hint purchased: ${HINT_COST} coins`,
-    'info'
-  );
+  showMsg(STRINGS[currentLang].ui.hintPurchased(HINT_COST), 'info');
 }
 
 /* ══════════════════════════════════════════════
@@ -3217,7 +3820,7 @@ function showRules() {
   overlay.classList.add('active');
   // Start at the top (on the demo), not scrolled down to the bottom CTA.
   overlay.scrollTop = 0;
-  const topClose = overlay.querySelector('button[aria-label="סגור"]');
+  const topClose = document.getElementById('rulesTopClose');
   if (topClose) topClose.focus({ preventScroll: true });
   // Show a clean starting frame immediately; the animation begins after the
   // modal has settled, so the previous run's solved state never flashes.
@@ -3354,9 +3957,7 @@ function updateStreakBadge() {
   if (!el) return;
   const s = loadStats();
   if (!s.currentStreak || s.currentStreak < 2) { el.innerHTML = ''; return; }
-  const label = currentLang === 'he'
-    ? `🔥 ${s.currentStreak} ימים ברצף!`
-    : `🔥 ${s.currentStreak}-day streak!`;
+  const label = STRINGS[currentLang].ui.streakBadge(s.currentStreak);
   el.innerHTML = `<span class="streak-badge-setup">${label}</span>`;
 }
 
@@ -3528,9 +4129,7 @@ function renderSetupProgress() {
   const key   = `${chosenSize}-${chosenDiff}`;
   const combo = s.combos[key];
   const diffLabel = STRINGS[currentLang].diff[chosenDiff];
-  const comboTooltip = currentLang === 'he'
-    ? 'Combo = ביצועים בשילוב גודל + קושי ספציפי'
-    : 'Combo = your record for this board size + difficulty';
+  const comboTooltip = STRINGS[currentLang].ui.comboTooltip;
 
   const comboLine = combo
     ? `<abbr title="${comboTooltip}" style="text-decoration:none;cursor:help;">🎯 ${W.comboLabel}</abbr> ${chosenSize}×${chosenSize} · ${diffLabel}: ${W.comboWins(combo.wins)}, ${W.bestStars(combo.bestStars)}`
@@ -3658,9 +4257,7 @@ function gameWin() {
   const sAfter = loadStats();
   const earnedLine = document.getElementById('winStarLine');
   if (earnedLine) {
-    earnedLine.textContent = currentLang === 'he'
-      ? `+${stars} מטבעות · יתרה: ${sAfter.totalCoins}`
-      : `+${stars} coins · total: ${sAfter.totalCoins}`;
+    earnedLine.textContent = STRINGS[currentLang].ui.coinsEarned(stars, sAfter.totalCoins);
   }
 
   const ov = document.getElementById('winOverlay');
@@ -3726,11 +4323,11 @@ let _pendingShareText = '';
 function showSharePreview(text) {
   _pendingShareText = text;
   document.getElementById('sharePreviewText').textContent = text;
-  const isHe = currentLang === 'he';
-  document.getElementById('sharePreviewTitle').textContent  = isHe ? '📤 שתף תוצאה'  : '📤 Share Result';
+  const ui = STRINGS[currentLang].ui;
+  document.getElementById('sharePreviewTitle').textContent  = ui.shareTitle;
   document.getElementById('sharePreviewCopyBtn').textContent = shareBtnLabel();
   const cancelBtn = document.querySelector('#sharePreviewOverlay .btn-restart');
-  if (cancelBtn) cancelBtn.textContent = isHe ? 'ביטול' : 'Cancel';
+  if (cancelBtn) cancelBtn.textContent = ui.cancel;
   const ov = document.getElementById('sharePreviewOverlay');
   ov.classList.add('active');
   document.getElementById('sharePreviewCopyBtn').focus();
@@ -3741,14 +4338,13 @@ function canNativeShare() {
 }
 
 function shareBtnLabel() {
-  const isHe = currentLang === 'he';
-  if (canNativeShare()) return isHe ? '📤 שתף' : '📤 Share';
-  return isHe ? '📋 העתק' : '📋 Copy';
+  const ui = STRINGS[currentLang].ui;
+  if (canNativeShare()) return ui.shareAction;
+  return ui.copyAction;
 }
 
 async function doShare() {
   const btn = document.getElementById('sharePreviewCopyBtn');
-  const isHe = currentLang === 'he';
   // Native share sheet (mobile): opens WhatsApp, Messages, etc.
   if (canNativeShare()) {
     try {
@@ -3761,7 +4357,7 @@ async function doShare() {
       // Any other failure: fall through to clipboard copy below.
     }
   }
-  const copiedLabel = isHe ? '✓ הועתק!' : '✓ Copied!';
+  const copiedLabel = STRINGS[currentLang].win.shareCopied;
   const onCopied = () => {
     btn.textContent = copiedLabel;
     setTimeout(() => { closeSharePreview(); btn.textContent = shareBtnLabel(); }, 1600);
@@ -3803,7 +4399,7 @@ function updateStatsBtn() {
 
 function showStats() {
   const s = loadStats();
-  const isHe = currentLang === 'he';
+  const ui = STRINGS[currentLang].ui;
   const W = STRINGS[currentLang].win;
 
   const winRate = s.totalGames > 0 ? Math.round((s.totalWins / s.totalGames) * 100) : 0;
@@ -3837,9 +4433,7 @@ function showStats() {
       </tr>`;
     }).join('');
 
-  const streakTxt = isHe
-    ? `🔥 ${s.currentStreak} ${s.currentStreak === 1 ? 'יום' : 'ימים'} ברצף`
-    : `🔥 ${s.currentStreak}-day streak`;
+  const streakTxt = ui.streakShort(s.currentStreak);
 
   document.getElementById('statsContent').innerHTML = `
     <div style="text-align:center;">
@@ -3849,36 +4443,36 @@ function showStats() {
     <div class="stats-grid">
       <div class="stats-card">
         <div class="sc-val">${s.totalGames}</div>
-        <div class="sc-lbl">${isHe ? 'משחקים' : 'Games'}</div>
+        <div class="sc-lbl">${ui.statsGames}</div>
       </div>
       <div class="stats-card">
         <div class="sc-val">${winRate}%</div>
-        <div class="sc-lbl">${isHe ? 'אחוז ניצחון' : 'Win rate'}</div>
+        <div class="sc-lbl">${ui.statsWinRate}</div>
       </div>
       <div class="stats-card">
         <div class="sc-val">${s.totalWins}</div>
-        <div class="sc-lbl">${isHe ? 'ניצחונות' : 'Wins'}</div>
+        <div class="sc-lbl">${ui.statsWins}</div>
       </div>
       <div class="stats-card">
         <div class="sc-val" style="color:var(--clr-warn);">🪙 ${s.totalCoins}</div>
-        <div class="sc-lbl">${isHe ? 'מטבעות' : 'Coins'}</div>
+        <div class="sc-lbl">${ui.statsCoins}</div>
       </div>
     </div>
     ${s.currentStreak > 0 ? `<p style="text-align:center;font-weight:700;margin-bottom:.75rem;font-size:.9rem;">${streakTxt}</p>` : ''}
     ${comboRows ? `
     <table class="stats-combo-table">
       <thead><tr>
-        <th>${isHe ? 'רמה' : 'Level'}</th>
-        <th style="text-align:center">${isHe ? 'ניצחונות' : 'Wins'}</th>
-        <th style="text-align:center">${isHe ? 'דירוג' : 'Rating'}<br><span class="combo-stars" aria-hidden="true">${'<span class="cstar empty">☆</span>'.repeat(3)}</span></th>
-        <th style="text-align:center">${isHe ? '⏱ שיא זמן' : '⏱ Best time'}</th>
+        <th>${ui.statsLevel}</th>
+        <th style="text-align:center">${ui.statsWins}</th>
+        <th style="text-align:center">${ui.statsRating}<br><span class="combo-stars" aria-hidden="true">${'<span class="cstar empty">☆</span>'.repeat(3)}</span></th>
+        <th style="text-align:center">${ui.statsBestTime}</th>
       </tr></thead>
       <tbody>${comboRows}</tbody>
     </table>` : ''}
   `;
 
-  document.getElementById('statsModalTitle').textContent = isHe ? '📊 הסטטיסטיקות שלי' : '📊 My Statistics';
-  document.querySelector('#statsOverlay .btn-check').textContent = isHe ? 'סגור' : 'Close';
+  document.getElementById('statsModalTitle').textContent = STRINGS[currentLang].statsBtnLabel;
+  document.querySelector('#statsOverlay .btn-check').textContent = ui.close;
   const ov = document.getElementById('statsOverlay');
   ov.classList.add('active');
   ov.querySelector('button').focus();
@@ -3998,7 +4592,7 @@ function updateStats() {
     buyBtn.style.display = showBuy ? '' : 'none';
     if (showBuy) {
       buyBtn.disabled = false;
-      buyBtn.textContent = currentLang === 'he' ? `קנה רמז (${HINT_COST} מטבעות)` : `Buy hint (${HINT_COST} coins)`;
+      buyBtn.textContent = STRINGS[currentLang].ui.buyHint(HINT_COST);
     }
   }
 
@@ -4115,6 +4709,13 @@ document.getElementById('muteBtn').addEventListener('click', toggleMute);
 function updateThemeColor(dark) {
   const m = document.querySelector('meta[name="theme-color"]');
   if (m) m.content = dark ? '#0B0B18' : '#6366f1';
+
+  // Native app (Capacitor): tint the iOS/Android status bar to match the theme too.
+  const SB = window.Capacitor?.isNativePlatform?.() && window.Capacitor.Plugins?.StatusBar;
+  if (SB) {
+    SB.setOverlaysWebView({ overlay: true });
+    SB.setStyle({ style: dark ? 'DARK' : 'LIGHT' });
+  }
 }
 
 (function initTheme() {
@@ -4131,19 +4732,29 @@ function updateThemeColor(dark) {
   btn.addEventListener('click', () => {
     const isDark = document.body.classList.toggle('theme-dark');
     btn.textContent = isDark ? STRINGS[currentLang].themeLightLabel : STRINGS[currentLang].themeDarkLabel;
+    btn.setAttribute('aria-label', btn.textContent);
     localStorage.setItem('dedu-theme', isDark ? 'dark' : 'light');
     updateThemeColor(isDark);
   });
 })();
 
-// Language initialisation — detect from browser locale only
+// Language initialisation — detect from device locale, fall back to English
+const SUPPORTED_LANGS = ['he', 'en', 'fr', 'es', 'ar'];
 (function initLang() {
   const saved = localStorage.getItem('lang');
-  currentLang = saved || (navigator.language?.startsWith('he') ? 'he' : 'en');
+  function detectLang() {
+    const cands = navigator.languages?.length ? navigator.languages : [navigator.language || 'en'];
+    for (const l of cands) {
+      const code = String(l).slice(0, 2).toLowerCase();
+      if (SUPPORTED_LANGS.includes(code)) return code;
+    }
+    return 'en';
+  }
+  currentLang = (saved && SUPPORTED_LANGS.includes(saved)) ? saved : detectLang();
   setLang(currentLang);
-  // Wire up language toggle button
-  const btn = document.getElementById('langToggleBtn');
-  if (btn) btn.addEventListener('click', () => setLang(currentLang === 'he' ? 'en' : 'he'));
+  // Wire up language selector
+  const sel = document.getElementById('langSelect');
+  if (sel) sel.addEventListener('change', (e) => setLang(e.target.value));
 })();
 
 /* ── Demo Animation ── */
@@ -4318,13 +4929,13 @@ function updateThemeColor(dark) {
     let t = 1000;
 
     // — Initial label
-    at(t, () => setLabel(he ? 'הדגמה' : 'Demo'));
+    at(t, () => setLabel(STRINGS[currentLang].setup.demoLabel));
 
     // — Step 1: highlight row-1 products, show "what row divides 12, 9, 6?"
     t += 300;
     at(t, () => {
       hint(['dp-1-0', 'dp-1-1', 'dp-1-2']);
-      setLabel(he ? 'שורה זו: 12, 9, 6 — מה מחלק הכל?' : 'Row: 12, 9, 6 — find the factor');
+      setLabel(STRINGS[currentLang].demo.rowFind);
     });
 
     // — Step 2: try row = 1 (wrong — 12÷1=12, out of range)
@@ -4333,7 +4944,7 @@ function updateThemeColor(dark) {
       clearHints();
       tryRow('1?', 'wrong');
       hint(['dp-1-0', 'dp-1-1', 'dp-1-2']);
-      setLabel(he ? 'שורה=1? → 12÷1=12 גדול מדי ✗' : 'row=1? → 12÷1=12 too large ✗');
+      setLabel(STRINGS[currentLang].demo.try1);
     });
 
     t += TRY;
@@ -4344,7 +4955,7 @@ function updateThemeColor(dark) {
     at(t, () => {
       tryRow('2?', 'wrong');
       hint(['dp-1-0', 'dp-1-1', 'dp-1-2']);
-      setLabel(he ? 'שורה=2? → 9÷2=4.5 לא שלם ✗' : 'row=2? → 9÷2=4.5 not whole ✗');
+      setLabel(STRINGS[currentLang].demo.try2);
     });
 
     t += TRY;
@@ -4355,7 +4966,7 @@ function updateThemeColor(dark) {
     at(t, () => {
       tryRow('3✓', 'ok');
       hint(['dp-1-0', 'dp-1-1', 'dp-1-2']);
-      setLabel(he ? 'שורה=3! → 4✓ 3✓ 2✓' : 'row=3! → 4✓ 3✓ 2✓');
+      setLabel(STRINGS[currentLang].demo.solved);
     });
 
     t += TRY;
@@ -4407,7 +5018,7 @@ function updateThemeColor(dark) {
     t += TYPE + 500;
     at(t, () => {
       if (win) { win.textContent = win.dataset.winText || '✨'; win.classList.add('show'); }
-      setLabel(he ? 'הדגמה' : 'Demo');
+      setLabel(STRINGS[currentLang].setup.demoLabel);
     });
 
     // — Restart after a pause
@@ -4422,7 +5033,7 @@ function updateThemeColor(dark) {
     buildBoard();
     const win = document.getElementById('demoWinMsg');
     if (win) { win.textContent = ''; win.classList.remove('show'); }
-    setLabel(isHe() ? 'הדגמה' : 'Demo');
+    setLabel(STRINGS[currentLang].setup.demoLabel);
   }
 
   // Expose to global scope so showRules() / closeRules() can start/stop the animation
