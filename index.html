@@ -3609,18 +3609,8 @@ function checkActiveHeader() {
   if (!activeHdrInput) return;
   const { isRow, idx, el } = activeHdrInput;
   validateHeader(isRow, idx, el);
-  if (el.readOnly) {
-    // Correct answer locked the cell — advance to the next empty header input.
-    const next = nextEmptyHeader();
-    if (next) { next.focus(); } else { hideKbdBar(); }
-  } else {
-    el.focus();                          // wrong/empty — stay for a retry
-  }
-}
-
-function nextEmptyHeader() {
-  const inputs = Array.from(document.querySelectorAll('.hdr-input'));
-  return inputs.find(i => !i.readOnly && !i.value.trim()) || null;
+  el.blur();                             // close the keyboard so the board is visible
+  hideKbdBar();
 }
 
 /* ══════════════════════════════════════════════
@@ -3728,6 +3718,9 @@ function checkAll() {
       gameLose();
     }
   }
+
+  activeHdrInput?.el.blur();               // close the keyboard so the board is visible
+  hideKbdBar();
 }
 
 /* ══════════════════════════════════════════════
