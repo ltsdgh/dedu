@@ -3278,9 +3278,11 @@ function startGame(n, diff, randFn = Math.random) {
     setTimeout(() => bw.classList.remove('board-entering'), 350);
   }
 
-  // Focus first unfilled header input
+  // Focus first unfilled header input — but not on touch devices, where
+  // focusing it immediately pops the on-screen keyboard over the board
+  // before the player has even seen it.
   const first = document.querySelector('.hdr-input:not([readonly])');
-  if (first) first.focus();
+  if (first && !isTouchDevice) first.focus();
 
   // Start timer
   clearInterval(G.timerID);
@@ -3912,7 +3914,7 @@ function closeTutorial() {
   localStorage.setItem('dedu-tutorial-done', '1');
   document.getElementById('tutorialOverlay').classList.remove('active');
   const first = document.querySelector('.hdr-input:not([readonly])');
-  if (first) first.focus();
+  if (first && !isTouchDevice) first.focus();
 }
 
 /* ══════════════════════════════════════════════
@@ -4011,7 +4013,7 @@ function resumeGame(saved) {
   document.getElementById('pauseBtn').textContent = '⏸';
 
   const first = document.querySelector('.hdr-input:not([readonly])');
-  if (first) first.focus();
+  if (first && !isTouchDevice) first.focus();
 
   clearInterval(G.timerID);
   G.timerID = setInterval(tick, 1000);
