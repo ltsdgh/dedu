@@ -245,6 +245,17 @@
       padding: 1.75rem 2rem .75rem;
       width: 100%;
       max-width: 540px;
+      transition: opacity .15s, margin .15s;
+    }
+    /* While a game is in progress, get the branding out of the way so the
+       board is the first thing the player sees — no scrolling past a logo. */
+    body.in-game .site-header {
+      display: none;
+    }
+    /* Leave just enough room for the fixed corner buttons (game-corner /
+       corner-controls, ~54px tall) so the stats bar doesn't slide under them. */
+    body.in-game {
+      padding-top: calc(4.5rem + env(safe-area-inset-top, 0px));
     }
     .site-header h1 { line-height: 1; margin: 0; }
     .site-header p { color: var(--clr-text); font-size: .95rem; font-weight: 500; margin-top: .45rem; opacity: .7; }
@@ -3256,6 +3267,7 @@ function startGame(n, diff, randFn = Math.random) {
   const gs = document.getElementById('gameScreen');
   gs.style.display = 'flex';
   gs.classList.add('active');
+  document.body.classList.add('in-game');
 
   // D4 — board entrance animation
   const bw = document.querySelector('.board-wrap');
@@ -3994,6 +4006,7 @@ function resumeGame(saved) {
   const gs = document.getElementById('gameScreen');
   gs.style.display = 'flex';
   gs.classList.add('active');
+  document.body.classList.add('in-game');
   document.getElementById('pauseOverlayBoard').classList.remove('active');
   document.getElementById('pauseBtn').textContent = '⏸';
 
@@ -4503,6 +4516,7 @@ function _doGoSetup() {
   document.getElementById('gameScreen').classList.remove('active');
   document.getElementById('setupScreen').style.display = '';
   document.getElementById('setupSecondary').style.display = '';
+  document.body.classList.remove('in-game');
   if (!G.over) clearGameState();
   renderSetupProgress();
   updateResumeBtn();
