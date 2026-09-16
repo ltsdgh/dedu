@@ -21,3 +21,11 @@ ios/App/App.xcodeproj/project.xcworkspace/xcuserdata/
 *.p8
 Codemagke/
 AuthKey_*.p8
+
+# Android/PWA signing credentials - never commit
+*.keystore
+*.jks
+signing-key-info.txt
+de-du-play-package/
+de-du - Google Play package*/
+de-du - Google Play package*.zip
