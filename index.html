@@ -229,14 +229,10 @@
     .game-corner-btn:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
     .game-corner-btn:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
 
-    /* "New game" — same size & light background as the other corner buttons,
+    /* "Home" — same size & light background as the other corner buttons,
        but a darker, bolder symbol so it reads clearly. */
     .game-corner-btn--primary {
       color: var(--clr-primary-dk);
-      font-weight: 900;
-      font-size: 26px;
-      line-height: 1;
-      -webkit-text-stroke: 1.1px var(--clr-primary-dk); /* thicken the ↺ glyph */
     }
 
     /* ── Header ── */
@@ -997,12 +993,13 @@
     }
     .btn-daily:hover { background: #fef3c7; border-color: #b45309; color: #92400e; }
     .btn-daily:focus { outline: 3px solid #f59e0b; outline-offset: 2px; }
-    /* Daily challenge already completed today — shown as a result, not clickable */
+    /* Daily challenge already completed today — shown as a result, not clickable.
+       Solid fill (not tint-on-tint) so the checkmark text stays readable. */
     .btn-daily.daily-done,
     .btn-daily.daily-done:hover {
-      background: var(--clr-success-bg);
-      border-color: var(--clr-success-border);
-      color: var(--clr-success);
+      background: var(--clr-success);
+      border-color: var(--clr-success);
+      color: #fff;
       cursor: default;
     }
 
@@ -1032,6 +1029,13 @@
     }
     .theme-dark .btn-daily:hover { background: rgba(245,158,11,.15); border-color: #fcd34d; color: #fef3c7; }
     .theme-dark .btn-daily:focus { outline-color: #fcd34d; }
+    /* Higher specificity than .theme-dark .btn-daily so "done" isn't swallowed by it. */
+    .theme-dark .btn-daily.daily-done,
+    .theme-dark .btn-daily.daily-done:hover {
+      background: #065f46;
+      border-color: #065f46;
+      color: #fff;
+    }
     .daily-badge {
       display: inline-block;
       background: #f59e0b;
@@ -1673,7 +1677,7 @@
     <div class="game-corner">
       <button class="game-corner-btn" id="pauseBtn"   aria-label="הפסקה"      data-i18n-aria="board.pauseAria"   title="הפסקה">⏸</button>
       <button class="game-corner-btn" id="muteBtn"    aria-label="השתק צלילים" data-i18n-aria="board.muteAria"    title="השתק / הפעל צלילים">🔊</button>
-      <button class="game-corner-btn game-corner-btn--primary" id="restartBtn" aria-label="חזרה למסך הבית"   data-i18n-aria="board.homeAria" title="חזרה למסך הבית">🏠</button>
+      <button class="game-corner-btn game-corner-btn--primary" id="restartBtn" aria-label="חזרה למסך הבית"   data-i18n-aria="board.homeAria" title="חזרה למסך הבית"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 9.8V20h13V9.8"/></svg></button>
     </div>
 
     <!-- Stats -->
