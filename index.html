@@ -3230,12 +3230,12 @@ function startGame(n, diff, randFn = Math.random) {
     rowNums  = shuffle([...pool], randFn);
     colNums  = shuffle([...pool], randFn);
     board    = rowNums.map(r => colNums.map(c => r * c));
-    revealed = pickRevealedCells(board, n, pool, cfg.revealPct, randFn);
+    revealed = pickRevealedCells(board, n, pool, cfg.revealPct, randFn, rowNums, colNums);
     if (cfg.revealPct >= 1 || countSolutions(n, poolMax, board, revealed) === 1) break;
   }
   // Guarantee a single solution even if no attempt produced one, by revealing a
   // few extra clues. No-op when the board is already unique (or fully revealed).
-  if (cfg.revealPct < 1) ensureUnique(n, poolMax, board, revealed, randFn);
+  if (cfg.revealPct < 1) ensureUnique(n, poolMax, board, revealed, randFn, rowNums, colNums);
 
   document.getElementById('rangeVal').textContent = `1–${poolMax}`;
   document.getElementById('rangeBanner').innerHTML =
@@ -3304,7 +3304,7 @@ function startGame(n, diff, randFn = Math.random) {
 /* ══════════════════════════════════════════════
    Cell reveal strategy
 ══════════════════════════════════════════════ */
-function pickRevealedCells(board, n, pool, pct, randFn = Math.random) {
+function pickRevealedCells(board, n, pool, pct, randFn = Math.random, rowNums = null, colNums = null) {
   const total   = n * n;
   const target  = Math.round(total * pct);
   const revealed = Array.from({ length: n }, () => new Array(n).fill(false));
@@ -3318,10 +3318,16 @@ function pickRevealedCells(board, n, pool, pct, randFn = Math.random) {
       factorPairs[p] = (factorPairs[p] || 0) + 1;
     }
 
+  // A cell whose row or column multiplier is 1 gives away the other axis'
+  // value verbatim (1×b = b) — deprioritize these so 1 stays in the pool
+  // without flooding the board with give-away clues.
+  const isTrivial = (r, c) =>
+    (rowNums && rowNums[r] === 1) || (colNums && colNums[c] === 1);
+
   const cells = [];
   for (let r = 0; r < n; r++)
     for (let c = 0; c < n; c++)
-      cells.push({ r, c, score: factorPairs[board[r][c]] || 1 });
+      cells.push({ r, c, score: factorPairs[board[r][c]] || 1, trivial: isTrivial(r, c) });
 
   // Sort: prefer unique products (score=1) for easy, common for hard
   // Then shuffle within same-score groups for variety
@@ -3335,6 +3341,10 @@ function pickRevealedCells(board, n, pool, pct, randFn = Math.random) {
     pct >= 0.5 ? a - b : b - a   // easy: unique first; hard: common first
   );
   scores.forEach(s => sorted.push(...shuffle(groups[s], randFn)));
+
+  // Push give-away (trivial) cells to the back, regardless of the ordering
+  // above, so they're only revealed when nothing else covers their row/column.
+  sorted.sort((a, b) => (a.trivial === b.trivial) ? 0 : (a.trivial ? 1 : -1));
 
   // Always guarantee at least one clue per row and column for solvability
   const rowCovered = new Array(n).fill(false);
@@ -3426,7 +3436,7 @@ function countSolutions(n, poolMax, board, revealed, limit = 2) {
 // Reveal additional hidden cells until the puzzle has exactly one solution.
 // Mutates `revealed` in place. Prefers cells with a unique factorisation so the
 // fewest extra clues are needed; deterministic when given a seeded randFn.
-function ensureUnique(n, poolMax, board, revealed, randFn = Math.random) {
+function ensureUnique(n, poolMax, board, revealed, randFn = Math.random, rowNums = null, colNums = null) {
   // Pre-rank hidden cells: unique-factorisation products first (most informative).
   const factorPairs = {};
   for (let r = 0; r < n; r++)
@@ -3434,15 +3444,20 @@ function ensureUnique(n, poolMax, board, revealed, randFn = Math.random) {
       const p = board[r][c];
       factorPairs[p] = (factorPairs[p] || 0) + 1;
     }
+  const isTrivial = (r, c) =>
+    (rowNums && rowNums[r] === 1) || (colNums && colNums[c] === 1);
   let safety = n * n;
   while (safety-- > 0 && countSolutions(n, poolMax, board, revealed) !== 1) {
     const hidden = [];
     for (let r = 0; r < n; r++)
       for (let c = 0; c < n; c++)
-        if (!revealed[r][c]) hidden.push({ r, c, score: factorPairs[board[r][c]] || 1 });
+        if (!revealed[r][c]) hidden.push({ r, c, score: factorPairs[board[r][c]] || 1, trivial: isTrivial(r, c) });
     if (!hidden.length) break;
-    const best = Math.min(...hidden.map(h => h.score));
-    const pool = shuffle(hidden.filter(h => h.score === best), randFn);
+    // Avoid give-away (1×b) cells unless they're the only way left to resolve ambiguity.
+    const nonTrivial = hidden.filter(h => !h.trivial);
+    const candidates = nonTrivial.length ? nonTrivial : hidden;
+    const best = Math.min(...candidates.map(h => h.score));
+    const pool = shuffle(candidates.filter(h => h.score === best), randFn);
     revealed[pool[0].r][pool[0].c] = true;
   }
 }
