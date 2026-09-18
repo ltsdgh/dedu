@@ -1755,8 +1755,11 @@
 </div>
 
 <!-- ══ Win Modal ══ -->
-<div class="overlay" id="winOverlay" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+<div class="overlay" id="winOverlay" role="dialog" aria-modal="true" aria-labelledby="winTitle" onclick="if(event.target===this)closeWin()">
   <div class="modal">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:-.5rem;">
+      <button onclick="closeWin()" aria-label="סגור" data-i18n-aria="ui.close" style="background:none;border:none;font-size:1.5rem;line-height:1;cursor:pointer;color:var(--clr-muted);padding:.1rem .4rem;border-radius:4px;" title="סגור">✕</button>
+    </div>
     <h2 id="winTitle" data-i18n="modals.winTitle">🎉 כל הכבוד!</h2>
     <div id="winStars" role="img" aria-label="דירוג כוכבים" data-i18n-aria="modals.winStarsAriaLabel"></div>
     <p id="winStarsEarned" style="font-size:1rem;font-weight:700;margin:-.2rem 0 .7rem;color:var(--clr-text);"></p>
@@ -1997,7 +2000,7 @@ const STRINGS = {
       p1: 'המספרים בלוח הם <strong>תוצאות כפל</strong>, כלומר מכפלה של <strong>מכפיל השורה × מכפיל העמודה</strong>.',
       p2: 'עליכם לגלות מהם המכפילים הן בשורה והן בטור.',
       p3: 'לדוגמה, אם המספר הוא 6, המכפילים יכולים להיות 6×1, 1×6, 2×3 או 3×2.',
-      p4: 'כדי לגלות מהם המכפילים — היעזרו בשאר המספרים שבאותה שורה או עמודה.<br>💡 כל ניחוש נבדק מיד — <strong>ניחוש שגוי נספר כטעות</strong>. ניתן גם להשתמש בכפתור <strong>בדוק הכל</strong>.',
+      p4: 'כדי לגלות מהם המכפילים — היעזרו בשאר המספרים שבאותה שורה או עמודה.<br>💡 אפשר למלא כמה תאים ורק אז לבדוק — הבדיקה קורית עם <strong>Enter</strong> או כפתור <strong>בדוק</strong>/<strong>בדוק הכל</strong>. <strong>ניחוש שגוי נספר כטעות</strong>.',
       p5: 'טווח המכפילים האפשרי (למשל 1–6) מופיע בראש כל משחק. כל מכפיל/מספר בטווח זה יכול להופיע <strong>רק פעם אחת</strong> בכל שורה ופעם אחת בכל טור.',
       p6: '❓ אין לכם מספיק נתונים להחלטה? <strong>קחו רמז!</strong>',
       p7: '⭐ <strong>כוכבים:</strong> סיימו מהר, עם מעט טעויות ורמזים — וקבלו עד 3 כוכבים.',
@@ -2175,7 +2178,7 @@ const STRINGS = {
       p1: 'The numbers on the board are <strong>multiplication products</strong> — that is, <strong>row multiplier × column multiplier</strong>.',
       p2: 'You need to find the multipliers, both in the row and in the column.',
       p3: 'For example, if the number is 6, the multipliers could be 6×1, 1×6, 2×3 or 3×2.',
-      p4: 'To find the multipliers, use the other numbers in the same row or column.<br>💡 Every guess is checked immediately — <strong>a wrong guess counts as a mistake</strong>. You can also use the <strong>Check All</strong> button.',
+      p4: 'To find the multipliers, use the other numbers in the same row or column.<br>💡 You can fill several cells before checking — checking happens with <strong>Enter</strong> or the <strong>Check</strong>/<strong>Check All</strong> button. <strong>A wrong guess counts as a mistake</strong>.',
       p5: 'The possible multiplier range (e.g. 1–6) appears at the top of every game. Each number in that range can appear <strong>only once</strong> in each row and once in each column.',
       p6: '❓ Not enough information to decide? <strong>Take a hint!</strong>',
       p7: '⭐ <strong>Stars:</strong> finish fast with few mistakes and hints to earn up to 3 stars.',
@@ -2353,7 +2356,7 @@ const STRINGS = {
       p1: 'Les nombres sur la grille sont des <strong>produits de multiplication</strong> — c\'est-à-dire <strong>multiplicateur de ligne × multiplicateur de colonne</strong>.',
       p2: 'Vous devez trouver les multiplicateurs, à la fois dans la ligne et dans la colonne.',
       p3: 'Par exemple, si le nombre est 6, les multiplicateurs peuvent être 6×1, 1×6, 2×3 ou 3×2.',
-      p4: 'Pour trouver les multiplicateurs, utilisez les autres nombres de la même ligne ou colonne.<br>💡 Chaque réponse est vérifiée immédiatement — <strong>une réponse fausse compte comme une erreur</strong>. Vous pouvez aussi utiliser le bouton <strong>Tout vérifier</strong>.',
+      p4: 'Pour trouver les multiplicateurs, utilisez les autres nombres de la même ligne ou colonne.<br>💡 Vous pouvez remplir plusieurs cases avant de vérifier — la vérification se fait avec <strong>Entrée</strong> ou le bouton <strong>Vérifier</strong>/<strong>Tout vérifier</strong>. <strong>Une réponse fausse compte comme une erreur</strong>.',
       p5: 'La plage de multiplicateurs possible (par ex. 1–6) apparaît en haut de chaque partie. Chaque nombre de cette plage ne peut apparaître qu\'<strong>une seule fois</strong> par ligne et une fois par colonne.',
       p6: '❓ Pas assez d\'informations pour décider ? <strong>Prenez un indice !</strong>',
       p7: '⭐ <strong>Étoiles :</strong> terminez vite avec peu d\'erreurs et d\'indices pour gagner jusqu\'à 3 étoiles.',
@@ -2531,7 +2534,7 @@ const STRINGS = {
       p1: 'Los números del tablero son <strong>productos de multiplicación</strong> — es decir, <strong>multiplicador de fila × multiplicador de columna</strong>.',
       p2: 'Debes encontrar los multiplicadores, tanto en la fila como en la columna.',
       p3: 'Por ejemplo, si el número es 6, los multiplicadores pueden ser 6×1, 1×6, 2×3 o 3×2.',
-      p4: 'Para encontrar los multiplicadores, usa los demás números de la misma fila o columna.<br>💡 Cada respuesta se comprueba al instante — <strong>una respuesta incorrecta cuenta como error</strong>. También puedes usar el botón <strong>Comprobar todo</strong>.',
+      p4: 'Para encontrar los multiplicadores, usa los demás números de la misma fila o columna.<br>💡 Puedes rellenar varias casillas antes de comprobar — la comprobación se hace con <strong>Intro</strong> o el botón <strong>Comprobar</strong>/<strong>Comprobar todo</strong>. <strong>Una respuesta incorrecta cuenta como error</strong>.',
       p5: 'El rango de multiplicadores posible (p. ej. 1–6) aparece al principio de cada partida. Cada número de ese rango solo puede aparecer <strong>una vez</strong> en cada fila y una vez en cada columna.',
       p6: '❓ ¿No tienes suficiente información para decidir? ¡<strong>Pide una pista!</strong>',
       p7: '⭐ <strong>Estrellas:</strong> termina rápido con pocos errores y pistas para ganar hasta 3 estrellas.',
@@ -2709,7 +2712,7 @@ const STRINGS = {
       p1: 'الأرقام على اللوح هي <strong>حواصل ضرب</strong> — أي <strong>عامل الصف × عامل العمود</strong>.',
       p2: 'عليك إيجاد العوامل في الصف والعمود معاً.',
       p3: 'مثلاً، إذا كان الرقم 6، فقد تكون العوامل 6×1 أو 1×6 أو 2×3 أو 3×2.',
-      p4: 'لإيجاد العوامل، استعن بالأرقام الأخرى في الصف أو العمود نفسه.<br>💡 يُتحقَّق من كل إجابة فوراً — <strong>الإجابة الخاطئة تُحتسب خطأً</strong>. يمكنك أيضاً استخدام زر <strong>تحقّق من الكل</strong>.',
+      p4: 'لإيجاد العوامل، استعن بالأرقام الأخرى في الصف أو العمود نفسه.<br>💡 يمكنك ملء عدة خلايا قبل التحقق — يتم التحقق بالضغط على <strong>Enter</strong> أو زر <strong>تحقّق</strong>/<strong>تحقّق من الكل</strong>. <strong>الإجابة الخاطئة تُحتسب خطأً</strong>.',
       p5: 'يظهر نطاق العوامل الممكن (مثلاً 1–6) في أعلى كل لعبة. كل رقم في هذا النطاق يمكن أن يظهر <strong>مرة واحدة فقط</strong> في كل صف ومرة واحدة في كل عمود.',
       p6: '❓ لا تملك معلومات كافية للقرار؟ <strong>خذ تلميحاً!</strong>',
       p7: '⭐ <strong>النجوم:</strong> أنهِ بسرعة وبأقل الأخطاء والتلميحات لتكسب حتى 3 نجوم.',
@@ -3080,13 +3083,14 @@ document.addEventListener('keydown', e => {
   for (let i = MODAL_IDS.length - 1; i >= 0; i--) {
     const ov = document.getElementById(MODAL_IDS[i]);
     if (ov && ov.classList.contains('active')) {
-      // Close dismissible modals (not win/lose — user must make a choice)
-      const dismissible = ['confirmOverlay', 'tutorialOverlay', 'rulesOverlay', 'sharePreviewOverlay', 'statsOverlay'];
+      // Close dismissible modals (not lose — user must make a choice)
+      const dismissible = ['confirmOverlay', 'winOverlay', 'tutorialOverlay', 'rulesOverlay', 'sharePreviewOverlay', 'statsOverlay'];
       if (dismissible.includes(MODAL_IDS[i])) {
         if (MODAL_IDS[i] === 'rulesOverlay') closeRules();
         else if (MODAL_IDS[i] === 'tutorialOverlay') closeTutorial();
         else if (MODAL_IDS[i] === 'sharePreviewOverlay') closeSharePreview();
         else if (MODAL_IDS[i] === 'statsOverlay') closeStats();
+        else if (MODAL_IDS[i] === 'winOverlay') closeWin();
         else ov.classList.remove('active');
       }
       break;
@@ -3524,7 +3528,9 @@ function makeHdrInput(type, idx) {
     showKbdBar();
   });
   inp.addEventListener('blur', () => {
-    validateHeader(isRow, idx, inp);
+    // Leaving the field just saves the typed value — it does NOT validate.
+    // Validation only happens via Enter, the kbd bar's "Check" buttons, or
+    // Check All, so the user can fill several cells before checking any.
     // Delay so a tap on the float button still resolves to a click first.
     setTimeout(() => {
       const a = document.activeElement;
@@ -4271,7 +4277,11 @@ function gameWin() {
 
   const ov = document.getElementById('winOverlay');
   ov.classList.add('active');
-  ov.querySelector('button').focus();
+  ov.querySelector('.btn').focus();
+}
+
+function closeWin() {
+  document.getElementById('winOverlay').classList.remove('active');
 }
 
 function gameLose() {
