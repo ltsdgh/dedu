@@ -202,6 +202,10 @@
     }
     .lang-select:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
     .lang-select:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
+    /* Wrapper is a no-op by default — the select sits directly in the
+       corner-controls row, same as before this wrapper existed. */
+    .lang-select-wrap { display: contents; }
+    .lang-select-icon { display: none; }
 
     /* ── Game-screen corner (mute + new game), opposite the global corner ── */
     .game-corner {
@@ -233,6 +237,49 @@
        but a darker, bolder symbol so it reads clearly. */
     .game-corner-btn--primary {
       color: var(--clr-primary-dk);
+    }
+
+    /* On narrow screens, the in-game corner groups (game-corner on the left,
+       corner-controls on the right) don't have room for the theme toggle's
+       and language selector's full-width pills and end up overlapping.
+       Shrink both to icon-sized circles, matching the other corner buttons,
+       so the two groups always fit side by side. */
+    @media (max-width: 480px) {
+      body.in-game .corner-controls .theme-toggle {
+        width: 40px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+      }
+      body.in-game .corner-controls .theme-toggle .corner-label { display: none; }
+
+      body.in-game .lang-select-wrap {
+        display: block;
+        position: relative;
+        width: 40px;
+        height: 40px;
+      }
+      body.in-game .lang-select-wrap .lang-select-icon {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--clr-surface);
+        border: 1.5px solid var(--clr-border);
+        border-radius: 50%;
+        font-size: 18px;
+        pointer-events: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      }
+      body.in-game .lang-select-wrap .lang-select {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        min-height: 0;
+        padding: 0;
+        opacity: 0;
+      }
     }
 
     /* ── Header ── */
@@ -483,6 +530,11 @@
 
     /* Board */
     .board-scroll { overflow-x: auto; padding: .5rem; width: 100%; display: flex; justify-content: center; }
+
+    /* Persistent Check All / Hint actions for pointer (non-touch) devices —
+       touch devices get the floating keyboard toolbar instead. */
+    .board-actions { display: flex; gap: .6rem; justify-content: center; margin: .3rem 0 .6rem; }
+    @media (pointer: coarse) { .board-actions { display: none; } }
 
     .board-wrap {
       background: #ECEAF8;
@@ -1602,14 +1654,17 @@
           aria-label="איך משחקים?"
           data-i18n-aria="help.ariaLabel"
           onclick="showRules()">ℹ️</button>
-  <button class="theme-toggle" id="themeToggleBtn" aria-label="החלף ערכת צבעים">🌙 מצב כהה</button>
-  <select class="lang-select" id="langSelect" aria-label="בחר שפה">
-    <option value="he">עברית</option>
-    <option value="en">English</option>
-    <option value="fr">Français</option>
-    <option value="es">Español</option>
-    <option value="ar">العربية</option>
-  </select>
+  <button class="theme-toggle" id="themeToggleBtn" aria-label="🌙 מצב כהה"><span aria-hidden="true">🌙</span><span class="corner-label"> מצב כהה</span></button>
+  <div class="lang-select-wrap">
+    <span class="lang-select-icon" aria-hidden="true">🌐</span>
+    <select class="lang-select" id="langSelect" aria-label="בחר שפה">
+      <option value="he">עברית</option>
+      <option value="en">English</option>
+      <option value="fr">Français</option>
+      <option value="es">Español</option>
+      <option value="ar">العربية</option>
+    </select>
+  </div>
 </div>
 
 <a href="#main-content" class="skip-link" data-i18n="skipLink">דלג לתוכן הראשי</a>
@@ -1732,6 +1787,12 @@
           <!-- Rendered by JS -->
         </table>
       </div>
+    </div>
+
+    <!-- Persistent Check All / Hint actions (non-touch devices) -->
+    <div class="board-actions" id="boardActions">
+      <button class="btn btn-check" id="boardCheckAllBtn" type="button" data-i18n="board.checkAllBtn">✓ בדוק הכל</button>
+      <button class="btn btn-hint"  id="boardHintBtn"     type="button" data-i18n="board.hintBtn">💡 רמז</button>
     </div>
 
     <!-- Live message -->
@@ -2868,9 +2929,9 @@ const STRINGS = {
 
 let currentLang = 'he';
 
-function setLang(lang) {
+function setLang(lang, persist = true) {
   currentLang = lang;
-  localStorage.setItem('lang', lang);
+  if (persist) localStorage.setItem('lang', lang);
   const str = STRINGS[lang];
   document.documentElement.lang = lang;
   document.documentElement.dir  = (lang === 'he' || lang === 'ar') ? 'rtl' : 'ltr';
@@ -2927,9 +2988,8 @@ function setLang(lang) {
   // Update theme toggle label
   const themeBtn = document.getElementById('themeToggleBtn');
   if (themeBtn) {
-    themeBtn.textContent =
-      document.body.classList.contains('theme-dark') ? str.themeLightLabel : str.themeDarkLabel;
-    themeBtn.setAttribute('aria-label', themeBtn.textContent);
+    setThemeBtnLabel(themeBtn,
+      document.body.classList.contains('theme-dark') ? str.themeLightLabel : str.themeDarkLabel);
   }
 
   renderSetupProgress();
@@ -3055,7 +3115,11 @@ document.getElementById('pauseBtn').addEventListener('click',  togglePause);
   keepFocus(onTap('kbdCheckBtn',    checkActiveHeader));
   keepFocus(onTap('kbdCheckAllBtn', checkAll));
   // Hint: use a free hint if any remain, otherwise fall back to the coin buy-hint.
-  keepFocus(onTap('kbdHintBtn',     () => { if (G.hintsLeft > 0) giveHint(); else buyHint(); }));
+  const useHint = () => { if (G.hintsLeft > 0) giveHint(); else buyHint(); };
+  keepFocus(onTap('kbdHintBtn', useHint));
+  // Persistent board actions (non-touch devices — see .board-actions CSS).
+  onTap('boardCheckAllBtn', checkAll);
+  onTap('boardHintBtn', useHint);
   // Done: allow blur so the keyboard closes.
   onTap('kbdDoneBtn', () => { (activeHdrInput?.el || document.activeElement)?.blur(); });
 })();
@@ -4619,9 +4683,11 @@ function updateStats() {
   // Hints — hidden entirely in easy mode (maxHints === 0, no hidden cells to reveal)
   const hasHints = cfg.maxHints > 0;
   document.getElementById('hintRow').style.display = hasHints ? '' : 'none';
-  // Hint lives in the keyboard toolbar; hide it entirely when hints don't apply.
+  // Hide the hint buttons (keyboard toolbar + persistent board action) entirely when hints don't apply.
   const hintBtn = document.getElementById('kbdHintBtn');
   if (hintBtn) hintBtn.style.display = hasHints ? '' : 'none';
+  const boardHintBtn = document.getElementById('boardHintBtn');
+  if (boardHintBtn) boardHintBtn.style.display = hasHints ? '' : 'none';
   if (hasHints) {
     document.getElementById('hintsVal').textContent = hintsUsedTotal();
     document.getElementById('hintsMax').textContent = ` / ${cfg.maxHints}`;
@@ -4754,6 +4820,18 @@ function toggleMute() {
 document.getElementById('muteBtn').addEventListener('click', toggleMute);
 
 // Theme toggle
+// Split "🌙 Dark mode" into an icon + a label span, so narrow screens can
+// hide just the label (via CSS) and keep the toggle icon-sized, without
+// losing the full text from the accessible name.
+function setThemeBtnLabel(btn, fullLabel) {
+  const spaceIdx = fullLabel.indexOf(' ');
+  const icon = spaceIdx > -1 ? fullLabel.slice(0, spaceIdx) : fullLabel;
+  const rest = spaceIdx > -1 ? fullLabel.slice(spaceIdx + 1) : '';
+  btn.innerHTML = '<span aria-hidden="true">' + icon + '</span>' +
+    (rest ? '<span class="corner-label"> ' + rest + '</span>' : '');
+  btn.setAttribute('aria-label', fullLabel);
+}
+
 // Keep the browser UI (status bar / address bar) in sync with the active theme.
 function updateThemeColor(dark) {
   const m = document.querySelector('meta[name="theme-color"]');
@@ -4780,8 +4858,7 @@ function updateThemeColor(dark) {
   if (!btn) return;
   btn.addEventListener('click', () => {
     const isDark = document.body.classList.toggle('theme-dark');
-    btn.textContent = isDark ? STRINGS[currentLang].themeLightLabel : STRINGS[currentLang].themeDarkLabel;
-    btn.setAttribute('aria-label', btn.textContent);
+    setThemeBtnLabel(btn, isDark ? STRINGS[currentLang].themeLightLabel : STRINGS[currentLang].themeDarkLabel);
     localStorage.setItem('dedu-theme', isDark ? 'dark' : 'light');
     updateThemeColor(isDark);
   });
@@ -4790,6 +4867,14 @@ function updateThemeColor(dark) {
 // Language initialisation — detect from device locale, fall back to English
 const SUPPORTED_LANGS = ['he', 'en', 'fr', 'es', 'ar'];
 (function initLang() {
+  // One-time migration: older versions persisted the auto-detected language
+  // on every visit, so a single bad detection (e.g. a browser whose language
+  // differs from the device OS) could get stuck showing the wrong language
+  // forever. Clear any such stale value once so it re-detects from the OS.
+  if (!localStorage.getItem('lang-migrated-v2')) {
+    localStorage.removeItem('lang');
+    localStorage.setItem('lang-migrated-v2', '1');
+  }
   const saved = localStorage.getItem('lang');
   function detectLang() {
     const cands = navigator.languages?.length ? navigator.languages : [navigator.language || 'en'];
@@ -4799,8 +4884,11 @@ const SUPPORTED_LANGS = ['he', 'en', 'fr', 'es', 'ar'];
     }
     return 'en';
   }
-  currentLang = (saved && SUPPORTED_LANGS.includes(saved)) ? saved : detectLang();
-  setLang(currentLang);
+  const hasSaved = saved && SUPPORTED_LANGS.includes(saved);
+  currentLang = hasSaved ? saved : detectLang();
+  // Only persist when the user has explicitly chosen a language before;
+  // otherwise keep re-detecting from the device locale on every visit.
+  setLang(currentLang, hasSaved);
   // Wire up language selector
   const sel = document.getElementById('langSelect');
   if (sel) sel.addEventListener('change', (e) => setLang(e.target.value));
