@@ -1772,15 +1772,19 @@
     <div id="winCriteria" class="win-criteria"></div>
     <p id="winBody" data-i18n="modals.winBody">פתרת את הלוח בהצלחה!</p>
     <p id="winStarLine" style="font-size:.85rem;font-weight:600;margin:-.8rem 0 .8rem;color:var(--clr-muted);"></p>
-    <button class="btn btn-check"   id="shareBtn" onclick="shareResult()" data-i18n="win.shareBtn">📤 שתף תוצאה</button>
+    <!-- Share temporarily disabled -->
+    <button class="btn btn-check"   id="shareBtn" onclick="shareResult()" data-i18n="win.shareBtn" style="display:none;">📤 שתף תוצאה</button>
     <button class="btn btn-restart" onclick="sameSettings()" data-i18n="modals.winPlayAgain">↺ שחק שוב – אותן הגדרות</button>
     <button class="btn btn-restart" onclick="goSetup()"      data-i18n="modals.winNewGame">🎮 הגדרות חדשות</button>
   </div>
 </div>
 
 <!-- ══ Lose Modal ══ -->
-<div class="overlay" id="loseOverlay" role="dialog" aria-modal="true" aria-labelledby="loseTitle">
+<div class="overlay" id="loseOverlay" role="dialog" aria-modal="true" aria-labelledby="loseTitle" onclick="if(event.target===this)closeLose()">
   <div class="modal">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:-.5rem;">
+      <button onclick="closeLose()" aria-label="סגור" data-i18n-aria="ui.close" style="background:none;border:none;font-size:1.5rem;line-height:1;cursor:pointer;color:var(--clr-muted);padding:.1rem .4rem;border-radius:4px;" title="סגור">✕</button>
+    </div>
     <h2 id="loseTitle" data-i18n="modals.loseTitle">😕 נגמרו הניסיונות</h2>
     <p id="loseBody" data-i18n="modals.loseBody">הגעת למקסימום הטעויות.</p>
     <button class="btn btn-success" id="showSolutionBtn" data-i18n="modals.loseShow">👁️ הצג פתרון בלוח</button>
@@ -3088,14 +3092,15 @@ document.addEventListener('keydown', e => {
   for (let i = MODAL_IDS.length - 1; i >= 0; i--) {
     const ov = document.getElementById(MODAL_IDS[i]);
     if (ov && ov.classList.contains('active')) {
-      // Close dismissible modals (not lose — user must make a choice)
-      const dismissible = ['confirmOverlay', 'winOverlay', 'tutorialOverlay', 'rulesOverlay', 'sharePreviewOverlay', 'statsOverlay'];
+      // Close dismissible modals
+      const dismissible = ['confirmOverlay', 'winOverlay', 'loseOverlay', 'tutorialOverlay', 'rulesOverlay', 'sharePreviewOverlay', 'statsOverlay'];
       if (dismissible.includes(MODAL_IDS[i])) {
         if (MODAL_IDS[i] === 'rulesOverlay') closeRules();
         else if (MODAL_IDS[i] === 'tutorialOverlay') closeTutorial();
         else if (MODAL_IDS[i] === 'sharePreviewOverlay') closeSharePreview();
         else if (MODAL_IDS[i] === 'statsOverlay') closeStats();
         else if (MODAL_IDS[i] === 'winOverlay') closeWin();
+        else if (MODAL_IDS[i] === 'loseOverlay') closeLose();
         else ov.classList.remove('active');
       }
       break;
@@ -4302,6 +4307,10 @@ function gameWin() {
 
 function closeWin() {
   document.getElementById('winOverlay').classList.remove('active');
+}
+
+function closeLose() {
+  document.getElementById('loseOverlay').classList.remove('active');
 }
 
 function gameLose() {
