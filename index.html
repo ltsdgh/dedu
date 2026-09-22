@@ -1789,10 +1789,11 @@
       </div>
     </div>
 
-    <!-- Persistent Check All / Hint actions (non-touch devices) -->
+    <!-- Persistent Check / Check All / Hint actions (non-touch devices) -->
     <div class="board-actions" id="boardActions">
-      <button class="btn btn-check" id="boardCheckAllBtn" type="button" data-i18n="board.checkAllBtn">✓ בדוק הכל</button>
-      <button class="btn btn-hint"  id="boardHintBtn"     type="button" data-i18n="board.hintBtn">💡 רמז</button>
+      <button class="btn btn-success" id="boardCheckBtn"    type="button" data-i18n="board.checkBtn">✓ בדוק</button>
+      <button class="btn btn-check"   id="boardCheckAllBtn" type="button" data-i18n="board.checkAllBtn">✓ בדוק הכל</button>
+      <button class="btn btn-hint"    id="boardHintBtn"     type="button" data-i18n="board.hintBtn">💡 רמז</button>
     </div>
 
     <!-- Live message -->
@@ -3118,6 +3119,13 @@ document.getElementById('pauseBtn').addEventListener('click',  togglePause);
   const useHint = () => { if (G.hintsLeft > 0) giveHint(); else buyHint(); };
   keepFocus(onTap('kbdHintBtn', useHint));
   // Persistent board actions (non-touch devices — see .board-actions CSS).
+  // Unlike the keyboard toolbar, this bar is visible even when no header is
+  // focused, so "Check" needs its own guard for that case.
+  const boardCheckOne = () => {
+    if (!activeHdrInput) { showMsg(STRINGS[currentLang].messages.fillFirst, 'info'); return; }
+    checkActiveHeader();
+  };
+  keepFocus(onTap('boardCheckBtn', boardCheckOne));
   onTap('boardCheckAllBtn', checkAll);
   onTap('boardHintBtn', useHint);
   // Done: allow blur so the keyboard closes.
