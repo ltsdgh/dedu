@@ -5461,8 +5461,18 @@ const SUPPORTED_LANGS = ['he', 'en', 'fr', 'es', 'ar', 'ru'];
 
 <!-- PWA Service Worker registration -->
 <script>
-  if ('serviceWorker' in navigator)
-    navigator.serviceWorker.register('./sw.js');
+  if ('serviceWorker' in navigator) {
+    // When an updated worker takes over an already-controlled page, reload once
+    // so the new version replaces the one served by the old cache-first worker.
+    const hadController = !!navigator.serviceWorker.controller;
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController || reloaded) return;
+      reloaded = true;
+      location.reload();
+    });
+    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
+  }
 </script>
 </body>
 </html>

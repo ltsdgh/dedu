@@ -1,5 +1,5 @@
 /* de-du Service Worker — cache-first, offline support */
-const CACHE = 'dedu-v56';
+const CACHE = 'dedu-v57';
 const ASSETS = [
   './index.html',
   './manifest.json',
@@ -30,10 +30,23 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   const url = e.request.url;
-  // Cache-first for same-origin and Google Fonts
-  if (url.startsWith(self.location.origin) ||
-      url.includes('fonts.googleapis.com') ||
-      url.includes('fonts.gstatic.com')) {
+  // Network-first for our own files, so a new deploy shows up right away;
+  // the cache is only a fallback when offline.
+  if (url.startsWith(self.location.origin)) {
+    e.respondWith(
+      fetch(e.request, { cache: 'no-cache' }).then(response => {
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
+        return response;
+      }).catch(() =>
+        caches.match(e.request).then(cached => cached || caches.match('./index.html'))
+      )
+    );
+  // Cache-first for Google Fonts (they never change)
+  } else if (url.includes('fonts.googleapis.com') ||
+             url.includes('fonts.gstatic.com')) {
     e.respondWith(
       caches.match(e.request).then(cached => {
         if (cached) return cached;
