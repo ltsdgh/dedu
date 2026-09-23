@@ -1,3 +1,10 @@
+# Deployed automatically from GitHub on every push to master.
+# Only the website files are copied to dist/, so repo-only files
+# (ios/, store-listings.md, scripts, configs) are never published.
+[build]
+  command = "rm -rf dist && mkdir dist && cp index.html privacy.html sw.js manifest.json *.png *.jpeg *.svg dist/"
+  publish = "dist"
+
 [[headers]]
   for = "/*"
   [headers.values]

@@ -1,8 +1,9 @@
 .claude/
 *.log
 
-# Local Netlify folder
+# Local Netlify folder + build output
 .netlify
+dist/
 
 # Node
 node_modules/
