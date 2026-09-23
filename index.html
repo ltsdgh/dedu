@@ -326,8 +326,8 @@
       body.kbd-open .game-corner,
       body.kbd-open .corner-controls,
       body.kbd-open #gameScreen > :not(.board-scroll):not(.kbd-bar) { display: none !important; }
-      body.kbd-open #gameScreen.active { padding-bottom: 0; }
-      body.kbd-open .board-scroll { overflow: visible; }   /* let fitBoardAboveKbd() scale up */
+      /* Scroll room so revealActiveInput() can lift bottom cells above the keyboard. */
+      body.kbd-open #gameScreen.active { padding-bottom: 60vh; }
     }
     .site-header h1 { line-height: 1; margin: 0; }
     .site-header p { color: var(--clr-text); font-size: .95rem; font-weight: 500; margin-top: .45rem; opacity: .7; }
@@ -585,10 +585,6 @@
       #boardHintBtn { flex: 1 1 0; }
       /* While typing, everything but the board is hidden — see body.kbd-open above. */
     }
-    /* Shrunk by fitBoardAboveKbd() when the board is taller than the space
-       left above the on-screen keyboard. */
-    .board-wrap { transform-origin: top center; }
-
     .board-wrap {
       background: #ECEAF8;
       border-radius: var(--radius-board);
@@ -3374,7 +3370,7 @@ document.getElementById('pauseBtn').addEventListener('click',  togglePause);
   onTap('kbdDoneBtn', () => { (activeHdrInput?.el || document.activeElement)?.blur(); });
 })();
 if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', () => { positionKbdBar(); fitBoardAboveKbd(); });
+  window.visualViewport.addEventListener('resize', () => { positionKbdBar(); revealActiveInput(); });
   window.visualViewport.addEventListener('scroll', positionKbdBar);
 }
 document.getElementById('restartBtn').addEventListener('click', goSetup);
@@ -3923,10 +3919,10 @@ function showKbdBar() {
   bar.hidden = false;
   document.body.classList.add('kbd-open');   // swaps out the bottom action bar
   positionKbdBar();
-  // Once the keyboard has animated in, pin the whole board to the top.
+  // Once the keyboard has animated in, make sure the cell isn't hidden by it.
   setTimeout(() => {
     positionKbdBar();
-    fitBoardAboveKbd();
+    revealActiveInput();
   }, 250);
 }
 
@@ -3935,30 +3931,21 @@ function hideKbdBar() {
   if (bar) bar.hidden = true;
   document.body.classList.remove('kbd-open');
   activeHdrInput = null;
-  const bw = document.querySelector('#gameScreen .board-wrap');
-  if (bw) bw.style.transform = '';
 }
 
-// Scroll the board to the top of the visible area and scale it to fill the
-// space between the screen top and the keyboard toolbar — down if it is too
-// tall, up (bounded by the screen width) if there is room to spare.
-function fitBoardAboveKbd() {
+// Keep the board at full size and just scroll so the focused cell sits in the
+// space between the screen top and the keyboard toolbar.
+function revealActiveInput() {
   const bar = document.getElementById('kbdBar');
-  const bw  = document.querySelector('#gameScreen .board-wrap');
-  if (!bar || bar.hidden || !bw) return;
+  const el  = activeHdrInput?.el;
+  if (!bar || bar.hidden || !el) return;
   const vv = window.visualViewport;
-  const gap = 4;
+  const gap = 8;
   const visTop    = vv ? vv.offsetTop : 0;
   const visBottom = (vv ? vv.offsetTop + vv.height : window.innerHeight) - bar.offsetHeight;
-  const visWidth  = vv ? vv.width : window.innerWidth;
-  const r = bw.getBoundingClientRect();
-  window.scrollBy(0, r.top - visTop - gap);
-  const newTop = bw.getBoundingClientRect().top;   // may be clamped by page height
-  const availH = visBottom - Math.max(newTop, visTop) - gap;
-  const cx = (r.left + r.right) / 2;               // scaling is centred here
-  const availW = 2 * (Math.min(cx, visWidth - cx) - gap);
-  const scale = Math.min(availH / bw.offsetHeight, availW / bw.offsetWidth, 1.5);
-  bw.style.transform = Math.abs(scale - 1) > 0.01 ? `scale(${Math.max(scale, 0.5)})` : '';
+  const r = el.getBoundingClientRect();
+  if (r.bottom > visBottom - gap)  window.scrollBy(0, r.bottom - visBottom + gap);
+  else if (r.top < visTop + gap)   window.scrollBy(0, r.top - visTop - gap);
 }
 
 function positionKbdBar() {
