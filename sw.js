@@ -1,11 +1,12 @@
 /* de-du Service Worker — cache-first, offline support */
-const CACHE = 'dedu-v51';
+const CACHE = 'dedu-v56';
 const ASSETS = [
   './index.html',
   './manifest.json',
   './icon.svg',
   './icon192.png',
   './icon512.png',
+  './apple-touch-icon.png',
   './dedu_white.jpeg',
   'https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap'
 ];

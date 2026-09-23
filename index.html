@@ -10,7 +10,6 @@
   <title>de-du | דדו — גלו את המכפילים</title>
 
   <!-- Favicon -->
-  <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="icon" href="icon192.png" type="image/png" sizes="192x192" />
 
   <!-- PWA -->
@@ -21,7 +20,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="de-du" />
-  <link rel="apple-touch-icon" href="icon192.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 
   <!-- SEO -->
   <meta name="description" content="גלו את המכפילים" />
@@ -282,6 +281,21 @@
       }
     }
 
+    /* On phones, a shorter in-game top row (34px instead of 40px, closer to the
+       edge) frees vertical room for the board. Both corner groups hold at most
+       3 circles, so they still fit side by side down to 320px wide. */
+    @media (max-width: 480px) {
+      body.in-game .game-corner,
+      body.in-game .corner-controls { top: calc(8px + env(safe-area-inset-top, 0px)); gap: 6px; }
+      body.in-game .game-corner { left: 10px; }
+      body.in-game .corner-controls { right: 10px; }
+      body.in-game .game-corner-btn,
+      body.in-game .btn-help-corner,
+      body.in-game .corner-controls .theme-toggle,
+      body.in-game .lang-select-wrap { width: 34px; height: 34px; min-height: 34px; font-size: 15px; }
+      body.in-game .game-corner-btn svg { width: 17px; height: 17px; }
+    }
+
     /* ── Header ── */
     .site-header {
       text-align: center;
@@ -300,6 +314,20 @@
        corner-controls, ~54px tall) so the stats bar doesn't slide under them. */
     body.in-game {
       padding-top: calc(4.5rem + env(safe-area-inset-top, 0px));
+    }
+    @media (max-width: 480px) {
+      body.in-game { padding-top: calc(3.1rem + env(safe-area-inset-top, 0px)); }
+    }
+    /* While typing on a touch device only the board and the keyboard toolbar
+       are shown; everything else comes back once the keyboard is dismissed
+       (Done / Check / Check All). */
+    @media (pointer: coarse) {
+      body.in-game.kbd-open { padding-top: calc(4px + env(safe-area-inset-top, 0px)); }
+      body.kbd-open .game-corner,
+      body.kbd-open .corner-controls,
+      body.kbd-open #gameScreen > :not(.board-scroll):not(.kbd-bar) { display: none !important; }
+      body.kbd-open #gameScreen.active { padding-bottom: 0; }
+      body.kbd-open .board-scroll { overflow: visible; }   /* let fitBoardAboveKbd() scale up */
     }
     .site-header h1 { line-height: 1; margin: 0; }
     .site-header p { color: var(--clr-text); font-size: .95rem; font-weight: 500; margin-top: .45rem; opacity: .7; }
@@ -464,7 +492,7 @@
       display: flex;
       flex-wrap: nowrap;
       gap: 6px;
-      margin-bottom: .75rem;
+      margin: .5rem 0 .75rem;     /* sits below the board now */
       width: 100%;
     }
     .stat {
@@ -531,10 +559,35 @@
     /* Board */
     .board-scroll { overflow-x: auto; padding: .5rem; width: 100%; display: flex; justify-content: center; }
 
-    /* Persistent Check All / Hint actions for pointer (non-touch) devices —
-       touch devices get the floating keyboard toolbar instead. */
+    /* Persistent Check / Check All / Hint actions. On touch devices this becomes
+       a slim bar pinned to the bottom (thumb zone) while the keyboard is closed;
+       single "Check" is dropped there since it needs a focused header. While
+       typing, the keyboard toolbar (.kbd-bar) takes over. Overlays (z 200) sit above. */
     .board-actions { display: flex; gap: .6rem; justify-content: center; margin: .3rem 0 .6rem; }
-    @media (pointer: coarse) { .board-actions { display: none; } }
+    @media (pointer: coarse) {
+      #gameScreen.active { padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px)); }
+      .board-actions {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 150;
+        margin: 0;
+        gap: .5rem;
+        padding: .45rem .7rem calc(.45rem + env(safe-area-inset-bottom, 0px));
+        background: var(--clr-surface);
+        border-top: 1px solid var(--clr-border);
+        box-shadow: 0 -4px 16px rgba(0,0,0,.12);
+      }
+      .board-actions .btn { min-height: 38px; margin: 0; padding-top: .3rem; padding-bottom: .3rem; }
+      #boardCheckBtn { display: none; }
+      #boardCheckAllBtn { flex: 2 1 0; }
+      #boardHintBtn { flex: 1 1 0; }
+      /* While typing, everything but the board is hidden — see body.kbd-open above. */
+    }
+    /* Shrunk by fitBoardAboveKbd() when the board is taller than the space
+       left above the on-screen keyboard. */
+    .board-wrap { transform-origin: top center; }
 
     .board-wrap {
       background: #ECEAF8;
@@ -911,12 +964,14 @@
       .hdr-input, .cell-product { width: 48px; height: 48px; font-size: .9rem; border-radius: .9rem; }
       .board { border-spacing: 5px; }
       .card { padding: 1.25rem 1.1rem; }
-      .board-wrap { padding: .85rem; border-radius: 1.5rem; }
+      .board-wrap { padding: .45rem; border-radius: 1.2rem; }
+      .board-scroll { padding: .25rem; }
+      .progress-bar-wrap { margin-bottom: .3rem; }
     }
     @media (max-width: 400px) {
       .hdr-input, .cell-product { width: 42px; height: 42px; font-size: .82rem; border-radius: .8rem; }
       .board { border-spacing: 4px; }
-      .board-wrap { padding: .7rem; }
+      .board-wrap { padding: .35rem; }
     }
     /* 6×6 on small screens — milder than 7×7 (only one column more than 5×5) */
     @media (max-width: 480px) {
@@ -1401,8 +1456,8 @@
       display: flex;
       gap: .4rem;
       align-items: stretch;
-      padding: .4rem .55rem calc(.4rem + env(safe-area-inset-bottom, 0px));
-      min-height: 52px;
+      padding: .25rem .5rem calc(.25rem + env(safe-area-inset-bottom, 0px));
+      min-height: 40px;
       background: var(--clr-surface);
       border-top: 1px solid var(--clr-border);
       box-shadow: 0 -4px 16px rgba(0,0,0,.14);
@@ -1412,9 +1467,9 @@
     .kbd-bar[hidden] { display: none; }
     .kbd-btn {
       flex: 1 1 auto;
-      min-height: 44px;
-      padding: .5rem .7rem;
-      font-size: 1rem;
+      min-height: 34px;
+      padding: .2rem .7rem;
+      font-size: .95rem;
       font-weight: 700;
       white-space: nowrap;
       color: var(--clr-primary);
@@ -1434,9 +1489,9 @@
     }
     .kbd-btn.kbd-icon {
       flex: 0 0 auto;
-      width: 48px;
-      font-size: 1.2rem;
-      padding: .5rem 0;
+      width: 44px;
+      font-size: 1.1rem;
+      padding: .2rem 0;
     }
 
     /* V4 – Range banner: gradient + shadow */
@@ -1663,6 +1718,7 @@
       <option value="fr">Français</option>
       <option value="es">Español</option>
       <option value="ar">العربية</option>
+      <option value="ru">Русский</option>
     </select>
   </div>
 </div>
@@ -1736,6 +1792,32 @@
       <button class="game-corner-btn game-corner-btn--primary" id="restartBtn" aria-label="חזרה למסך הבית"   data-i18n-aria="board.homeAria" title="חזרה למסך הבית"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 9.8V20h13V9.8"/></svg></button>
     </div>
 
+    <!-- Board -->
+    <div class="board-scroll">
+      <div class="board-wrap pause-wrap">
+        <div class="pause-overlay-board" id="pauseOverlayBoard" aria-live="polite">
+          <span>⏸</span>
+          <span data-i18n="board.pausedLabel">המשחק מושהה</span>
+        </div>
+        <table class="board" id="boardTable" aria-label="לוח הכפל" data-i18n-aria="board.tableAriaLabel">
+          <caption class="sr-only" style="position:absolute;clip:rect(0,0,0,0);white-space:nowrap;overflow:hidden;" data-i18n="board.caption">
+            לוח כפל. מלא את התאים הכחולים עם המכפלה הנכונה.
+          </caption>
+          <!-- Rendered by JS -->
+        </table>
+      </div>
+    </div>
+
+    <!-- Persistent Check / Check All / Hint actions (non-touch devices) -->
+    <div class="board-actions" id="boardActions">
+      <button class="btn btn-success" id="boardCheckBtn"    type="button" data-i18n="board.checkBtn">✓ בדוק</button>
+      <button class="btn btn-check"   id="boardCheckAllBtn" type="button" data-i18n="board.checkAllBtn">✓ בדוק הכל</button>
+      <button class="btn btn-hint"    id="boardHintBtn"     type="button" data-i18n="board.hintBtn">💡 רמז</button>
+    </div>
+
+    <!-- Live message -->
+    <div class="msg" id="msgBox" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
     <!-- Stats -->
     <div class="stats-bar" role="status" aria-live="polite" aria-atomic="false">
       <div class="stat" aria-label="מכפילים שגילית" data-i18n-aria="stats.correctAriaLabel">
@@ -1772,32 +1854,6 @@
 
     <!-- Range banner -->
     <div class="range-banner" id="rangeBanner" aria-live="polite"></div>
-
-    <!-- Board -->
-    <div class="board-scroll">
-      <div class="board-wrap pause-wrap">
-        <div class="pause-overlay-board" id="pauseOverlayBoard" aria-live="polite">
-          <span>⏸</span>
-          <span data-i18n="board.pausedLabel">המשחק מושהה</span>
-        </div>
-        <table class="board" id="boardTable" aria-label="לוח הכפל" data-i18n-aria="board.tableAriaLabel">
-          <caption class="sr-only" style="position:absolute;clip:rect(0,0,0,0);white-space:nowrap;overflow:hidden;" data-i18n="board.caption">
-            לוח כפל. מלא את התאים הכחולים עם המכפלה הנכונה.
-          </caption>
-          <!-- Rendered by JS -->
-        </table>
-      </div>
-    </div>
-
-    <!-- Persistent Check / Check All / Hint actions (non-touch devices) -->
-    <div class="board-actions" id="boardActions">
-      <button class="btn btn-success" id="boardCheckBtn"    type="button" data-i18n="board.checkBtn">✓ בדוק</button>
-      <button class="btn btn-check"   id="boardCheckAllBtn" type="button" data-i18n="board.checkAllBtn">✓ בדוק הכל</button>
-      <button class="btn btn-hint"    id="boardHintBtn"     type="button" data-i18n="board.hintBtn">💡 רמז</button>
-    </div>
-
-    <!-- Live message -->
-    <div class="msg" id="msgBox" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
     <!-- Keyboard accessory toolbar (shown atop the keyboard while a header cell is focused) -->
     <div class="kbd-bar" id="kbdBar" role="toolbar" aria-label="כלי הקלדה" data-i18n-aria="board.kbdBarAriaLabel" hidden>
@@ -2926,7 +2982,193 @@ const STRINGS = {
     themeDarkLabel: '🌙 الوضع الداكن',
     themeLightLabel: '☀️ الوضع الفاتح',
   },
+  ru: {
+    pageTitle: 'de-du | Найди множители',
+    skipLink: 'Перейти к основному содержимому',
+    headerSubtitle: 'Найди множители',
+    setup: {
+      heading: 'Настройки игры',
+      boardSizeLegend: 'Размер поля',
+      boardSizeAriaLabel: 'Выберите размер поля',
+      diffLegend: 'Сложность',
+      diffAriaLabel: 'Выберите сложность',
+      startBtn: 'Начать игру ▶',
+      resumeBtn: '▶ Продолжить прошлую игру',
+      dailyBtn: '📅 Задание дня',
+      howToPlay: '❓ Как играть?',
+      dailyBadge: '📅 Задание дня',
+      milestone: (n) => `🏅 Достижение! Ты собрал ${n} ${ruPlural(n, 'монету', 'монеты', 'монет')} — отлично!`,
+      diffSuggest: (next) => `🚀 Готов к новому вызову? Попробуй <strong>${next}</strong>!`,
+      demoLabel: 'Демо',
+      demoWin: '✨ Все множители найдены!',
+    },
+    /* SYNC: mirror tutorial + rules copy across all languages when How-to-Play changes */
+    tutorial: {
+      title: '🎓 Как играть',
+      step1: 'На поле показаны <strong>произведения</strong> — это твои подсказки.<br><br>Каждая клетка = <strong>множитель строки × множитель столбца</strong>. Например, если в клетке 6, множители могут быть 6×1, 1×6, 2×3 или 3×2.<br><br>Твоя задача: найти <strong>секретные множители</strong> в верхней строке и в боковом столбце. <strong>Диапазон множителей</strong> (например, 1–6) показан над полем.',
+      step2: 'Чтобы найти множители, <strong>используй другие числа в той же строке или столбце</strong> и ищи закономерности.<br><br>💡 Совет: зная множитель одной строки, ты получишь остальные множители простым делением.',
+      step3: 'Введи множитель и нажми <strong>Enter</strong>, чтобы сразу проверить.<br><br>⚠️ <strong>Каждое число встречается один раз среди строк и один раз среди столбцов.</strong><br><br>💡 Застрял — возьми <strong>Подсказку</strong>, а <strong>Проверить всё</strong> проверит сразу несколько ответов.<br><br>🎉 Удачи!',
+      next: 'Далее ›',
+      prev: '‹ Назад',
+      done: 'Играем! ▶',
+      skip: 'Пропустить обучение',
+    },
+    rules: {
+      p1: 'Числа на поле — это <strong>произведения</strong>, то есть <strong>множитель строки × множитель столбца</strong>.',
+      p2: 'Нужно найти множители — и для строк, и для столбцов.',
+      p3: 'Например, если число 6, множители могут быть 6×1, 1×6, 2×3 или 3×2.',
+      p4: 'Чтобы найти множители, используй другие числа в той же строке или столбце.<br>💡 Можно заполнить несколько клеток и только потом проверить — проверка происходит по <strong>Enter</strong> или кнопкой <strong>Проверить</strong>/<strong>Проверить всё</strong>. <strong>Неверный ответ считается ошибкой</strong>.',
+      p5: 'Возможный диапазон множителей (например, 1–6) показан в начале каждой игры. Каждое число из этого диапазона может встретиться <strong>только один раз</strong> в строках и один раз в столбцах.',
+      p6: '❓ Не хватает данных для решения? <strong>Возьми подсказку!</strong>',
+      p7: '⭐ <strong>Звёзды:</strong> решай быстро, с малым числом ошибок и подсказок — и получи до 3 звёзд.',
+      modalTitle: '🎮 Как играть',
+      closeBtn: 'Понятно, играем! ▶',
+    },
+    help: { ariaLabel: 'Как играть?', btnLabel: '❓ Как играть' },
+    svg: { multiplier: 'Множ.', notes: '?', multiplicand: 'Множим.' },
+    diff: {
+      easy: 'Легко', medium: 'Средне', hard: 'Сложно',
+    },
+    stats: {
+      settingsAriaLabel: 'Настройки игры',
+      timerAriaLabel: 'Время игры',
+      mistakesAriaLabel: 'Ошибки',
+      mistakesTitle: 'Каждый неверный ответ считается ошибкой',
+      mistakesLabel: '❌ Ошибки:',
+      hintsAriaLabel: 'Использовано подсказок',
+      hintsLabel: '💡 Подсказки:',
+      correctAriaLabel: 'Найдено множителей',
+      correctLabel: '🎯 Найдено:',
+      rangeAriaLabel: 'Диапазон чисел умножения',
+      rangeLabel: '🔢 Диапазон:',
+      coinsLabel: '🪙 Монеты:',
+    },
+    board: {
+      tableAriaLabel: 'Поле умножения — подсказки',
+      caption: 'Поле умножения. Числа — это подсказки: найди множители.',
+      cornerCell: '×',
+      hintBtn: '💡 Подсказка',
+      pauseBtn: '⏸ Пауза',
+      resumeBtn: '▶ Продолжить',
+      pausedLabel: 'Игра на паузе',
+      checkAllBtn: '✓ Проверить всё',
+      checkBtn: '✓ Проверить',
+      kbdBarAriaLabel: 'Инструменты ввода',
+      hintAriaLabel: 'Подсказка',
+      soundAriaLabel: 'Включить или выключить звук',
+      doneAriaLabel: 'Закрыть клавиатуру',
+      muteAria: 'Включить или выключить звук',
+      homeAria: 'На главный экран',
+      pauseAria: 'Пауза',
+      resumeAria: 'Продолжить игру',
+      newGameBtn: '↺ Новая игра',
+      cellShownAriaLabel: (r, c, val) => `Строка ${r+1}, столбец ${c+1}: ${val}`,
+      cellHiddenAriaLabel: (r, c) => `Строка ${r+1}, столбец ${c+1}: скрыто`,
+      colHelperAriaLabel: (i) => `Множитель столбца ${i+1} — введи число`,
+      rowHelperAriaLabel: (i) => `Множитель строки ${i+1} — введи число`,
+    },
+    messages: {
+      enterPositive: 'Введи положительное число',
+      correct: '✓ Верно!',
+      incorrect: '✗ Неверно – попробуй ещё',
+      fillFirst: 'Введи хотя бы один множитель перед проверкой',
+      allCorrect: (n) => `✓ Все введённые множители (${n}) верны!`,
+      errorsFound: (w, n) => `Ошибок: ${w} из ${n} ответов`,
+      noHints: 'Подсказок больше нет',
+      allFilled: 'Все множители уже найдены!',
+      hintMsg: (r, c, val) => `💡 Подсказка: строка ${r+1} × столбец ${c+1} = ${val}`,
+      rangeBanner: (max, diff) => `${diff ? `<strong>Уровень:</strong> <span>${diff}</span> · ` : ''}<strong>Диапазон:</strong> <span>1–${max}</span>`,
+    },
+    modals: {
+      confirmTitle: '⚠️ Выход из игры',
+      confirmBody: 'Текущая игра будет потеряна. Продолжить?',
+      confirmYes: 'Да, выйти',
+      confirmNo: 'Нет, назад',
+      winTitle: '🎉 Молодец!',
+      winStarsAriaLabel: 'Оценка звёздами',
+      winBody: 'Ты успешно решил поле!',
+      winPlayAgain: '↺ Ещё раз – те же настройки',
+      winNewGame: '🎮 Новые настройки',
+      loseTitle: '😕 Попытки закончились',
+      loseBody: 'Ты достиг максимального числа ошибок.',
+      loseShow: '👁️ Показать решение',
+      loseTryAgain: '↺ Попробовать снова',
+      loseNewGame: '🎮 Новые настройки',
+    },
+    win: {
+      starsLabel: (n) => `${n} из 3 звёзд`,
+      starsEarned: (n) => `Ты получил ${n} из 3 звёзд`,
+      newTimeRecord: '🏅 Новый рекорд времени!',
+      stats: (t, m, h) => `Время: ${t} | Ошибки: ${m} | Подсказки: ${h}`,
+      streak: (n) => `🔥 Серия ${n} ${ruPlural(n, 'день', 'дня', 'дней')} подряд — так держать!`,
+      streakWarning: (n) => `🔥 У тебя серия ${n} ${ruPlural(n, 'день', 'дня', 'дней')} — сыграй сегодня, чтобы её сохранить!`,
+      streakStart: '👋 Начни серию — сыграй сейчас!',
+      comboWins: (w) => `${w} ${ruPlural(w, 'победа', 'победы', 'побед')}`,
+      bestStars: (n) => `лучший ${n}★`,
+      badgeStreak: 'Дней подряд',
+      badgeStars: 'Всего звёзд',
+      badgeWins: 'Всего побед',
+      badgeLegend: '',
+      comboLabel: 'Рекорд',
+      dailyLevel: '5×5 · Средне',
+      dailyPersonalBest: (t) => `🏅 Личный рекорд: ${t}`,
+      dailyNewRecord: '🎉 Новый личный рекорд!',
+      tiers: ['🌱 Новичок', '🥉 Ученик', '🥈 Опытный', '🥇 Умелый', '🏆 Эксперт', '👑 Чемпион'],
+      tierProgress: (cur, next, rem) => `${cur} → ${next} (ещё ${rem} ${ruPlural(rem, 'победа', 'победы', 'побед')})`,
+      tierMax: (cur) => `${cur} — высший ранг!`,
+      suggestNow: '→ Попробовать',
+      shareBtn: '📤 Поделиться',
+      shareCopied: '✓ Скопировано!',
+      shareText: (n, diff, stars, t, m, h) => `de-du ${n}×${n} · ${diff} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
+      shareDailyText: (date, stars, t, m, h) => `de-du Daily ${date} ${'⭐'.repeat(stars)}\n⏱ ${t} | ❌ ${m} | 💡 ${h}\n🎮 de-du.netlify.app`,
+    },
+    ui: {
+      close: 'Закрыть',
+      cancel: 'Отмена',
+      shareTitle: '📤 Поделиться результатом',
+      shareAction: '📤 Поделиться',
+      copyAction: '📋 Копировать',
+      statsGames: 'Игры',
+      statsWinRate: 'Процент побед',
+      statsWins: 'Победы',
+      statsCoins: 'Монеты',
+      statsLevel: 'Уровень',
+      statsRating: 'Рейтинг',
+      statsBestTime: '⏱ Лучшее время',
+      streakShort: (n) => `🔥 ${n} ${ruPlural(n, 'день', 'дня', 'дней')} подряд`,
+      streakBadge: (n) => `🔥 ${n} ${ruPlural(n, 'день', 'дня', 'дней')} подряд!`,
+      dailyDone: 'Выполнено сегодня',
+      notEnoughCoins: 'Не хватает монет — играй ещё, чтобы заработать!',
+      hintPurchased: (cost) => `Подсказка куплена: ${cost} ${ruPlural(cost, 'монета', 'монеты', 'монет')}`,
+      buyHint: (cost) => `Купить подсказку (${cost} ${ruPlural(cost, 'монета', 'монеты', 'монет')})`,
+      comboTooltip: 'Комбо = твой рекорд для этого размера поля и сложности',
+      coinsEarned: (stars, total) => `+${stars} ${ruPlural(stars, 'монета', 'монеты', 'монет')} · всего: ${total}`,
+      revealShown: (pct) => `открыто ${pct}%`,
+      forBeginners: 'для новичков',
+      upToMistakes: (n) => `до ${n} ${ruPlural(n, 'ошибки', 'ошибок', 'ошибок')}`,
+    },
+    /* SYNC: demo narration is part of How-to-Play — mirror across languages */
+    demo: {
+      rowFind: 'Строка: 12, 9, 6 — найди множитель',
+      try1: 'строка=1? → 12÷1=12 слишком много ✗',
+      try2: 'строка=2? → 9÷2=4.5 не целое ✗',
+      solved: 'строка=3! → 4✓ 3✓ 2✓',
+    },
+    langName: 'Русский',
+    langSelectAriaLabel: 'Выберите язык',
+    statsBtnLabel: '📊 Моя статистика',
+    themeDarkLabel: '🌙 Тёмная тема',
+    themeLightLabel: '☀️ Светлая тема',
+  },
 };
+
+// Russian plural form: 1 монета, 2–4 монеты, 5+ монет (11–14 always "many").
+function ruPlural(n, one, few, many) {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+  return many;
+}
 
 let currentLang = 'he';
 
@@ -3132,7 +3374,7 @@ document.getElementById('pauseBtn').addEventListener('click',  togglePause);
   onTap('kbdDoneBtn', () => { (activeHdrInput?.el || document.activeElement)?.blur(); });
 })();
 if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', positionKbdBar);
+  window.visualViewport.addEventListener('resize', () => { positionKbdBar(); fitBoardAboveKbd(); });
   window.visualViewport.addEventListener('scroll', positionKbdBar);
 }
 document.getElementById('restartBtn').addEventListener('click', goSetup);
@@ -3679,18 +3921,44 @@ function showKbdBar() {
   const bar = document.getElementById('kbdBar');
   if (!bar) return;
   bar.hidden = false;
+  document.body.classList.add('kbd-open');   // swaps out the bottom action bar
   positionKbdBar();
-  // Nudge the focused cell into view so the bar never hides it.
+  // Once the keyboard has animated in, pin the whole board to the top.
   setTimeout(() => {
-    if (activeHdrInput) activeHdrInput.el.scrollIntoView({ block: 'center' });
     positionKbdBar();
+    fitBoardAboveKbd();
   }, 250);
 }
 
 function hideKbdBar() {
   const bar = document.getElementById('kbdBar');
   if (bar) bar.hidden = true;
+  document.body.classList.remove('kbd-open');
   activeHdrInput = null;
+  const bw = document.querySelector('#gameScreen .board-wrap');
+  if (bw) bw.style.transform = '';
+}
+
+// Scroll the board to the top of the visible area and scale it to fill the
+// space between the screen top and the keyboard toolbar — down if it is too
+// tall, up (bounded by the screen width) if there is room to spare.
+function fitBoardAboveKbd() {
+  const bar = document.getElementById('kbdBar');
+  const bw  = document.querySelector('#gameScreen .board-wrap');
+  if (!bar || bar.hidden || !bw) return;
+  const vv = window.visualViewport;
+  const gap = 4;
+  const visTop    = vv ? vv.offsetTop : 0;
+  const visBottom = (vv ? vv.offsetTop + vv.height : window.innerHeight) - bar.offsetHeight;
+  const visWidth  = vv ? vv.width : window.innerWidth;
+  const r = bw.getBoundingClientRect();
+  window.scrollBy(0, r.top - visTop - gap);
+  const newTop = bw.getBoundingClientRect().top;   // may be clamped by page height
+  const availH = visBottom - Math.max(newTop, visTop) - gap;
+  const cx = (r.left + r.right) / 2;               // scaling is centred here
+  const availW = 2 * (Math.min(cx, visWidth - cx) - gap);
+  const scale = Math.min(availH / bw.offsetHeight, availW / bw.offsetWidth, 1.5);
+  bw.style.transform = Math.abs(scale - 1) > 0.01 ? `scale(${Math.max(scale, 0.5)})` : '';
 }
 
 function positionKbdBar() {
@@ -4873,7 +5141,7 @@ function updateThemeColor(dark) {
 })();
 
 // Language initialisation — detect from device locale, fall back to English
-const SUPPORTED_LANGS = ['he', 'en', 'fr', 'es', 'ar'];
+const SUPPORTED_LANGS = ['he', 'en', 'fr', 'es', 'ar', 'ru'];
 (function initLang() {
   // One-time migration: older versions persisted the auto-detected language
   // on every visit, so a single bad detection (e.g. a browser whose language
