@@ -1,5 +1,5 @@
-/* de-du Service Worker — cache-first, offline support */
-const CACHE = 'dedu-v57';
+/* de-du Service Worker — network-first, offline support */
+const CACHE = 'dedu-v58';
 const ASSETS = [
   './index.html',
   './manifest.json',
@@ -18,14 +18,27 @@ self.addEventListener('install', e => {
   self.skipWaiting();
 });
 
+// Versions before v57 were cache-first and their pages have no reload-on-update
+// code, so a phone upgrading from one of them would keep showing the old game.
+const LAST_CACHE_FIRST_VERSION = 56;
+
 self.addEventListener('activate', e => {
-  // Remove old caches
-  e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    )
-  );
-  self.clients.claim();
+  e.waitUntil((async () => {
+    // Remove old caches
+    const old = (await caches.keys()).filter(k => k !== CACHE);
+    await Promise.all(old.map(k => caches.delete(k)));
+    await self.clients.claim();
+    // Coming from a cache-first version: reload open windows ourselves so the
+    // new version appears now, without the user having to do anything.
+    const fromCacheFirst = old.some(k => {
+      const m = /^dedu-v(\d+)$/.exec(k);
+      return m && Number(m[1]) <= LAST_CACHE_FIRST_VERSION;
+    });
+    if (fromCacheFirst) {
+      const wins = await self.clients.matchAll({ type: 'window' });
+      await Promise.all(wins.map(w => w.navigate(w.url).catch(() => {})));
+    }
+  })());
 });
 
 self.addEventListener('fetch', e => {
