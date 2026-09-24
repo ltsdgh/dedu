@@ -4880,6 +4880,7 @@ function _doGoSetup() {
   document.getElementById('setupSecondary').style.display = '';
   document.body.classList.remove('in-game');
   if (!G.over) clearGameState();
+  if (window.deduUpdateReady) { location.reload(); return; }
   renderSetupProgress();
   updateResumeBtn();
   updateDailyBtn();
@@ -5451,14 +5452,21 @@ const SUPPORTED_LANGS = ['he', 'en', 'fr', 'es', 'ar', 'ru'];
   if ('serviceWorker' in navigator) {
     // When an updated worker takes over an already-controlled page, reload once
     // so the new version replaces the one served by the old cache-first worker.
-    const hadController = !!navigator.serviceWorker.controller;
-    let reloaded = false;
+    // When an updated worker takes over, reload once to show the new version —
+    // but never mid-game: then wait until the player is back on the setup screen.
+    let controlled = !!navigator.serviceWorker.controller;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!hadController || reloaded) return;
-      reloaded = true;
-      location.reload();
+      if (!controlled) { controlled = true; return; }  // first install, page is already current
+      if (document.body.classList.contains('in-game')) window.deduUpdateReady = true;
+      else location.reload();
     });
-    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
+    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(reg => {
+      // An installed app is often resumed from the background rather than
+      // relaunched, which never checks for a new version on its own.
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') reg.update().catch(() => {});
+      });
+    });
   }
 </script>
 </body>
