@@ -1,5 +1,5 @@
 /* de-du Service Worker — network-first, offline support */
-const CACHE = 'dedu-v58';
+const CACHE = 'dedu-v59';
 const ASSETS = [
   './index.html',
   './manifest.json',
@@ -7,13 +7,15 @@ const ASSETS = [
   './icon192.png',
   './icon512.png',
   './apple-touch-icon.png',
-  './dedu_white.jpeg',
-  'https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap'
+  './dedu_white.jpeg'
 ];
+const FONTS = 'https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap';
 
 self.addEventListener('install', e => {
+  // The fonts are optional: if they can't be fetched, the update must still
+  // install, otherwise phones stay stuck on the old version.
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS))
+    caches.open(CACHE).then(c => c.addAll(ASSETS).then(() => c.add(FONTS).catch(() => {})))
   );
   self.skipWaiting();
 });
