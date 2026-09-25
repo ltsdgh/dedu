@@ -25,16 +25,21 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     const dir = path.join(OUT, lang);
     fs.mkdirSync(dir, { recursive: true });
 
+    // The app follows the device language, so emulate it (later scripts run
+    // after earlier ones, so the most recent language wins on each load).
+    await page.evaluateOnNewDocument((l) => {
+      Object.defineProperty(navigator, 'languages', { get: () => [l], configurable: true });
+      Object.defineProperty(navigator, 'language',  { get: () => l,   configurable: true });
+    }, lang);
     // Load once to get an origin, set prefs, then reload in the target language.
     await page.goto(URL, { waitUntil: 'networkidle2' });
-    await page.evaluate((l) => {
-      localStorage.setItem('lang', l);
+    await page.evaluate(() => {
       localStorage.setItem('dedu-rules-seen', '1');    // suppress rules auto-popup
       localStorage.setItem('dedu-tutorial-done', '1'); // suppress first-game tutorial
       localStorage.removeItem('dedu-active-game');     // no "resume" prompt
       localStorage.removeItem('dedu-stats');           // new-user state: coin HUD stays hidden
       localStorage.setItem('dedu-theme', 'light');
-    }, lang);
+    });
     await page.reload({ waitUntil: 'networkidle2' });
     await sleep(600); // fonts + i18n settle
 

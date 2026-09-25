@@ -195,28 +195,6 @@
     .theme-toggle:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
     .theme-toggle:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
 
-    /* ── Language selector ── */
-    .lang-select {
-      background: var(--clr-surface);
-      border: 1.5px solid var(--clr-border);
-      border-radius: var(--radius-pill);
-      padding: 5px 10px;
-      min-height: 40px;
-      font-family: var(--font-ui);
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--clr-muted);
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 2px 8px rgba(0,0,0,.08);
-    }
-    .lang-select:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
-    .lang-select:focus { outline: 3px solid var(--clr-primary); outline-offset: 2px; }
-    /* Wrapper is a no-op by default — the select sits directly in the
-       corner-controls row, same as before this wrapper existed. */
-    .lang-select-wrap { display: contents; }
-    .lang-select-icon { display: none; }
-
     /* ── Game-screen corner (mute + new game), opposite the global corner ── */
     .game-corner {
       position: fixed;
@@ -251,9 +229,9 @@
 
     /* On narrow screens, the in-game corner groups (game-corner on the left,
        corner-controls on the right) don't have room for the theme toggle's
-       and language selector's full-width pills and end up overlapping.
-       Shrink both to icon-sized circles, matching the other corner buttons,
-       so the two groups always fit side by side. */
+       full-width pill and end up overlapping. Shrink it to an icon-sized
+       circle, matching the other corner buttons, so the two groups always
+       fit side by side. */
     @media (max-width: 480px) {
       body.in-game .corner-controls .theme-toggle {
         width: 40px;
@@ -262,34 +240,6 @@
         border-radius: 50%;
       }
       body.in-game .corner-controls .theme-toggle .corner-label { display: none; }
-
-      body.in-game .lang-select-wrap {
-        display: block;
-        position: relative;
-        width: 40px;
-        height: 40px;
-      }
-      body.in-game .lang-select-wrap .lang-select-icon {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--clr-surface);
-        border: 1.5px solid var(--clr-border);
-        border-radius: 50%;
-        font-size: 18px;
-        pointer-events: none;
-        box-shadow: 0 2px 8px rgba(0,0,0,.08);
-      }
-      body.in-game .lang-select-wrap .lang-select {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        min-height: 0;
-        padding: 0;
-        opacity: 0;
-      }
     }
 
     /* On phones, a shorter in-game top row (34px instead of 40px, closer to the
@@ -302,8 +252,7 @@
       body.in-game .corner-controls { right: 10px; }
       body.in-game .game-corner-btn,
       body.in-game .btn-help-corner,
-      body.in-game .corner-controls .theme-toggle,
-      body.in-game .lang-select-wrap { width: 34px; height: 34px; min-height: 34px; font-size: 15px; }
+      body.in-game .corner-controls .theme-toggle { width: 34px; height: 34px; min-height: 34px; font-size: 15px; }
       body.in-game .game-corner-btn svg { width: 17px; height: 17px; }
     }
 
@@ -1717,17 +1666,6 @@
           data-i18n-aria="help.ariaLabel"
           onclick="showRules()">ℹ️</button>
   <button class="theme-toggle" id="themeToggleBtn" aria-label="🌙 מצב כהה"><span aria-hidden="true">🌙</span><span class="corner-label"> מצב כהה</span></button>
-  <div class="lang-select-wrap">
-    <span class="lang-select-icon" aria-hidden="true">🌐</span>
-    <select class="lang-select" id="langSelect" aria-label="בחר שפה">
-      <option value="he">עברית</option>
-      <option value="en">English</option>
-      <option value="fr">Français</option>
-      <option value="es">Español</option>
-      <option value="ar">العربية</option>
-      <option value="ru">Русский</option>
-    </select>
-  </div>
 </div>
 
 <a href="#main-content" class="skip-link" data-i18n="skipLink">דלג לתוכן הראשי</a>
@@ -2272,7 +2210,6 @@ const STRINGS = {
       solved: 'שורה=3! → 4✓ 3✓ 2✓',
     },
     langName: 'עברית',
-    langSelectAriaLabel: 'בחר שפה',
     statsBtnLabel: '📊 הסטטיסטיקות שלי',
     themeDarkLabel: '🌙 מצב כהה',
     themeLightLabel: '☀️ מצב בהיר',
@@ -2450,7 +2387,6 @@ const STRINGS = {
       solved: 'row=3! → 4✓ 3✓ 2✓',
     },
     langName: 'English',
-    langSelectAriaLabel: 'Choose language',
     statsBtnLabel: '📊 My Statistics',
     themeDarkLabel: '🌙 Dark mode',
     themeLightLabel: '☀️ Light mode',
@@ -2628,7 +2564,6 @@ const STRINGS = {
       solved: 'ligne=3 ! → 4✓ 3✓ 2✓',
     },
     langName: 'Français',
-    langSelectAriaLabel: 'Choisir la langue',
     statsBtnLabel: '📊 Mes statistiques',
     themeDarkLabel: '🌙 Mode sombre',
     themeLightLabel: '☀️ Mode clair',
@@ -2806,7 +2741,6 @@ const STRINGS = {
       solved: '¡fila=3! → 4✓ 3✓ 2✓',
     },
     langName: 'Español',
-    langSelectAriaLabel: 'Elegir idioma',
     statsBtnLabel: '📊 Mis estadísticas',
     themeDarkLabel: '🌙 Modo oscuro',
     themeLightLabel: '☀️ Modo claro',
@@ -2984,7 +2918,6 @@ const STRINGS = {
       solved: 'الصف=3! → 4✓ 3✓ 2✓',
     },
     langName: 'العربية',
-    langSelectAriaLabel: 'اختر اللغة',
     statsBtnLabel: '📊 إحصاءاتي',
     themeDarkLabel: '🌙 الوضع الداكن',
     themeLightLabel: '☀️ الوضع الفاتح',
@@ -3162,7 +3095,6 @@ const STRINGS = {
       solved: 'строка=3! → 4✓ 3✓ 2✓',
     },
     langName: 'Русский',
-    langSelectAriaLabel: 'Выберите язык',
     statsBtnLabel: '📊 Моя статистика',
     themeDarkLabel: '🌙 Тёмная тема',
     themeLightLabel: '☀️ Светлая тема',
@@ -3179,9 +3111,8 @@ function ruPlural(n, one, few, many) {
 
 let currentLang = 'he';
 
-function setLang(lang, persist = true) {
+function setLang(lang) {
   currentLang = lang;
-  if (persist) localStorage.setItem('lang', lang);
   const str = STRINGS[lang];
   document.documentElement.lang = lang;
   document.documentElement.dir  = (lang === 'he' || lang === 'ar') ? 'rtl' : 'ltr';
@@ -3225,12 +3156,6 @@ function setLang(lang, persist = true) {
       document.getElementById('winBody').textContent =
         str.win.stats(G.winStats.t, G.winStats.m, G.winStats.h);
     }
-  }
-  // Update language selector
-  const langSel = document.getElementById('langSelect');
-  if (langSel) {
-    langSel.value = lang;
-    langSel.setAttribute('aria-label', str.langSelectAriaLabel);
   }
   // Update stats button label
   const statsBtn = document.getElementById('statsBtn');
@@ -5139,18 +5064,16 @@ function updateThemeColor(dark) {
   });
 })();
 
-// Language initialisation — detect from device locale, fall back to English
+// Language initialisation — always follow the device locale, fall back to English.
+// There is no in-app language picker; the OS language is the only source.
 const SUPPORTED_LANGS = ['he', 'en', 'fr', 'es', 'ar', 'ru'];
 (function initLang() {
-  // One-time migration: older versions persisted the auto-detected language
-  // on every visit, so a single bad detection (e.g. a browser whose language
-  // differs from the device OS) could get stuck showing the wrong language
-  // forever. Clear any such stale value once so it re-detects from the OS.
-  if (!localStorage.getItem('lang-migrated-v2')) {
+  // Older versions let the user pick a language and saved it; drop that so
+  // the device language always wins.
+  try {
     localStorage.removeItem('lang');
-    localStorage.setItem('lang-migrated-v2', '1');
-  }
-  const saved = localStorage.getItem('lang');
+    localStorage.removeItem('lang-migrated-v2');
+  } catch (e) {}
   function detectLang() {
     const cands = navigator.languages?.length ? navigator.languages : [navigator.language || 'en'];
     for (const l of cands) {
@@ -5159,14 +5082,12 @@ const SUPPORTED_LANGS = ['he', 'en', 'fr', 'es', 'ar', 'ru'];
     }
     return 'en';
   }
-  const hasSaved = saved && SUPPORTED_LANGS.includes(saved);
-  currentLang = hasSaved ? saved : detectLang();
-  // Only persist when the user has explicitly chosen a language before;
-  // otherwise keep re-detecting from the device locale on every visit.
-  setLang(currentLang, hasSaved);
-  // Wire up language selector
-  const sel = document.getElementById('langSelect');
-  if (sel) sel.addEventListener('change', (e) => setLang(e.target.value));
+  setLang(detectLang());
+  // Follow OS language changes made while the app is open.
+  window.addEventListener('languagechange', () => {
+    const lang = detectLang();
+    if (lang !== currentLang) setLang(lang);
+  });
 })();
 
 /* ── Demo Animation ── */
