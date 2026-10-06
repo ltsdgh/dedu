@@ -282,6 +282,13 @@
     @media (max-width: 480px) {
       body.in-game { padding-top: calc(3.1rem + env(safe-area-inset-top, 0px)); }
     }
+    /* Tall phones (iPhone etc.): centre the content vertically instead of
+       leaving the lower half of the screen empty. Not while typing, so the
+       board stays pinned to the top above the keyboard. */
+    @media (max-width: 480px) and (min-height: 700px) {
+      body { min-height: 100dvh; justify-content: center; }
+      body.kbd-open { justify-content: flex-start; }
+    }
     /* While typing on a touch device only the board and the keyboard toolbar
        are shown; everything else comes back once the keyboard is dismissed
        (Done / Check / Check All). */
