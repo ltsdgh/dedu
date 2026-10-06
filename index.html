@@ -51,9 +51,11 @@
       --clr-success:        #047857;
       --clr-success-bg:     #d1fae5;
       --clr-success-border: #6ee7b7;
+      --clr-success-text:   #065f46;
       --clr-error:          #be123c;
       --clr-error-bg:       #ffe4e6;
       --clr-error-border:   #fda4af;
+      --clr-error-text:     #9f1239;
       --clr-warn:           #92400e;
       --clr-warn-bg:        #fef3c7;
       --clr-info:           #075985;
@@ -91,9 +93,11 @@
       --clr-success:        #10b981;
       --clr-success-bg:     rgba(16,185,129,.15);
       --clr-success-border: rgba(16,185,129,.5);
+      --clr-success-text:   #6ee7b7;
       --clr-error:          #f43f5e;
       --clr-error-bg:       rgba(244,63,94,.15);
       --clr-error-border:   rgba(244,63,94,.5);
+      --clr-error-text:     #fda4af;
       --clr-warn:           #f59e0b;
       --clr-warn-bg:        rgba(245,158,11,.12);
       --clr-info:           #38bdf8;
@@ -611,12 +615,12 @@
       background: var(--clr-success-bg);
       border-color: var(--clr-success);
       border-style: solid;
-      color: var(--clr-text);
+      color: var(--clr-success-text);
     }
     .hdr-input.wrong {
       background: var(--clr-error-bg);
       border-color: var(--clr-error);
-      color: var(--clr-error);
+      color: var(--clr-error-text);
       animation: shake .35s;
     }
     /* Multipliers revealed when the player runs out of attempts (lose screen) */
@@ -811,8 +815,8 @@
       max-width: 480px;
     }
     .msg:empty { background: transparent; }
-    .msg.success { background: var(--clr-success-bg); color: var(--clr-success); border: 1px solid var(--clr-success-border); }
-    .msg.error   { background: var(--clr-error-bg);   color: var(--clr-error);   border: 1px solid var(--clr-error-border); }
+    .msg.success { background: var(--clr-success-bg); color: var(--clr-success-text); border: 1px solid var(--clr-success-border); }
+    .msg.error   { background: var(--clr-error-bg);   color: var(--clr-error-text);   border: 1px solid var(--clr-error-border); }
     .msg.info    { background: var(--clr-info-bg);    color: var(--clr-info);    border: 1px solid rgba(7,89,133,.2); }
     .msg.warn    { background: var(--clr-warn-bg);    color: var(--clr-warn);    border: 1px solid rgba(146,64,14,.2); }
 
